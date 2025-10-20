@@ -46,6 +46,17 @@ const driveSchema = new mongoose.Schema({
     type: Date,
     required: true
   },
+  externalApplicationUrl: {
+    type: String,
+    required: false,
+    validate: {
+      validator: function(v) {
+        if (!v) return true; // Allow empty/null values
+        return /^https?:\/\/.+/.test(v); // Must be a valid URL if provided
+      },
+      message: 'External application URL must be a valid HTTP/HTTPS URL'
+    }
+  },
   eligibility: {
     minCGPA: {
       type: Number,

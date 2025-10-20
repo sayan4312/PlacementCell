@@ -183,7 +183,7 @@ notificationSchema.statics.createApplicationNotification = async function(applic
   const Application = require('./Application');
   const application = await Application.findById(applicationId)
     .populate('student', '_id name email')
-    .populate('drive', 'title position')
+    .populate('drive', 'title position companyName location')
     .populate('company', 'companyName');
 
   if (!application) return null;
@@ -197,44 +197,49 @@ notificationSchema.statics.createApplicationNotification = async function(applic
     metadata: {
       applicationId,
       driveTitle: application.drive.title,
-      companyName: application.company.companyName
+      companyName: application.drive.companyName || application.company?.companyName || 'Unknown Company'
     }
   };
 
   switch (type) {
     case 'application_submitted':
       notificationData.title = 'Application Submitted';
-      notificationData.message = `Your application for ${application.drive.position} at ${application.company.companyName} has been submitted successfully.`;
+      notificationData.message = `Your application for ${application.drive.position} at ${application.drive.companyName || application.company?.companyName || 'Unknown Company'} has been submitted successfully.`;
       notificationData.type = 'success';
       notificationData.priority = 'medium';
+      notificationData.actionUrl = '/student/dashboard?tab=applications';
       break;
     
     case 'application_shortlisted':
       notificationData.title = 'Application Shortlisted!';
-      notificationData.message = `Congratulations! Your application for ${application.drive.position} at ${application.company.companyName} has been shortlisted.`;
+      notificationData.message = `Congratulations! Your application for ${application.drive.position} at ${application.drive.companyName || application.company?.companyName || 'Unknown Company'} has been shortlisted.`;
       notificationData.type = 'success';
       notificationData.priority = 'high';
+      notificationData.actionUrl = '/student/dashboard?tab=applications';
       break;
     
     case 'application_selected':
       notificationData.title = 'Application Selected!';
-      notificationData.message = `🎉 You have been selected for ${application.drive.position} at ${application.company.companyName}!`;
+      notificationData.message = `🎉 You have been selected for ${application.drive.position} at ${application.drive.companyName || application.company?.companyName || 'Unknown Company'}!`;
       notificationData.type = 'success';
       notificationData.priority = 'high';
+      notificationData.actionUrl = '/student/dashboard?tab=applications';
       break;
     
     case 'application_rejected':
       notificationData.title = 'Application Update';
-      notificationData.message = `Your application for ${application.drive.position} at ${application.company.companyName} was not selected.`;
+      notificationData.message = `Your application for ${application.drive.position} at ${application.drive.companyName || application.company?.companyName || 'Unknown Company'} was not selected.`;
       notificationData.type = 'info';
       notificationData.priority = 'medium';
+      notificationData.actionUrl = '/student/dashboard?tab=applications';
       break;
     
     case 'interview_scheduled':
       notificationData.title = 'Interview Scheduled';
-      notificationData.message = `An interview has been scheduled for your application at ${application.company.companyName}. Check your application details for more information.`;
+      notificationData.message = `An interview has been scheduled for your application at ${application.drive.companyName || application.company?.companyName || 'Unknown Company'}. Check your application details for more information.`;
       notificationData.type = 'warning';
       notificationData.priority = 'high';
+      notificationData.actionUrl = '/student/dashboard?tab=applications';
       break;
     
     default:
@@ -252,6 +257,9 @@ notificationSchema.statics.createDriveNotification = async function(driveId, typ
   const drive = await Drive.findById(driveId).populate('company', 'companyName');
   if (!drive) return null;
 
+  // Get company name with fallbacks
+  const companyName = drive.companyName || drive.company?.companyName || 'a company';
+
   let users = [];
   
   if (type === 'new_drive') {
@@ -267,10 +275,10 @@ notificationSchema.statics.createDriveNotification = async function(driveId, typ
   const notifications = users.map(userId => ({
     user: userId,
     title: 'New Job Drive Available',
-    message: `A new ${drive.position} position is available at ${drive.company.companyName}. Apply now!`,
+    message: `A new ${drive.position} position is available at ${companyName}. Apply now!`,
     type: 'info',
     priority: 'medium',
-    actionUrl: `/drives/${driveId}`,
+    actionUrl: `/student/dashboard?tab=drives`,
     relatedEntity: {
       type: 'drive',
       id: driveId
@@ -278,7 +286,7 @@ notificationSchema.statics.createDriveNotification = async function(driveId, typ
     metadata: {
       driveId,
       position: drive.position,
-      companyName: drive.company.companyName
+      companyName: companyName
     }
   }));
 

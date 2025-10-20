@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 
   Bell, 
@@ -30,11 +30,11 @@ interface Notification {
 }
 
 interface NotificationsSectionProps {
-  notifications: Notification[];
+  notifications?: Notification[];
 }
 
 const NotificationsSection: React.FC<NotificationsSectionProps> = ({ notifications }) => {
-  const [localNotifications, setLocalNotifications] = useState<Notification[]>(notifications);
+  const [localNotifications, setLocalNotifications] = useState<Notification[]>(notifications || []);
   const [filterType, setFilterType] = useState<'all' | 'unread' | 'read'>('all');
   const [selectedNotifications, setSelectedNotifications] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -49,6 +49,11 @@ const NotificationsSection: React.FC<NotificationsSectionProps> = ({ notificatio
   });
 
   const navigate = useNavigate();
+
+  // Update local notifications when prop changes
+  useEffect(() => {
+    setLocalNotifications(notifications || []);
+  }, [notifications]);
 
   const getNotificationIcon = (type: string) => {
     switch (type) {
@@ -181,8 +186,8 @@ const NotificationsSection: React.FC<NotificationsSectionProps> = ({ notificatio
         (filterType === 'read' && notification.read);
       
       const matchesSearch = !searchTerm || 
-        notification.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        notification.message.toLowerCase().includes(searchTerm.toLowerCase());
+        (notification.title && notification.title.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (notification.message && notification.message.toLowerCase().includes(searchTerm.toLowerCase()));
 
       return matchesType && matchesSearch;
     });
@@ -339,21 +344,21 @@ const NotificationsSection: React.FC<NotificationsSectionProps> = ({ notificatio
                     className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                   />
                   <div className="flex items-start space-x-3 flex-1">
-                    {getNotificationIcon(notification.type)}
+                    {getNotificationIcon(notification.type || 'info')}
                     <div className="flex-1">
                       <div className="flex items-center space-x-2 mb-1">
                         <h4 className={`font-medium ${notification.read ? 'text-gray-700 dark:text-gray-300' : 'text-gray-900 dark:text-white'}`}>
-                          {notification.title}
+                          {notification.title || 'No Title'}
                         </h4>
                         {!notification.read && (
                           <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
                         )}
                       </div>
                       <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                        {notification.message}
+                        {notification.message || 'No message'}
                       </p>
                       <div className="flex items-center space-x-4 text-xs text-gray-500 dark:text-gray-500">
-                        <span>{formatDate(notification.createdAt)}</span>
+                        <span>{notification.createdAt ? formatDate(notification.createdAt) : 'Unknown date'}</span>
                         {notification.actionUrl && (
                           <span className="text-blue-600 dark:text-blue-400">Click to view</span>
                         )}

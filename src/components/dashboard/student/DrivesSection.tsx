@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Search, DollarSign, MapPin, Calendar, Building2, CheckCircle, Clock, Filter, X, Briefcase } from 'lucide-react';
+import { Search, DollarSign, MapPin, Calendar, Building2, CheckCircle, Clock, Filter, X, Briefcase, ExternalLink } from 'lucide-react';
+import { toast } from 'react-toastify';
 
 interface Drive {
   _id: string;
@@ -27,6 +28,7 @@ interface Drive {
   requirements: string[];
   status: string;
   appliedAt?: string;
+  externalApplicationUrl?: string;
 }
 
 interface DrivesSectionProps {
@@ -46,10 +48,17 @@ const DrivesSection: React.FC<DrivesSectionProps> = ({
   filterStatus,
   setFilterStatus,
   handleApplyToDrive,
-  formatDate
+  formatDate,
 }) => {
   const [applyingDriveId, setApplyingDriveId] = useState<string | null>(null);
   const [showFilters, setShowFilters] = useState(false);
+
+  // Debug: Log drives data to see if external fields are present
+  console.log('Drives data:', drives.map(d => ({
+    id: d._id,
+    position: d.position,
+    externalApplicationUrl: d.externalApplicationUrl
+  })));
   const [locationFilter, setLocationFilter] = useState('');
   const [ctcFilter, setCtcFilter] = useState('');
 
@@ -71,6 +80,15 @@ const DrivesSection: React.FC<DrivesSectionProps> = ({
       await handleApplyToDrive(driveId);
     } finally {
       setApplyingDriveId(null);
+    }
+  };
+
+  const handleExternalLink = (drive: Drive) => {
+    if (drive.externalApplicationUrl) {
+      window.open(drive.externalApplicationUrl, '_blank');
+      toast.success('Opening external application link...');
+    } else {
+      toast.error(`No external application URL set for ${drive.position}`);
     }
   };
 
@@ -272,13 +290,14 @@ const DrivesSection: React.FC<DrivesSectionProps> = ({
                     <span>{drive.eligibility.industry || 'Technology'}</span>
                   </div>
                   <div className="flex items-center space-x-2">
+                    {/* Apply Button */}
                     <button 
                       onClick={() => handleApply(drive._id)}
                       disabled={drive.status !== 'eligible' || applyingDriveId === drive._id}
                       className={`px-4 py-2 text-white rounded-lg transition-colors flex items-center space-x-2 ${
                         drive.status === 'eligible' && applyingDriveId !== drive._id
                           ? 'bg-blue-600 hover:bg-blue-700' 
-                          : 'bg-gray-300 cursor-not-allowed'
+                          : 'bg-gray-300 cursor-not-allowed text-gray-600'
                       }`}
                     >
                       {applyingDriveId === drive._id ? (
@@ -287,8 +306,27 @@ const DrivesSection: React.FC<DrivesSectionProps> = ({
                           <span>Applying...</span>
                         </>
                       ) : (
-                        <span>{drive.status === 'eligible' ? 'Apply Now' : drive.status === 'pending' ? 'Applied' : drive.status.charAt(0).toUpperCase() + drive.status.slice(1)}</span>
+                        <span className="flex items-center space-x-1">
+                          <CheckCircle className="w-4 h-4" />
+                          <span>
+                            {drive.status === 'eligible' 
+                              ? 'Apply'
+                              : drive.status === 'pending' 
+                              ? 'Applied' 
+                              : drive.status.charAt(0).toUpperCase() + drive.status.slice(1)
+                            }
+                          </span>
+                        </span>
                       )}
+                    </button>
+                    
+                    {/* Application Link Button - always show for testing */}
+                    <button 
+                      onClick={() => handleExternalLink(drive)}
+                      className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors flex items-center space-x-2"
+                    >
+                      <ExternalLink className="w-4 h-4" />
+                      <span>Application Link</span>
                     </button>
                   </div>
                 </div>

@@ -14,7 +14,9 @@ import {
   Bell,
   UserPlus,
   Shield,
-  X
+  X,
+  ChevronDown,
+  Filter
 } from 'lucide-react';
 import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
 import { PieChart, Pie, Cell } from 'recharts';
@@ -117,7 +119,8 @@ export const TPODashboard: React.FC = () => {
       minYear: ''
     },
     workMode: 'On-site',
-    logo: ''
+    logo: '',
+    externalApplicationUrl: ''
   });
   const [driveModalError, setDriveModalError] = useState('');
   const [deletingDriveId, setDeletingDriveId] = useState<string|null>(null);
@@ -142,6 +145,11 @@ export const TPODashboard: React.FC = () => {
   const [internshipSearch, setInternshipSearch] = useState('');
   const [applicationSearch, setApplicationSearch] = useState('');
   const [applicationStatusFilter, setApplicationStatusFilter] = useState('all');
+  
+  // Active Drives filter state
+  const [activeDrivesFilter, setActiveDrivesFilter] = useState('all');
+  const [showActiveDrivesDropdown, setShowActiveDrivesDropdown] = useState(false);
+  const [showAllActiveDrives, setShowAllActiveDrives] = useState(false);
 
   // 1. Add state for students, showStudentModal, studentForm, studentModalError
   const [students, setStudents] = useState<any[]>([]);
@@ -216,6 +224,30 @@ export const TPODashboard: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.search]);
 
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = () => {
+      if (showActiveDrivesDropdown) {
+        setShowActiveDrivesDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showActiveDrivesDropdown]);
+
+  // Utility function to filter valid applications
+  const filterValidApplications = (applications: any[]) => {
+    return applications.filter((app: any) => {
+      const hasValidPosition = app.drive?.position && app.drive.position !== "Unknown Position";
+      const hasValidCompany = (app.drive?.companyName && app.drive.companyName !== "Unknown Company") || 
+                             (app.company?.companyName && app.company.companyName !== "Unknown Company");
+      return hasValidPosition && hasValidCompany;
+    });
+  };
+
   // 2. Fetch students (department-wise)
   const fetchStudents = async () => {
     try {
@@ -269,7 +301,8 @@ export const TPODashboard: React.FC = () => {
         minYear: ''
       },
       workMode: 'On-site',
-      logo: ''
+      logo: '',
+      externalApplicationUrl: ''
     });
   };
 
@@ -288,7 +321,8 @@ export const TPODashboard: React.FC = () => {
           deadline: driveForm.deadline,
           eligibility: driveForm.eligibility,
           workMode: driveForm.workMode,
-          logo: driveForm.logo
+          logo: driveForm.logo,
+          externalApplicationUrl: driveForm.externalApplicationUrl
         });
         toast.success('Drive updated successfully!');
       } else {
@@ -301,7 +335,8 @@ export const TPODashboard: React.FC = () => {
           deadline: driveForm.deadline,
           eligibility: driveForm.eligibility,
           workMode: driveForm.workMode,
-          logo: driveForm.logo
+          logo: driveForm.logo,
+          externalApplicationUrl: driveForm.externalApplicationUrl
         });
         toast.success('Drive created successfully!');
       }
@@ -526,73 +561,166 @@ export const TPODashboard: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Recent Applications</h3>
-          {applications.length === 0 ? (
-            <div className="text-center text-gray-400 dark:text-gray-500 py-8">No recent applications.</div>
-          ) : (
-            <div className="space-y-4">
-              {applications.slice(0, 3).map((app: any) => (
-                <div key={app._id || app.id || `app-${Math.random()}`} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                  <div className="flex items-center space-x-3">
-                    <img
-                      src={app.avatar || 'https://ui-avatars.com/api/?name=Student'}
-                      alt={app.studentName}
-                      className="w-10 h-10 rounded-full object-cover bg-gray-200"
-                    />
-                    <div>
-                      <p className="font-medium text-gray-900 dark:text-white">
-                        {app.student?.name || "Unknown Student"}
-                      </p>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
-                        {app.drive?.position || "Unknown Position"} at {app.drive?.company?.companyName || "Unknown Company"}
-                      </p>
+          {(() => {
+            // Filter out applications with unknown position or company
+            const validApplications = filterValidApplications(applications);
+            
+            return validApplications.length === 0 ? (
+              <div className="text-center text-gray-400 dark:text-gray-500 py-8">No recent applications.</div>
+            ) : (
+              <div className="space-y-4">
+                {validApplications.slice(0, 3).map((app: any) => (
+                  <div key={app._id || app.id || `app-${Math.random()}`} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                    <div className="flex items-center space-x-3">
+                      <img
+                        src={app.avatar || 'https://ui-avatars.com/api/?name=Student'}
+                        alt={app.studentName}
+                        className="w-10 h-10 rounded-full object-cover bg-gray-200"
+                      />
+                      <div>
+                        <p className="font-medium text-gray-900 dark:text-white">
+                          {app.student?.name || "Unknown Student"}
+                        </p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                          {app.drive?.position} at {app.drive?.companyName || app.company?.companyName}
+                        </p>
+                      </div>
                     </div>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(app.status)}`}>
+                      {app.status}
+                    </span>
                   </div>
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(app.status)}`}>
-                    {app.status}
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
+                ))}
+              </div>
+            );
+          })()}
         </div>
         <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Active Drives</h3>
-          {jobDrives.filter((drive: any) => drive.status === 'active').length === 0 ? (
-            <div className="text-center text-gray-400 dark:text-gray-500 py-8">No active drives.</div>
-          ) : (
-            <div className="space-y-4">
-              {jobDrives.filter((drive: any) => drive.status === 'active').map((drive: any) => (
-                <motion.div
-                  key={drive._id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 flex items-center justify-between shadow-sm border border-gray-200 dark:border-gray-600"
-                >
-                  <div className="flex items-center space-x-4">
-                    <img
-                      src={drive.logo || 'https://ui-avatars.com/api/?name=Company&background=random'}
-                      alt={drive.company?.companyName || drive.companyName || 'Company'}
-                      className="w-12 h-12 rounded object-cover bg-gray-200"
-                    />
-                    <div>
-                      <div className="flex items-center space-x-2">
-                        <span className="font-semibold text-gray-900 dark:text-white text-base">{drive.companyName}</span>
-                        <span className="text-xs px-2 py-1 rounded-full font-medium bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300">{drive.status}</span>
-                      </div>
-                      <div className="text-sm text-gray-600 dark:text-gray-300">{drive.company?.companyName || drive.companyName}</div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400 flex space-x-2 mt-1">
-                        <span>CTC: {drive.ctc}</span>
-                        <span>•</span>
-                        <span>{drive.location}</span>
-                        <span>•</span>
-                        <span>Applications: {Array.isArray(drive.applicants) ? drive.applicants.length : 0}</span>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Active Drives</h3>
+            <div className="relative">
+              <button
+                onClick={() => setShowActiveDrivesDropdown(!showActiveDrivesDropdown)}
+                className="flex items-center space-x-2 px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+              >
+                <Filter className="w-4 h-4" />
+                <span className="text-sm">
+                  {activeDrivesFilter === 'all' ? 'All Drives' : 
+                   activeDrivesFilter === 'high-ctc' ? 'High CTC' :
+                   activeDrivesFilter === 'recent' ? 'Recent' : 'Most Applications'}
+                </span>
+                <ChevronDown className={`w-4 h-4 transition-transform ${showActiveDrivesDropdown ? 'rotate-180' : ''}`} />
+              </button>
+              
+              {showActiveDrivesDropdown && (
+                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-10">
+                  <div className="py-2">
+                    {[
+                      { value: 'all', label: 'All Drives' },
+                      { value: 'high-ctc', label: 'High CTC (>10L)' },
+                      { value: 'recent', label: 'Recently Posted' },
+                      { value: 'most-applications', label: 'Most Applications' }
+                    ].map((option) => (
+                      <button
+                        key={option.value}
+                        onClick={() => {
+                          setActiveDrivesFilter(option.value);
+                          setShowActiveDrivesDropdown(false);
+                        }}
+                        className={`w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
+                          activeDrivesFilter === option.value ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400' : 'text-gray-700 dark:text-gray-300'
+                        }`}
+                      >
+                        {option.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+          
+          {(() => {
+            let filteredDrives = jobDrives.filter((drive: any) => drive.status === 'active');
+            
+            // Apply additional filtering based on dropdown selection
+            switch (activeDrivesFilter) {
+              case 'high-ctc':
+                filteredDrives = filteredDrives.filter((drive: any) => {
+                  const ctcValue = parseInt(drive.ctc?.replace(/[^\d]/g, '') || '0');
+                  return ctcValue >= 1000000; // 10L+ 
+                });
+                break;
+              case 'recent':
+                filteredDrives = filteredDrives.sort((a: any, b: any) => 
+                  new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+                );
+                break;
+              case 'most-applications':
+                filteredDrives = filteredDrives.sort((a: any, b: any) => 
+                  (Array.isArray(b.applicants) ? b.applicants.length : 0) - 
+                  (Array.isArray(a.applicants) ? a.applicants.length : 0)
+                );
+                break;
+              default:
+                // 'all' - no additional filtering
+                break;
+            }
+            
+            const drivesToShow = showAllActiveDrives ? filteredDrives : filteredDrives.slice(0, 3);
+            const hasMoreDrives = filteredDrives.length > 3;
+            
+            return filteredDrives.length === 0 ? (
+              <div className="text-center text-gray-400 dark:text-gray-500 py-8">
+                {activeDrivesFilter === 'all' ? 'No active drives.' : `No drives match the selected filter.`}
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {drivesToShow.map((drive: any) => (
+                  <motion.div
+                    key={drive._id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 flex items-center justify-between shadow-sm border border-gray-200 dark:border-gray-600"
+                  >
+                    <div className="flex items-center space-x-4">
+                      <img
+                        src={drive.logo || 'https://ui-avatars.com/api/?name=Company&background=random'}
+                        alt={drive.company?.companyName || drive.companyName || 'Company'}
+                        className="w-12 h-12 rounded object-cover bg-gray-200"
+                      />
+                      <div>
+                        <div className="flex items-center space-x-2">
+                          <span className="font-semibold text-gray-900 dark:text-white text-base">{drive.companyName}</span>
+                          <span className="text-xs px-2 py-1 rounded-full font-medium bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300">{drive.status}</span>
+                        </div>
+                        <div className="text-sm text-gray-600 dark:text-gray-300">{drive.position}</div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400 flex space-x-2 mt-1">
+                          <span>CTC: {drive.ctc}</span>
+                          <span>•</span>
+                          <span>{drive.location}</span>
+                          <span>•</span>
+                          <span>Applications: {Array.isArray(drive.applicants) ? drive.applicants.length : 0}</span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          )}
+                  </motion.div>
+                ))}
+                
+                {hasMoreDrives && (
+                  <button
+                    onClick={() => setShowAllActiveDrives(!showAllActiveDrives)}
+                    className="w-full py-3 px-4 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors flex items-center justify-center space-x-2 text-gray-700 dark:text-gray-300"
+                  >
+                    <span className="text-sm font-medium">
+                      {showAllActiveDrives ? 'Show Less' : `Show ${filteredDrives.length - 3} More Drives`}
+                    </span>
+                    <ChevronDown className={`w-4 h-4 transition-transform ${showAllActiveDrives ? 'rotate-180' : ''}`} />
+                  </button>
+                )}
+              </div>
+            );
+          })()}
         </div>
       </div>
 
@@ -657,7 +785,8 @@ export const TPODashboard: React.FC = () => {
       eligibility: {
         ...drive.eligibility,
         allowedBranches: [...drive.eligibility.allowedBranches]
-      }
+      },
+      externalApplicationUrl: drive.externalApplicationUrl || ''
     });
   };
 
@@ -683,6 +812,23 @@ export const TPODashboard: React.FC = () => {
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
           <p className="text-gray-600 dark:text-gray-400">Loading dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-red-500 text-xl mb-4">⚠️</div>
+          <p className="text-red-600 dark:text-red-400">{error}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          >
+            Retry
+          </button>
         </div>
       </div>
     );
@@ -745,8 +891,9 @@ export const TPODashboard: React.FC = () => {
             )}
             {activeTab === 'applications' && (
               <ApplicationsSection
-                applications={applications}
+                applications={filterValidApplications(applications)}
                 tpoProfile={tpoProfile}
+                jobDrives={jobDrives}
                 applicationSearch={applicationSearch}
                 setApplicationSearch={setApplicationSearch}
                 applicationStatusFilter={applicationStatusFilter}
@@ -853,6 +1000,20 @@ export const TPODashboard: React.FC = () => {
                     <input type="date" className="w-full pl-10 pr-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white" value={driveForm.deadline} onChange={e => setDriveForm({ ...driveForm, deadline: e.target.value })} required />
                   </div>
                   <p className="text-xs text-gray-400 mt-1 ml-1">Last date to apply.</p>
+                </div>
+                <div className="relative">
+                  <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">External Application URL (Optional)</label>
+                  <div className="relative">
+                    <ExternalLink className="absolute left-3 top-1/2 transform -translate-y-1/2 text-green-400 w-5 h-5" />
+                    <input 
+                      type="url" 
+                      placeholder="https://company.com/apply (optional)" 
+                      className="w-full pl-10 pr-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white" 
+                      value={driveForm.externalApplicationUrl} 
+                      onChange={e => setDriveForm({ ...driveForm, externalApplicationUrl: e.target.value })} 
+                    />
+                  </div>
+                  <p className="text-xs text-gray-400 mt-1 ml-1">If provided, students will see an additional "Application Link" button.</p>
                 </div>
                 <div className="relative">
                   <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">Work Mode</label>

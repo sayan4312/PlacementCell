@@ -5,7 +5,8 @@ import {
   Building2, 
   GraduationCap,
   BarChart3,
-  Activity
+  Activity,
+  Bell
 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart as RechartsPieChart, Cell, LineChart, Line, AreaChart, Area, Pie } from 'recharts';
 import apiClient from '../../../services/apiClient';
@@ -68,10 +69,11 @@ export default function AdminDashboard() {
   const fetchUsers = async (search = searchTerm, role = filterRole) => {
     setLoading(true);
     try {
-      let url = '/users?';
-      if (role && role !== 'all') url += `role=${role}&`;
-      if (search) url += `search=${encodeURIComponent(search)}`;
+      let url = '/admin/users?limit=100'; // Increase limit to see more users
+      if (role && role !== 'all') url += `&role=${role}`;
+      if (search) url += `&search=${encodeURIComponent(search)}`;
       const res = await apiClient.get(url);
+      console.log('Fetched users:', res.data.users);
       setUsers(res.data.users || []);
     } catch (err) {
       setError('Failed to load users.');
@@ -261,7 +263,7 @@ export default function AdminDashboard() {
     { id: 'users', label: 'User Management', icon: Users },
     { id: 'companies', label: 'Companies', icon: Building2 },
     { id: 'analytics', label: 'Analytics', icon: BarChart3 },
-    { id: 'notifications', label: 'Notifications', icon: null } // No specific icon for notifications in this list
+    { id: 'notifications', label: 'Notifications', icon: Bell }
   ];
 
   return (

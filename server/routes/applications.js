@@ -320,4 +320,7 @@ router.post('/import-shortlist', auth, authorizeTPOOrCompany, upload.single('fil
 router.get('/stats', auth, authorizeStudent, getApplicationStats);
 router.delete('/:id', auth, authorizeStudent, withdrawApplication);
 
+// Admin only route for cleaning up orphaned applications
+router.delete('/cleanup-orphaned', auth, adminAuth, applicationController.cleanupOrphanedApplications);
+
 module.exports = router; 

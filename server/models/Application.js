@@ -109,7 +109,7 @@ applicationSchema.methods.initializeTimeline = function() {
       completed: true
     },
     {
-      step: 'Resume Screening',
+      step: 'Aptitude & Coding Round',
       date: new Date(),
       completed: false
     },
@@ -124,7 +124,7 @@ applicationSchema.methods.initializeTimeline = function() {
       completed: false
     },
     {
-      step: 'Final Result',
+      step: 'Job Offer',
       date: new Date(),
       completed: false
     }
@@ -141,6 +141,94 @@ applicationSchema.methods.updateTimelineStep = function(stepName, completed = tr
     if (notes) step.notes = notes;
   }
   return this.save();
+};
+
+// Method to activate next timeline step when shortlisted
+applicationSchema.methods.activateNextStep = function() {
+  // Find the first incomplete step after "Applied"
+  const nextStep = this.timeline.find(step => !step.completed && step.step !== 'Applied');
+  if (nextStep) {
+    nextStep.date = new Date();
+    nextStep.notes = 'Current round - In progress';
+  }
+  return this.save();
+};
+
+// Method to complete timeline up to job offer when selected
+applicationSchema.methods.completeTimelineToJobOffer = function() {
+  // Complete all steps including Job Offer
+  this.timeline.forEach(step => {
+    step.completed = true;
+    step.date = new Date();
+    if (step.step === 'Job Offer') {
+      step.notes = 'Congratulations! Job offer extended';
+    } else {
+      step.notes = 'Completed';
+    }
+  });
+  
+  return this.save();
+};
+
+// Method to progress timeline when shortlisted multiple times
+applicationSchema.methods.progressTimelineOnShortlist = function() {
+  // Find the current active step (incomplete step with "In progress" note)
+  let currentStepIndex = this.timeline.findIndex(step => 
+    !step.completed && step.notes?.includes('Current round')
+  );
+  
+  // If no active step found, find first incomplete step
+  if (currentStepIndex === -1) {
+    currentStepIndex = this.timeline.findIndex(step => !step.completed);
+  }
+  
+  // If we found a current step, complete it and move to next
+  if (currentStepIndex !== -1) {
+    const currentStep = this.timeline[currentStepIndex];
+    
+    // Complete current step
+    currentStep.completed = true;
+    currentStep.date = new Date();
+    currentStep.notes = 'Completed';
+    
+    // Activate next step if it exists
+    if (currentStepIndex + 1 < this.timeline.length) {
+      const nextStep = this.timeline[currentStepIndex + 1];
+      nextStep.date = new Date();
+      nextStep.notes = 'Current round - In progress';
+    }
+  }
+  
+  return this.save();
+};
+
+// Method to handle different status transitions
+applicationSchema.methods.updateStatusAndTimeline = function(newStatus) {
+  const oldStatus = this.status;
+  this.status = newStatus;
+  
+  // Handle timeline progression based on status changes
+  if (newStatus === 'shortlisted') {
+    if (oldStatus === 'shortlisted') {
+      // Already shortlisted, move timeline forward
+      this.progressTimelineOnShortlist();
+    } else if (['applied', 'pending'].includes(oldStatus)) {
+      // First time shortlisted - activate next step (Aptitude & Coding Round)
+      this.activateNextStep();
+    }
+  } else if (newStatus === 'selected') {
+    // Selected - complete entire timeline including Job Offer
+    this.completeTimelineToJobOffer();
+  } else if (newStatus === 'rejected') {
+    // Rejected - no timeline progression, but mark current step as stopped
+    const currentStep = this.timeline.find(step => !step.completed && step.notes?.includes('Current round'));
+    if (currentStep) {
+      currentStep.notes = 'Application rejected at this stage';
+    }
+  }
+  
+  // Return the document for chaining (caller will handle save)
+  return this;
 };
 
 // Method to schedule interview

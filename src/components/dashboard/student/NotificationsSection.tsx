@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Bell, CheckCircle, AlertCircle, Info, X, Filter, Trash2, Eye } from 'lucide-react';
 import { notificationAPI } from '../../../services/apiClient';
@@ -16,16 +16,21 @@ interface Notification {
 }
 
 interface NotificationsSectionProps {
-  notifications: Notification[];
+  notifications?: Notification[];
 }
 
 const NotificationsSection: React.FC<NotificationsSectionProps> = ({ notifications }) => {
-  const [localNotifications, setLocalNotifications] = useState<Notification[]>(notifications);
+  const [localNotifications, setLocalNotifications] = useState<Notification[]>(notifications || []);
   const [filterType, setFilterType] = useState<'all' | 'unread' | 'read'>('all');
   const [showFilters, setShowFilters] = useState(false);
   const [selectedNotifications, setSelectedNotifications] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  // Update local notifications when prop changes
+  useEffect(() => {
+    setLocalNotifications(notifications || []);
+  }, [notifications]);
 
   const getNotificationIcon = (type: string) => {
     switch (type) {
@@ -146,12 +151,31 @@ const NotificationsSection: React.FC<NotificationsSectionProps> = ({ notificatio
   const hasSelection = selectedNotifications.length > 0;
 
   const handleNotificationClick = (notification: Notification) => {
+    // Mark as read if not already read
     if (!notification.read) {
       markAsRead(notification._id);
     }
     
+    // Navigate to specific content based on actionUrl
     if (notification.actionUrl) {
       navigate(notification.actionUrl);
+    } else {
+      // Fallback: Navigate based on notification content
+      const message = notification.message.toLowerCase();
+      const title = notification.title.toLowerCase();
+      
+      if (message.includes('application') || title.includes('application') || 
+          message.includes('interview') || title.includes('interview') ||
+          message.includes('selected') || message.includes('shortlisted')) {
+        navigate('/student/dashboard?tab=applications');
+      } else if (message.includes('drive') || title.includes('drive') || 
+                 message.includes('job') || title.includes('job') ||
+                 message.includes('position') || title.includes('position')) {
+        navigate('/student/dashboard?tab=drives');
+      } else {
+        // Default fallback to overview tab
+        navigate('/student/dashboard?tab=overview');
+      }
     }
   };
 
@@ -299,18 +323,18 @@ const NotificationsSection: React.FC<NotificationsSectionProps> = ({ notificatio
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between">
                     <div className="flex items-start space-x-3 flex-1">
-                      {getNotificationIcon(notification.type)}
+                      {getNotificationIcon(notification.type || 'info')}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center space-x-2 mb-1">
-                          <h4 className={`text-sm font-medium ${notification.read ? 'text-gray-600 dark:text-gray-400' : 'text-gray-900 dark:text-white'}`}>
-                            {notification.title}
+                          <h4 className={`text-sm font-medium leading-tight ${notification.read ? 'text-gray-600 dark:text-gray-400' : 'text-gray-900 dark:text-white'}`}>
+                            {notification.title || 'No Title'}
                           </h4>
                         </div>
-                        <p className={`text-sm ${notification.read ? 'text-gray-500 dark:text-gray-400' : 'text-gray-700 dark:text-gray-300'}`}>
-                          {notification.message}
+                        <p className={`text-sm leading-relaxed ${notification.read ? 'text-gray-500 dark:text-gray-400' : 'text-gray-700 dark:text-gray-300'}`}>
+                          {notification.message || 'No message'}
                         </p>
-                        <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">
-                          {formatDate(notification.createdAt)}
+                        <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                          {notification.createdAt ? formatDate(notification.createdAt) : 'Unknown date'}
                         </p>
                       </div>
                     </div>

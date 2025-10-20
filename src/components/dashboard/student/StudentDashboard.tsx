@@ -176,12 +176,24 @@ export const StudentDashboard: React.FC = () => {
       
       // Process stats
       const statsData = statsRes.data;
+      console.log('Stats API response:', statsData); // Debug log
+      
+      // Convert stats array to object for easier access
+      const statsMap = (statsData.stats && Array.isArray(statsData.stats)) 
+        ? statsData.stats.reduce((acc: any, stat: any) => {
+            acc[stat._id] = stat.count;
+            return acc;
+          }, {})
+        : {};
+      
+      console.log('Processed stats map:', statsMap); // Debug log
+      
       const processedStats: Stats = {
         totalApplications: statsData.totalApplications || 0,
-        pendingApplications: statsData.stats?.pendingApplications || 0,
-        shortlistedApplications: statsData.stats?.shortlistedApplications || 0,
-        selectedApplications: statsData.stats?.selectedApplications || 0,
-        rejectedApplications: statsData.stats?.rejectedApplications || 0,
+        pendingApplications: statsMap.pending || 0,
+        shortlistedApplications: statsMap.shortlisted || 0,
+        selectedApplications: statsMap.selected || 0,
+        rejectedApplications: statsMap.rejected || 0,
         profileScore: userRes.data.user.profileScore || 0,
         eligibleDrives: drivesRes.data.drives?.length || 0
       };

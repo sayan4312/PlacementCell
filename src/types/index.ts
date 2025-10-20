@@ -47,6 +47,7 @@ export interface JobDrive {
   applicants: string[];
   createdAt: string;
   postedBy: string;
+  externalApplicationUrl?: string;
 }
 
 export interface Internship {
@@ -73,13 +74,21 @@ export interface Application {
 }
 
 export interface Notification {
-  id: string;
-  userId: string;
+  _id: string;
+  user: string;
   title: string;
   message: string;
   type: 'info' | 'success' | 'warning' | 'error';
-  isRead: boolean;
+  priority: 'low' | 'medium' | 'high';
+  read: boolean;
+  actionUrl?: string;
+  relatedEntity?: {
+    type: 'application' | 'drive' | 'user' | 'system';
+    id: string;
+  };
+  metadata?: any;
   createdAt: string;
+  updatedAt?: string;
 }
 
 export interface AuthState {

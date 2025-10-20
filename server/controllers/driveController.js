@@ -19,12 +19,21 @@ const createDrive = async (req, res) => {
       eligibility,
       requirements,
       benefits,
-      companyName
+      companyName,
+      externalApplicationUrl
     } = req.body;
 
     // Validate required fields
     if (!position || !description || !ctc || !location || !deadline || !eligibility || !companyName) {
       return res.status(400).json({ message: 'All required fields must be provided' });
+    }
+
+    // Validate external application URL if provided
+    if (externalApplicationUrl) {
+      const urlPattern = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
+      if (!urlPattern.test(externalApplicationUrl)) {
+        return res.status(400).json({ message: 'Please provide a valid URL' });
+      }
     }
 
     // Check for existing active drive for this company
@@ -74,6 +83,7 @@ const createDrive = async (req, res) => {
       },
       requirements: requirements || [],
       benefits: benefits || [],
+      externalApplicationUrl: externalApplicationUrl || undefined,
       status: 'active',
       isVisible: true
     };
@@ -346,9 +356,17 @@ const deleteDrive = async (req, res) => {
       return res.status(403).json({ message: 'Access denied' });
     }
 
+    // Delete all applications for this drive first
+    const deletedApplications = await Application.deleteMany({ drive: id });
+    console.log(`Deleted ${deletedApplications.deletedCount} applications for drive ${id}`);
+
+    // Delete the drive
     await Drive.findByIdAndDelete(id);
 
-    res.json({ message: 'Drive deleted successfully' });
+    res.json({ 
+      message: 'Drive deleted successfully',
+      deletedApplications: deletedApplications.deletedCount
+    });
   } catch (error) {
     console.error('Delete drive error:', error);
     res.status(500).json({ message: 'Server error' });

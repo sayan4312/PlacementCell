@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 
   Bell, 
@@ -29,16 +29,21 @@ interface Notification {
 }
 
 interface NotificationsSectionProps {
-  notifications: Notification[];
+  notifications?: Notification[];
   tpoProfile?: { department: string }; // Added tpoProfile prop
 }
 
 const NotificationsSection: React.FC<NotificationsSectionProps> = ({ notifications, tpoProfile, ...props }) => {
-  const [localNotifications, setLocalNotifications] = useState<Notification[]>(notifications);
+  const [localNotifications, setLocalNotifications] = useState<Notification[]>(notifications || []);
   const [filterType, setFilterType] = useState<'all' | 'unread' | 'read'>('all');
   const [selectedNotifications, setSelectedNotifications] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
+
+  // Update local notifications when prop changes
+  useEffect(() => {
+    setLocalNotifications(notifications || []);
+  }, [notifications]);
 
   // 1. Remove Type and Priority fields from the send notification modal
   // 2. Only keep Title, Message, Target Roles, Action URL, and Send/Cancel buttons
@@ -122,8 +127,8 @@ const NotificationsSection: React.FC<NotificationsSectionProps> = ({ notificatio
         (filterType === 'read' && notification.read);
       
       const matchesSearch = !searchTerm || 
-        notification.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        notification.message.toLowerCase().includes(searchTerm.toLowerCase());
+        (notification.title && notification.title.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (notification.message && notification.message.toLowerCase().includes(searchTerm.toLowerCase()));
 
       return matchesType && matchesSearch;
     });
@@ -268,17 +273,17 @@ const NotificationsSection: React.FC<NotificationsSectionProps> = ({ notificatio
                     <div className="flex-1">
                       <div className="flex items-center space-x-2 mb-1">
                         <h4 className={`font-medium ${notification.read ? 'text-gray-700 dark:text-gray-300' : 'text-gray-900 dark:text-white'}`}>
-                          {notification.title}
+                          {notification.title || 'No Title'}
                         </h4>
                         {!notification.read && (
                           <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
                         )}
                       </div>
                       <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                        {notification.message}
+                        {notification.message || 'No message'}
                       </p>
                       <div className="flex items-center space-x-4 text-xs text-gray-500 dark:text-gray-500">
-                        <span>{formatDate(notification.createdAt)}</span>
+                        <span>{notification.createdAt ? formatDate(notification.createdAt) : 'Unknown date'}</span>
                         {notification.actionUrl && (
                           <span className="text-blue-600 dark:text-blue-400">Click to view</span>
                         )}

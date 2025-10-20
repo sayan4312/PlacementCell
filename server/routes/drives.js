@@ -25,7 +25,8 @@ router.post('/', [
   body('eligibility.minCGPA').isFloat({ min: 0, max: 10 }).withMessage('Min CGPA must be between 0 and 10'),
   body('eligibility.allowedBranches').isArray().withMessage('Allowed branches must be an array'),
   body('eligibility.maxBacklogs').isInt({ min: 0 }).withMessage('Max backlogs must be a non-negative integer'),
-  body('eligibility.minYear').isInt({ min: 1, max: 4 }).withMessage('Min year must be between 1 and 4')
+  body('eligibility.minYear').isInt({ min: 1, max: 4 }).withMessage('Min year must be between 1 and 4'),
+  body('externalApplicationUrl').optional().isURL().withMessage('External application URL must be a valid URL')
 ], driveController.createDrive);
 
 // @route   GET /api/drives

@@ -91,7 +91,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, onUserUpdate }) =
   const handleSaveSkill = async () => {
     if (newSkill.trim()) {
       try {
-        const response = await apiClient.post('/skills', { name: newSkill.trim() });
+        const response = await apiClient.post('/users/skills', { skill: newSkill.trim() });
         const updatedSkills = response.data.skills;
         updateLocalUser({ skills: updatedSkills, profileScore: response.data.profileScore });
         showToast(`Skill "${newSkill}" added successfully!`, 'success');

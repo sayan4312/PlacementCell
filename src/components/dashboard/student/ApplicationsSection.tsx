@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Calendar, Building2, Clock, CheckCircle, XCircle, AlertCircle, Filter, SortAsc, SortDesc, Eye, Download, X } from 'lucide-react';
+import { toast } from 'react-toastify';
 
 interface Application {
   _id: string;
@@ -71,7 +72,8 @@ const ApplicationsSection: React.FC<ApplicationsSectionProps> = ({ applications,
   };
 
   const filteredAndSortedApplications = useMemo(() => {
-    let filtered = applications;
+    // First filter out applications with null drives
+    let filtered = applications.filter(app => app.drive !== null);
     
     // Apply status filter
     if (statusFilter !== 'all') {
@@ -121,12 +123,15 @@ const ApplicationsSection: React.FC<ApplicationsSectionProps> = ({ applications,
   };
 
   const handleViewDetails = (application: Application) => {
-    alert(`Viewing details for ${application.drive.position} at ${application.drive.companyName}`);
+    const position = application.drive?.position || 'Unknown Position';
+    const company = application.drive?.companyName || 'Unknown Company';
+    toast.info(`Viewing details for ${position} at ${company}`);
     // In a real app, this would open a modal or navigate to a details page
   };
 
   const handleDownloadResume = (application: Application) => {
-    alert(`Downloading resume for ${application.drive.position} application`);
+    const position = application.drive?.position || 'Unknown Position';
+    toast.success(`Downloading resume for ${position} application`);
     // In a real app, this would trigger a download
   };
 
@@ -256,13 +261,16 @@ const ApplicationsSection: React.FC<ApplicationsSectionProps> = ({ applications,
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-start space-x-4">
                     <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center text-white font-bold">
-                      {application.drive.companyName.split(' ').map((n: string) => n[0]).join('')}
+                      {application.drive?.companyName ? 
+                        application.drive.companyName.split(' ').map((n: string) => n[0]).join('') : 
+                        'N/A'
+                      }
                     </div>
                     <div>
                       <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
-                        {application.drive.position}
+                        {application.drive?.position || 'Unknown Position'}
                       </h4>
-                      <p className="text-gray-600 dark:text-gray-400 mb-2">{application.drive.companyName}</p>
+                      <p className="text-gray-600 dark:text-gray-400 mb-2">{application.drive?.companyName || 'Unknown Company'}</p>
                       <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-500">
                         <span>Applied: {formatDate(application.appliedAt)}</span>
                         {application.nextStep && (
@@ -324,11 +332,37 @@ const ApplicationsSection: React.FC<ApplicationsSectionProps> = ({ applications,
                           <div className="space-y-3">
                             {canonicalSteps.map((stepName, index) => {
                               const step = timelineMap[stepName] || { step: stepName, completed: false };
+                              
+                              // Determine if this is the current active step
+                              const isCurrentStep = !step.completed && step.notes?.includes('Current round');
+                              
+                              // Determine step status for styling
+                              let stepStatus = 'pending'; // default
+                              if (step.completed) stepStatus = 'completed';
+                              else if (isCurrentStep) stepStatus = 'current';
+                              
                               return (
                                 <div key={index} className="flex items-center space-x-3">
-                                  <div className={`w-3 h-3 rounded-full ${step.completed ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600'}`}></div>
+                                  <div className={`w-3 h-3 rounded-full flex items-center justify-center ${
+                                    stepStatus === 'completed' ? 'bg-green-500' : 
+                                    stepStatus === 'current' ? 'bg-blue-500 animate-pulse' : 
+                                    'bg-gray-300 dark:bg-gray-600'
+                                  }`}>
+                                    {stepStatus === 'completed' && (
+                                      <svg className="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                      </svg>
+                                    )}
+                                  </div>
                                   <div className="flex-1">
-                                    <p className={`text-sm ${step.completed ? 'text-gray-900 dark:text-white' : 'text-gray-500 dark:text-gray-400'}`}>{stepName}</p>
+                                    <p className={`text-sm ${
+                                      stepStatus === 'completed' ? 'text-gray-900 dark:text-white font-medium' : 
+                                      stepStatus === 'current' ? 'text-blue-600 dark:text-blue-400 font-medium' : 
+                                      'text-gray-500 dark:text-gray-400'
+                                    }`}>
+                                      {stepName}
+                                      {stepStatus === 'current' && <span className="ml-2 text-xs text-blue-500">(In Progress)</span>}
+                                    </p>
                                   </div>
                                 </div>
                               );

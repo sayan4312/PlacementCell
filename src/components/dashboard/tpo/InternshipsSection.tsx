@@ -79,7 +79,7 @@ const InternshipsSection: React.FC<InternshipsSectionProps> = ({
                     <p className="text-lg text-gray-600 dark:text-gray-300 mb-1">{internship.company}</p>
                     <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 dark:text-gray-400 mb-2">
                       <span>Posted on {new Date(internship.createdAt).toLocaleDateString()}</span>
-                      {/* Add eligibility/batch info if available */}
+                      
                       {internship.eligibility && (
                         <span>for {internship.eligibility.batchYears?.join(', ') || ''} Batch {internship.eligibility.degree || ''}</span>
                       )}
