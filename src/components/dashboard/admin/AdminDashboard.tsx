@@ -267,20 +267,20 @@ export default function AdminDashboard() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-dark-bg pt-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Tabs */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-          <div className="border-b border-gray-200 dark:border-gray-700">
+        <div className="glass-panel">
+          <div className="border-b border-white/10">
             <nav className="flex space-x-8 px-6" aria-label="Tabs">
               {tabs.map((tab: any) => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 transition-colors ${
+                  className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 transition-all duration-300 ${
                     activeTab === tab.id
-                      ? 'border-blue-500 text-blue-600 dark:text-blue-400'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+                      ? 'border-indigo-500 text-white'
+                      : 'border-transparent text-gray-400 hover:text-gray-300 hover:border-white/20'
                   }`}
                 >
                   {tab.icon && <tab.icon className="h-4 w-4" />}
@@ -346,101 +346,114 @@ export default function AdminDashboard() {
         </div>
       </div>
       {showTpoModal && (
-  <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-    <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-lg md:max-w-xl relative flex flex-col" style={{ maxHeight: '90vh' }}>
-      <div className="flex flex-col md:flex-row items-start md:items-center px-6 py-4 rounded-t-2xl bg-gradient-to-r from-blue-700 to-purple-700 relative">
-        <Users className="w-8 h-8 text-white mr-3 mb-2 md:mb-0" />
-        <div className="flex-1">
-          <h2 className="text-xl font-bold text-white">Create TPO</h2>
-          <p className="text-white text-xs opacity-80 mt-1">Fill in the details to create a new TPO account.</p>
-        </div>
-        <button onClick={() => setShowTpoModal(false)} className="absolute top-3 right-3 z-10 text-white hover:text-gray-200 focus:outline-none bg-black/20 rounded-full p-1">
-          <span className="text-xl">&times;</span>
-        </button>
-      </div>
-      <form onSubmit={handleCreateTPO} className="flex-1 overflow-y-auto px-6 py-4 space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">Name</label>
-            <input 
-              type="text" 
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white" 
-              value={tpoForm.name} 
-              onChange={e => setTpoForm({ ...tpoForm, name: e.target.value })} 
-              required 
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">Email</label>
-            <input 
-              type="email" 
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white" 
-              value={tpoForm.email} 
-              onChange={e => setTpoForm({ ...tpoForm, email: e.target.value })} 
-              required 
-            />
-          </div>
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="glass-card w-full max-w-2xl relative border border-white/10 max-h-[90vh] flex flex-col">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-white/10">
+              <div className="flex items-center space-x-3">
+                <div className="p-2 rounded-lg bg-indigo-500/10">
+                  <Users className="w-6 h-6 text-indigo-400" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold text-white">Create TPO</h2>
+                  <p className="text-gray-400 text-sm">Fill in the details to create a new TPO account</p>
+                </div>
+              </div>
+              <button onClick={() => setShowTpoModal(false)} className="text-gray-400 hover:text-white transition-colors">
+                <span className="text-2xl">&times;</span>
+              </button>
+            </div>
+            <form onSubmit={handleCreateTPO} className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-2 text-gray-300">Name *</label>
+                  <input 
+                    type="text" 
+                    className="input-glass" 
+                    value={tpoForm.name} 
+                    onChange={e => setTpoForm({ ...tpoForm, name: e.target.value })} 
+                    placeholder="Enter name"
+                    required 
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2 text-gray-300">Email *</label>
+                  <input 
+                    type="email" 
+                    className="input-glass" 
+                    value={tpoForm.email} 
+                    onChange={e => setTpoForm({ ...tpoForm, email: e.target.value })} 
+                    placeholder="Enter email"
+                    required 
+                  />
+                </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">Department</label>
-            <select 
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white" 
-              value={tpoForm.department} 
-              onChange={e => setTpoForm({ ...tpoForm, department: e.target.value })} 
-            >
-              <option value="">Select Department</option>
-              <option value="Computer Science">Computer Science</option>
-              <option value="Information Technology">Information Technology</option>
-              <option value="Electronics & Communication">Electronics & Communication</option>
-              <option value="Electrical Engineering">Electrical Engineering</option>
-              <option value="Mechanical Engineering">Mechanical Engineering</option>
-              <option value="Civil Engineering">Civil Engineering</option>
-              <option value="Data Science">Data Science</option>
-              <option value="AIML">AIML</option>
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">Experience</label>
-            <input 
-              type="text" 
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white" 
-              value={tpoForm.experience} 
-              onChange={e => setTpoForm({ ...tpoForm, experience: e.target.value })} 
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">Qualification</label>
-            <select 
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white" 
-              value={tpoForm.qualification} 
-              onChange={e => setTpoForm({ ...tpoForm, qualification: e.target.value })} 
-            >
-              <option value="">Select Qualification</option>
-              <option value="B.Tech">B.Tech</option>
-              <option value="M.Tech">M.Tech</option>
-              <option value="MBA">MBA</option>
-              <option value="PhD">PhD</option>
-              <option value="Other">Other</option>
-            </select>
+                <div>
+                  <label className="block text-sm font-medium mb-2 text-gray-300">Department</label>
+                  <select 
+                    className="input-glass" 
+                    value={tpoForm.department} 
+                    onChange={e => setTpoForm({ ...tpoForm, department: e.target.value })} 
+                  >
+                    <option value="">Select Department</option>
+                    <option value="Computer Science">Computer Science</option>
+                    <option value="Information Technology">Information Technology</option>
+                    <option value="Electronics & Communication">Electronics & Communication</option>
+                    <option value="Electrical Engineering">Electrical Engineering</option>
+                    <option value="Mechanical Engineering">Mechanical Engineering</option>
+                    <option value="Civil Engineering">Civil Engineering</option>
+                    <option value="Data Science">Data Science</option>
+                    <option value="AIML">AIML</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2 text-gray-300">Experience</label>
+                  <input 
+                    type="text" 
+                    className="input-glass" 
+                    value={tpoForm.experience} 
+                    onChange={e => setTpoForm({ ...tpoForm, experience: e.target.value })} 
+                    placeholder="e.g., 5 years"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2 text-gray-300">Qualification</label>
+                  <select 
+                    className="input-glass" 
+                    value={tpoForm.qualification} 
+                    onChange={e => setTpoForm({ ...tpoForm, qualification: e.target.value })} 
+                  >
+                    <option value="">Select Qualification</option>
+                    <option value="B.Tech">B.Tech</option>
+                    <option value="M.Tech">M.Tech</option>
+                    <option value="MBA">MBA</option>
+                    <option value="PhD">PhD</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2 text-gray-300">Specialization</label>
+                  <input 
+                    type="text" 
+                    className="input-glass" 
+                    value={tpoForm.specialization} 
+                    onChange={e => setTpoForm({ ...tpoForm, specialization: e.target.value })} 
+                    placeholder="Enter specialization"
+                  />
+                </div>
+              </div>
+              {modalError && (
+                <div className="glass-card border-l-4 border-red-500 p-3 bg-red-500/10">
+                  <p className="text-sm text-red-400">{modalError}</p>
+                </div>
+              )}
+              <div className="flex justify-end space-x-3 pt-4 border-t border-white/10">
+                <button type="button" onClick={() => setShowTpoModal(false)} className="btn-secondary">Cancel</button>
+                <button type="submit" className="btn-primary">Create TPO</button>
+              </div>
+            </form>
           </div>
         </div>
-        <div>
-          <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">Specialization</label>
-          <input 
-            type="text" 
-            className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white" 
-            value={tpoForm.specialization} 
-            onChange={e => setTpoForm({ ...tpoForm, specialization: e.target.value })} 
-          />
-        </div>
-        {modalError && <div className="text-red-600 text-sm text-center">{modalError}</div>}
-        <div className="flex justify-end mt-4">
-          <button type="submit" className="px-6 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 focus:outline-none">Create TPO</button>
-        </div>
-      </form>
-    </div>
-  </div>
-)}
+      )}
 
 {showEditTpoModal && editTpo && (
   <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { FileText, CheckCircle, Target, Briefcase, AlertCircle, GraduationCap, Upload, Edit, Search, TrendingUp, Calendar, Award } from 'lucide-react';
-import { ResponsiveContainer, LineChart, CartesianGrid, XAxis, YAxis, Tooltip, Line, PieChart, Pie, Cell, BarChart, Bar } from 'recharts';
+import { FileText, CheckCircle, Target, Briefcase, AlertCircle, Upload, Edit, Search, TrendingUp, Award } from 'lucide-react';
+import { ResponsiveContainer, LineChart, CartesianGrid, XAxis, YAxis, Tooltip, Line, PieChart, Pie, Cell } from 'recharts';
 
 interface OverviewSectionProps {
   user: any;
@@ -107,39 +107,32 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({ user, stats, applicat
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fade-in">
       {/* Welcome Section */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 text-white">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-3xl font-bold mb-2">Welcome back, {user?.name}!</h2>
-            <p className="text-blue-100 text-lg">
-              {user?.profileCompleted ? 'Your profile is complete!' : 'Complete your profile to get better opportunities'}
-            </p>
-            {user?.requiresPasswordChange && (
-              <div className="mt-2 flex items-center space-x-2">
-                <AlertCircle className="w-4 h-4" />
-                <span className="text-yellow-200">Please change your password</span>
-              </div>
-            )}
-          </div>
-          <div className="hidden md:block">
-            <div className="w-24 h-24 bg-white/20 rounded-full flex items-center justify-center">
-              <GraduationCap className="w-12 h-12" />
-            </div>
-          </div>
+      <div className="flex justify-between items-center">
+        <div>
+          <h2 className="text-3xl font-bold text-white">Welcome back, {user?.name}!</h2>
+          <p className="text-gray-400">
+            {user?.profileCompleted ? 'Your profile is complete!' : 'Complete your profile to get better opportunities'}
+          </p>
         </div>
+        {user?.requiresPasswordChange && (
+          <div className="glass-card px-4 py-2 flex items-center space-x-2">
+            <AlertCircle className="w-4 h-4 text-yellow-400" />
+            <span className="text-yellow-400 text-sm">Please change your password</span>
+          </div>
+        )}
       </div>
 
       {/* Profile Completion Progress */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+      <div className="glass-card p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Profile Completion</h3>
-          <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">{profileCompletion}%</span>
+          <h3 className="text-lg font-semibold text-white">Profile Completion</h3>
+          <span className="text-2xl font-bold text-gradient-premium">{profileCompletion}%</span>
         </div>
         
         <div className="mb-4">
-          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
+          <div className="w-full bg-white/10 rounded-full h-3">
             <div 
               className="bg-gradient-to-r from-blue-500 to-purple-500 h-3 rounded-full transition-all duration-500"
               style={{ width: `${profileCompletion}%` }}
@@ -149,9 +142,9 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({ user, stats, applicat
 
         {suggestions.length > 0 && (
           <div className="space-y-2">
-            <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Suggestions to improve:</p>
+            <p className="text-sm font-medium text-white">Suggestions to improve:</p>
             {suggestions.map((suggestion, index) => (
-              <div key={index} className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
+              <div key={index} className="flex items-center space-x-2 text-sm text-gray-400">
                 <Award className="w-4 h-4 text-yellow-500" />
                 <span>{suggestion}</span>
               </div>
@@ -167,134 +160,104 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({ user, stats, applicat
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-shadow cursor-pointer"
+            className="glass-card p-6 hover:scale-[1.02] transition-transform duration-300 cursor-pointer"
             onClick={() => setActiveTab('applications')}
           >
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-3 rounded-full bg-blue-100 dark:bg-blue-900">
-                <FileText className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+            <div className="flex justify-between items-start">
+              <div>
+                <p className="text-gray-400 text-sm">Total Applications</p>
+                <h3 className="text-3xl font-bold text-white mt-1">{stats.totalApplications}</h3>
               </div>
-              <span className="text-sm text-green-600 dark:text-green-400 font-medium">
-                +{stats.totalApplications}
-              </span>
+              <div className="p-3 rounded-xl bg-indigo-500/10 text-indigo-400">
+                <FileText size={24} />
+              </div>
             </div>
-            <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
-                {stats.totalApplications}
-              </p>
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
-                Total Applications
-              </p>
-              <p className="text-xs text-gray-500 dark:text-gray-500">
-                Click to view details
-              </p>
-            </div>
+            <p className="text-emerald-400 text-sm mt-4 flex items-center gap-1">
+              <TrendingUp size={16} /> +{stats.totalApplications} this month
+            </p>
           </motion.div>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-shadow cursor-pointer"
+            className="glass-card p-6 hover:scale-[1.02] transition-transform duration-300 cursor-pointer"
             onClick={() => setActiveTab('applications')}
           >
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-3 rounded-full bg-green-100 dark:bg-green-900">
-                <CheckCircle className="h-6 w-6 text-green-600 dark:text-green-400" />
+            <div className="flex justify-between items-start">
+              <div>
+                <p className="text-gray-400 text-sm">Success Rate</p>
+                <h3 className="text-3xl font-bold text-white mt-1">{successRate}%</h3>
               </div>
-              <span className="text-sm text-green-600 dark:text-green-400 font-medium">
-                {successRate}%
-              </span>
+              <div className="p-3 rounded-xl bg-emerald-500/10 text-emerald-400">
+                <CheckCircle size={24} />
+              </div>
             </div>
-            <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
-                {successRate}%
-              </p>
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
-                Success Rate
-              </p>
-              <p className="text-xs text-gray-500 dark:text-gray-500">
-                Shortlisted + Selected
-              </p>
-            </div>
+            <p className="text-gray-400 text-sm mt-4">Shortlisted + Selected</p>
           </motion.div>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-shadow cursor-pointer"
+            className="glass-card p-6 hover:scale-[1.02] transition-transform duration-300 cursor-pointer"
             onClick={() => setActiveTab('profile')}
           >
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-3 rounded-full bg-purple-100 dark:bg-purple-900">
-                <Target className="h-6 w-6 text-purple-600 dark:text-purple-400" />
+            <div className="flex justify-between items-start">
+              <div>
+                <p className="text-gray-400 text-sm">Profile Score</p>
+                <h3 className="text-3xl font-bold text-white mt-1">{stats.profileScore}%</h3>
               </div>
-              <span className="text-sm text-green-600 dark:text-green-400 font-medium">
-                {stats.profileScore}%
-              </span>
+              <div className="p-3 rounded-xl bg-purple-500/10 text-purple-400">
+                <Target size={24} />
+              </div>
             </div>
-            <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
-                {stats.profileScore}%
-              </p>
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
-                Profile Score
-              </p>
-              <p className="text-xs text-gray-500 dark:text-gray-500">
-                Click to improve
-              </p>
-            </div>
+            <p className="text-white text-sm mt-4">Click to improve</p>
           </motion.div>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-shadow cursor-pointer"
+            className="glass-card p-6 hover:scale-[1.02] transition-transform duration-300 cursor-pointer"
             onClick={() => setActiveTab('drives')}
           >
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-3 rounded-full bg-orange-100 dark:bg-orange-900">
-                <Briefcase className="h-6 w-6 text-orange-600 dark:text-orange-400" />
+            <div className="flex justify-between items-start">
+              <div>
+                <p className="text-gray-400 text-sm">Eligible Drives</p>
+                <h3 className="text-3xl font-bold text-white mt-1">{stats.eligibleDrives}</h3>
               </div>
-              <span className="text-sm text-green-600 dark:text-green-400 font-medium">
-                {stats.eligibleDrives}
-              </span>
+              <div className="p-3 rounded-xl bg-pink-500/10 text-pink-400">
+                <Briefcase size={24} />
+              </div>
             </div>
-            <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
-                {stats.eligibleDrives}
-              </p>
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
-                Eligible Drives
-              </p>
-              <p className="text-xs text-gray-500 dark:text-gray-500">
-                Click to browse
-              </p>
-            </div>
+            <p className="text-emerald-400 text-sm mt-4">Click to browse</p>
           </motion.div>
         </div>
       )}
 
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Application Trends (Last 6 Months)</h3>
-          <ResponsiveContainer width="100%" height={250}>
-            <LineChart data={applicationTrends}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" />
-              <YAxis />
-              <Tooltip />
-              <Line type="monotone" dataKey="applications" stroke="#3B82F6" strokeWidth={2} name="Applications" />
-              <Line type="monotone" dataKey="interviews" stroke="#10B981" strokeWidth={2} name="Interviews" />
-            </LineChart>
-          </ResponsiveContainer>
+        <div className="glass-card p-6">
+          <h3 className="text-xl font-bold text-white mb-6">Application Trends (Last 6 Months)</h3>
+          <div className="h-[300px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={applicationTrends}>
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+                <XAxis dataKey="month" stroke="#9ca3af" tick={{ fill: '#9ca3af' }} />
+                <YAxis stroke="#9ca3af" tick={{ fill: '#9ca3af' }} />
+                <Tooltip
+                  contentStyle={{ backgroundColor: 'rgba(15, 23, 42, 0.9)', borderColor: 'rgba(255,255,255,0.1)', color: '#fff', borderRadius: '0.75rem' }}
+                />
+                <Line type="monotone" dataKey="applications" stroke="#818cf8" strokeWidth={3} name="Applications" />
+                <Line type="monotone" dataKey="interviews" stroke="#10b981" strokeWidth={3} name="Interviews" />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Application Status</h3>
+        <div className="glass-card p-6">
+          <h3 className="text-xl font-bold text-white mb-6">Application Status</h3>
           {(
             (stats.pendingApplications || 0) === 0 &&
             (stats.shortlistedApplications || 0) === 0 &&
@@ -303,60 +266,64 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({ user, stats, applicat
           ) ? (
             <div className="text-center py-12">
               <FileText className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-500 dark:text-gray-400 text-lg mb-2">No applications yet</p>
-              <p className="text-gray-400 dark:text-gray-500">Start applying to job drives to see your application status here.</p>
+              <p className="text-white text-lg mb-2">No applications yet</p>
+              <p className="text-gray-400">Start applying to job drives to see your application status here.</p>
             </div>
           ) : (
-            <ResponsiveContainer width="100%" height={250}>
-              <PieChart>
-                <Pie
-                  data={[
-                    { name: 'Pending', value: stats?.pendingApplications || 0, color: '#8B5CF6' },
-                    { name: 'Shortlisted', value: stats?.shortlistedApplications || 0, color: '#10B981' },
-                    { name: 'Selected', value: stats?.selectedApplications || 0, color: '#059669' },
-                    { name: 'Rejected', value: stats?.rejectedApplications || 0, color: '#EF4444' }
-                  ]}
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={80}
-                  dataKey="value"
-                  label={({ name, value }) => (value > 0 ? `${name}: ${value}` : '')}
-                >
-                  {[
-                    { name: 'Pending', value: stats?.pendingApplications || 0, color: '#8B5CF6' },
-                    { name: 'Shortlisted', value: stats?.shortlistedApplications || 0, color: '#10B981' },
-                    { name: 'Selected', value: stats?.selectedApplications || 0, color: '#059669' },
-                    { name: 'Rejected', value: stats?.rejectedApplications || 0, color: '#EF4444' }
-                  ].map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
+            <div className="h-[300px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={[
+                      { name: 'Pending', value: stats?.pendingApplications || 0, color: '#8B5CF6' },
+                      { name: 'Shortlisted', value: stats?.shortlistedApplications || 0, color: '#10B981' },
+                      { name: 'Selected', value: stats?.selectedApplications || 0, color: '#059669' },
+                      { name: 'Rejected', value: stats?.rejectedApplications || 0, color: '#EF4444' }
+                    ]}
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={80}
+                    dataKey="value"
+                    label={({ name, value }) => ((value ?? 0) > 0 ? `${name}: ${value}` : '')}
+                  >
+                    {[
+                      { name: 'Pending', value: stats?.pendingApplications || 0, color: '#8B5CF6' },
+                      { name: 'Shortlisted', value: stats?.shortlistedApplications || 0, color: '#10B981' },
+                      { name: 'Selected', value: stats?.selectedApplications || 0, color: '#059669' },
+                      { name: 'Rejected', value: stats?.rejectedApplications || 0, color: '#EF4444' }
+                    ].map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    contentStyle={{ backgroundColor: 'rgba(15, 23, 42, 0.9)', borderColor: 'rgba(255,255,255,0.1)', color: '#fff', borderRadius: '0.75rem' }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
           )}
         </div>
       </div>
 
       {/* Quick Actions */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Quick Actions</h3>
+      <div className="glass-card p-6">
+        <h3 className="text-xl font-bold text-white mb-6">Quick Actions</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <button 
             onClick={handleUpdateResume}
             disabled={isUploading}
-            className={`flex items-center space-x-3 p-4 rounded-lg transition-colors ${
+            className={`flex items-center space-x-3 p-4 rounded-lg transition-all ${
               isUploading 
-                ? 'bg-gray-100 dark:bg-gray-700 cursor-not-allowed' 
-                : 'bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/30'
+                ? 'bg-white/5 cursor-not-allowed' 
+                : 'bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/20'
             }`}
           >
             {isUploading ? (
-              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
+              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-indigo-400"></div>
             ) : (
-              <Upload className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+              <Upload className="w-5 h-5 text-indigo-400" />
             )}
-            <span className="text-blue-700 dark:text-blue-300 font-medium">
+            <span className="text-white font-medium">
               {isUploading ? 'Uploading...' : 'Update Resume'}
             </span>
           </button>
@@ -364,28 +331,28 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({ user, stats, applicat
           <button 
             onClick={handleEditProfile}
             disabled={isEditing}
-            className={`flex items-center space-x-3 p-4 rounded-lg transition-colors ${
+            className={`flex items-center space-x-3 p-4 rounded-lg transition-all ${
               isEditing 
-                ? 'bg-gray-100 dark:bg-gray-700 cursor-not-allowed' 
-                : 'bg-green-50 dark:bg-green-900/20 hover:bg-green-100 dark:hover:bg-green-900/30'
+                ? 'bg-white/5 cursor-not-allowed' 
+                : 'bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20'
             }`}
           >
             {isEditing ? (
-              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-green-600"></div>
+              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-emerald-400"></div>
             ) : (
-              <Edit className="w-5 h-5 text-green-600 dark:text-green-400" />
+              <Edit className="w-5 h-5 text-emerald-400" />
             )}
-            <span className="text-green-700 dark:text-green-300 font-medium">
+            <span className="text-white font-medium">
               {isEditing ? 'Opening...' : 'Edit Profile'}
             </span>
           </button>
           
           <button 
             onClick={handleBrowseJobs}
-            className="flex items-center space-x-3 p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-colors"
+            className="flex items-center space-x-3 p-4 bg-purple-500/10 hover:bg-purple-500/20 rounded-lg border border-purple-500/20 transition-all"
           >
-            <Search className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-            <span className="text-purple-700 dark:text-purple-300 font-medium">Browse Jobs</span>
+            <Search className="w-5 h-5 text-purple-400" />
+            <span className="text-white font-medium">Browse Jobs</span>
           </button>
         </div>
       </div>

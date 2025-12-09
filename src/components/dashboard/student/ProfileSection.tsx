@@ -217,7 +217,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, onUserUpdate }) =
             name="name"
             value={editForm.name}
             onChange={handleEditFormChange}
-            className="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+            className="input-glass"
             placeholder="Name"
           />
           <input
@@ -225,7 +225,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, onUserUpdate }) =
             name="phone"
             value={editForm.phone}
             onChange={handleEditFormChange}
-            className="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+            className="input-glass"
             placeholder="Phone"
           />
           <input
@@ -233,7 +233,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, onUserUpdate }) =
             name="address"
             value={editForm.address}
             onChange={handleEditFormChange}
-            className="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+            className="input-glass"
             placeholder="Address"
           />
           <input
@@ -241,19 +241,19 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, onUserUpdate }) =
             name="dateOfBirth"
             value={editForm.dateOfBirth}
             onChange={handleEditFormChange}
-            className="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+            className="input-glass"
             placeholder="Date of Birth"
           />
           <div className="flex space-x-2 mt-2">
             <button
               onClick={handleEditSave}
-              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+              className="btn-primary"
             >
               Save
             </button>
             <button
               onClick={handleEditCancel}
-              className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600"
+              className="btn-secondary"
             >
               Cancel
             </button>
@@ -261,16 +261,16 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, onUserUpdate }) =
         </div>
       </Modal>
       {/* Profile Header */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl p-8 shadow-sm border border-gray-200 dark:border-gray-700">
+      <div className="glass-card p-8">
         <div className="flex items-start justify-between mb-6">
           <div className="flex items-center space-x-6">
             <div className="w-24 h-24 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center text-white text-2xl font-bold">
               {localUser?.name?.split(' ').map((n: string) => n[0]).join('')}
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{localUser?.name}</h2>
-              <p className="text-gray-600 dark:text-gray-400">{localUser?.branch}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-500">{localUser?.studentId} • {localUser?.year}</p>
+              <h2 className="text-2xl font-bold text-white">{localUser?.name}</h2>
+              <p className="text-gray-400">{localUser?.branch}</p>
+              <p className="text-sm text-gray-400">{localUser?.studentId} • {localUser?.year}</p>
               <div className="flex items-center space-x-4 mt-2">
                 <div className="flex items-center space-x-1">
                   <Star className="w-4 h-4 text-yellow-500" />
@@ -286,14 +286,14 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, onUserUpdate }) =
           <button
             onClick={handleEditProfile}
             disabled={isEditing}
-            className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
+            className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all ${
               isEditing
-                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                : 'bg-blue-600 text-white hover:bg-blue-700'
+                ? 'bg-white/5 cursor-not-allowed'
+                : 'btn-primary'
             }`}
           >
             {isEditing ? (
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-500"></div>
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-indigo-400"></div>
             ) : (
               <Edit className="w-4 h-4" />
             )}
@@ -305,22 +305,22 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, onUserUpdate }) =
           <div className="flex items-center space-x-3">
             <Mail className="w-5 h-5 text-gray-400" />
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Email</p>
-              <p className="text-gray-900 dark:text-white">{localUser?.email}</p>
+              <p className="text-sm text-gray-400">Email</p>
+              <p className="text-white">{localUser?.email}</p>
             </div>
           </div>
           <div className="flex items-center space-x-3">
             <Phone className="w-5 h-5 text-gray-400" />
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Phone</p>
-              <p className="text-gray-900 dark:text-white">{localUser?.phone}</p>
+              <p className="text-sm text-gray-400">Phone</p>
+              <p className="text-white">{localUser?.phone}</p>
             </div>
           </div>
           <div className="flex items-center space-x-3">
             <Calendar className="w-5 h-5 text-gray-400" />
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Date of Birth</p>
-              <p className="text-gray-900 dark:text-white">
+              <p className="text-sm text-gray-400">Date of Birth</p>
+              <p className="text-white">
                 {localUser?.dateOfBirth
                   ? new Date(localUser.dateOfBirth).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
                   : ''}
@@ -331,12 +331,12 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, onUserUpdate }) =
       </div>
 
       {/* Skills Section */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+      <div className="glass-card p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Technical Skills</h3>
+          <h3 className="text-xl font-semibold text-white">Technical Skills</h3>
           <button 
             onClick={handleAddSkill}
-            className="text-blue-600 hover:text-blue-700 font-medium flex items-center space-x-1"
+            className="text-indigo-400 hover:text-indigo-300 font-medium flex items-center space-x-1"
           >
             <Plus className="w-4 h-4" />
             <span>Add Skill</span>
@@ -344,28 +344,41 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, onUserUpdate }) =
         </div>
         
         {isAddingSkill && (
-          <div className="mb-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-            <div className="flex items-center space-x-2">
-              <input
-                type="text"
-                value={newSkill}
-                onChange={(e) => setNewSkill(e.target.value)}
-                placeholder="Enter skill name"
-                className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                onKeyPress={(e) => e.key === 'Enter' && handleSaveSkill()}
-              />
-              <button
-                onClick={handleSaveSkill}
-                className="px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-              >
-                Save
-              </button>
-              <button
-                onClick={handleCancelSkill}
-                className="px-3 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
-              >
-                <X className="w-4 h-4" />
-              </button>
+          <div className="mb-6 bg-white/[0.03] backdrop-blur-xl rounded-2xl border border-white/10 p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h4 className="text-lg font-semibold text-white">Add New Skill</h4>
+            </div>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Skill Name
+                </label>
+                <input
+                  type="text"
+                  value={newSkill}
+                  onChange={(e) => setNewSkill(e.target.value)}
+                  placeholder="e.g., React, Node.js, Python"
+                  className="input-glass w-full"
+                  onKeyPress={(e) => e.key === 'Enter' && handleSaveSkill()}
+                />
+              </div>
+              
+              <div className="flex items-center gap-3 pt-2">
+                <button
+                  onClick={handleSaveSkill}
+                  className="btn-primary flex-1 flex items-center justify-center gap-2"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Add Skill</span>
+                </button>
+                <button
+                  onClick={handleCancelSkill}
+                  className="btn-secondary px-6"
+                >
+                  Cancel
+                </button>
+              </div>
             </div>
           </div>
         )}
@@ -374,7 +387,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, onUserUpdate }) =
           {localUser?.skills?.map((skill: string, index: number) => (
             <span
               key={index}
-              className="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-sm font-medium"
+              className="px-3 py-1 bg-indigo-500/10 text-indigo-400 rounded-full text-sm font-medium border border-indigo-500/20"
             >
               {skill}
             </span>
@@ -383,12 +396,12 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, onUserUpdate }) =
       </div>
 
       {/* Projects Section */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+      <div className="glass-card p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Projects</h3>
+          <h3 className="text-xl font-semibold text-white">Projects</h3>
           <button 
             onClick={handleAddProject}
-            className="text-blue-600 hover:text-blue-700 font-medium flex items-center space-x-1"
+            className="text-indigo-400 hover:text-indigo-300 font-medium flex items-center space-x-1"
           >
             <Plus className="w-4 h-4" />
             <span>Add Project</span>
@@ -396,59 +409,92 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, onUserUpdate }) =
         </div>
         
         {isAddingProject && (
-          <div className="mb-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg space-y-3">
-            <input
-              type="text"
-              value={newProject.name}
-              onChange={(e) => setNewProject({...newProject, name: e.target.value})}
-              placeholder="Project name"
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-            <input
-              type="text"
-              value={newProject.tech}
-              onChange={(e) => setNewProject({...newProject, tech: e.target.value})}
-              placeholder="Technologies used"
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-            <textarea
-              value={newProject.description}
-              onChange={(e) => setNewProject({...newProject, description: e.target.value})}
-              placeholder="Project description"
-              rows={3}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-            <input
-              type="url"
-              value={newProject.github}
-              onChange={(e) => setNewProject({...newProject, github: e.target.value})}
-              placeholder="GitHub URL (optional)"
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-            <div className="flex items-center space-x-2">
-              <button
-                onClick={handleSaveProject}
-                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-              >
-                Save Project
-              </button>
-              <button
-                onClick={handleCancelProject}
-                className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
-              >
-                Cancel
-              </button>
+          <div className="mb-6 bg-white/[0.03] backdrop-blur-xl rounded-2xl border border-white/10 p-6">
+            <div className="flex items-center justify-between mb-6">
+              <h4 className="text-lg font-semibold text-white">Add New Project</h4>
+            </div>
+            
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Project Name <span className="text-red-400">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={newProject.name}
+                    onChange={(e) => setNewProject({...newProject, name: e.target.value})}
+                    placeholder="e.g., E-commerce Platform"
+                    className="input-glass w-full"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Technologies Used <span className="text-red-400">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={newProject.tech}
+                    onChange={(e) => setNewProject({...newProject, tech: e.target.value})}
+                    placeholder="e.g., React, Node.js, MongoDB"
+                    className="input-glass w-full"
+                  />
+                </div>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Project Description <span className="text-red-400">*</span>
+                </label>
+                <textarea
+                  value={newProject.description}
+                  onChange={(e) => setNewProject({...newProject, description: e.target.value})}
+                  placeholder="Describe your project, its features, and your role..."
+                  rows={4}
+                  className="input-glass w-full resize-none"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  GitHub URL <span className="text-gray-500">(Optional)</span>
+                </label>
+                <input
+                  type="url"
+                  value={newProject.github}
+                  onChange={(e) => setNewProject({...newProject, github: e.target.value})}
+                  placeholder="https://github.com/username/repository"
+                  className="input-glass w-full"
+                />
+              </div>
+              
+              <div className="flex items-center gap-3 pt-2">
+                <button
+                  onClick={handleSaveProject}
+                  className="btn-primary flex-1 flex items-center justify-center gap-2"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Add Project</span>
+                </button>
+                <button
+                  onClick={handleCancelProject}
+                  className="btn-secondary px-6"
+                >
+                  Cancel
+                </button>
+              </div>
             </div>
           </div>
         )}
         
         <div className="space-y-4">
           {localUser?.projects?.map((project: any, index: number) => (
-            <div key={index} className="p-5 bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 flex flex-col gap-2 mb-4">
+            <div key={index} className="p-5 bg-white/5 rounded-xl border border-white/10 hover:bg-white/10 transition-all flex flex-col gap-2 mb-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <h4 className="font-bold text-lg text-gray-900 dark:text-white">{project.name}</h4>
-                  <span className="inline-block mt-1 px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-200 rounded-full text-xs font-semibold">
+                  <h4 className="font-bold text-lg text-white">{project.name}</h4>
+                  <span className="inline-block mt-1 px-3 py-1 bg-purple-500/10 text-purple-400 rounded-full text-xs font-semibold border border-purple-500/20">
                     {project.tech}
                   </span>
                 </div>
@@ -457,47 +503,47 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, onUserUpdate }) =
                     href={project.github}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-1 text-blue-600 hover:text-blue-800 font-medium text-sm bg-blue-50 dark:bg-blue-900 px-3 py-1 rounded-lg transition"
+                    className="flex items-center gap-1 text-indigo-400 hover:text-indigo-300 font-medium text-sm bg-indigo-500/10 px-3 py-1 rounded-lg border border-indigo-500/20 transition"
                   >
                     <Globe className="w-4 h-4" />
                     View
                   </a>
                 )}
               </div>
-              <hr className="my-2 border-gray-300 dark:border-gray-700" />
-              <p className="text-gray-700 dark:text-gray-300 text-sm">{project.description}</p>
+              <hr className="my-2 border-white/10" />
+              <p className="text-gray-400 text-sm">{project.description}</p>
             </div>
           ))}
         </div>
       </div>
 
       {/* Resume Section */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+      <div className="glass-card p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Resume</h3>
+          <h3 className="text-xl font-semibold text-white">Resume</h3>
           <button 
             onClick={handleUploadResume}
             disabled={isUploadingResume}
-            className={`text-blue-600 hover:text-blue-700 font-medium flex items-center space-x-1 ${
+            className={`text-indigo-400 hover:text-indigo-300 font-medium flex items-center space-x-1 ${
               isUploadingResume ? 'opacity-50 cursor-not-allowed' : ''
             }`}
           >
             {isUploadingResume ? (
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-indigo-400"></div>
             ) : (
               <Plus className="w-4 h-4" />
             )}
             <span>{isUploadingResume ? 'Uploading...' : 'Upload New'}</span>
           </button>
         </div>
-        <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+        <div className="flex items-center justify-between p-4 bg-white/5 rounded-lg border border-white/10">
           <div className="flex items-center space-x-4">
-            <div className="w-12 h-12 bg-red-100 dark:bg-red-900 rounded-lg flex items-center justify-center">
-              <FileText className="w-6 h-6 text-red-600 dark:text-red-400" />
+            <div className="w-12 h-12 bg-pink-500/10 rounded-lg flex items-center justify-center">
+              <FileText className="w-6 h-6 text-pink-400" />
             </div>
             <div>
-              <p className="font-medium text-gray-900 dark:text-white">{localUser?.resume?.filename || 'No resume uploaded'}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
+              <p className="font-medium text-white">{localUser?.resume?.filename || 'No resume uploaded'}</p>
+              <p className="text-sm text-gray-400">
                 {localUser?.resume?.uploadDate ? `Uploaded on ${localUser.resume.uploadDate} • ${localUser.resume.size}` : 'Upload your resume to get started'}
               </p>
             </div>
@@ -505,14 +551,14 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, onUserUpdate }) =
           <div className="flex items-center space-x-2">
             <button 
               onClick={handleViewResume}
-              className="p-2 text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg transition-colors"
+              className="p-2 text-gray-400 hover:bg-white/10 rounded-lg transition-colors"
               title="View Resume"
             >
               <Eye className="w-4 h-4" />
             </button>
             <button 
               onClick={handleDownloadResume}
-              className="p-2 text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg transition-colors"
+              className="p-2 text-gray-400 hover:bg-white/10 rounded-lg transition-colors"
               title="Download Resume"
             >
               <Download className="w-4 h-4" />

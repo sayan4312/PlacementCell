@@ -32,19 +32,19 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }) => {
     <div
       ref={modalRef}
       onClick={handleOverlayClick}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40"
+      className="fixed inset-0 z-[9999] flex items-start justify-center bg-black/60 backdrop-blur-sm overflow-y-auto pt-20"
       aria-modal="true"
       role="dialog"
     >
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg w-full max-w-md p-6 relative animate-fadeIn">
+      <div className="glass-panel w-full max-w-md p-6 relative animate-fadeIn mx-4">
         <button
           onClick={onClose}
-          className="absolute top-3 right-3 text-gray-400 hover:text-gray-700 dark:hover:text-white text-xl font-bold focus:outline-none"
+          className="absolute top-3 right-3 text-gray-400 hover:text-white text-2xl font-bold focus:outline-none transition-colors"
           aria-label="Close"
         >
           &times;
         </button>
-        {title && <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">{title}</h2>}
+        {title && <h2 className="text-xl font-semibold mb-4 text-white">{title}</h2>}
         {children}
       </div>
     </div>

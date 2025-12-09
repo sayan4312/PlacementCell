@@ -29,6 +29,7 @@ import InternshipsSection from './InternshipsSection';
 import ApplicationsSection from './ApplicationsSection';
 import StudentsSection from './StudentsSection';
 import NotificationsSection from './NotificationsSection';
+import OverviewSection from './OverviewSection';
 import { useLocation } from 'react-router-dom';
 
 // Add these above the component
@@ -63,29 +64,31 @@ const CompaniesList: React.FC = () => {
       .catch(() => setError('Failed to load companies'))
       .finally(() => setLoading(false));
   }, []);
-  if (loading) return <div className="py-8 text-center">Loading companies...</div>;
-  if (error) return <div className="py-8 text-center text-red-500">{error}</div>;
-  if (!companies.length) return <div className="py-8 text-center text-gray-500">No companies found.</div>;
+  if (loading) return <div className="py-8 text-center text-white/70">Loading companies...</div>;
+  if (error) return <div className="py-8 text-center text-red-400">{error}</div>;
+  if (!companies.length) return <div className="py-8 text-center text-white/50">No companies found.</div>;
   return (
-    <div className="overflow-x-auto">
-      <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-        <thead className="bg-gray-50 dark:bg-gray-700">
-          <tr>
-            <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Name</th>
-            <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Contact Info</th>
-            <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Notes</th>
-          </tr>
-        </thead>
-        <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-          {companies.map(company => (
-            <tr key={company._id}>
-              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{company.name}</td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">{company.contactInfo || '-'}</td>
-              <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{company.notes || '-'}</td>
+    <div className="glass-card p-6 overflow-hidden">
+      <div className="overflow-x-auto">
+        <table className="min-w-full">
+          <thead>
+            <tr className="border-b border-white/10">
+              <th className="px-6 py-4 text-left text-xs font-semibold text-white/90 uppercase tracking-wider">Name</th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-white/90 uppercase tracking-wider">Contact Info</th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-white/90 uppercase tracking-wider">Notes</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody className="divide-y divide-white/10">
+            {companies.map(company => (
+              <tr key={company._id} className="hover:bg-white/5 transition-colors">
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">{company.name}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-white/70">{company.contactInfo || '-'}</td>
+                <td className="px-6 py-4 text-sm text-white/70">{company.notes || '-'}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };
@@ -808,10 +811,10 @@ export const TPODashboard: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+      <div className="min-h-screen bg-dark-bg flex items-center justify-center pt-20">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600 dark:text-gray-400">Loading dashboard...</p>
+          <div className="w-16 h-16 border-4 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-400">Loading dashboard...</p>
         </div>
       </div>
     );
@@ -819,15 +822,19 @@ export const TPODashboard: React.FC = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-red-500 text-xl mb-4">⚠️</div>
-          <p className="text-red-600 dark:text-red-400">{error}</p>
+      <div className="min-h-screen bg-dark-bg flex items-center justify-center pt-20">
+        <div className="glass-panel p-8 max-w-md text-center">
+          <div className="text-red-400 mb-4">
+            <svg className="h-12 w-12 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+            </svg>
+          </div>
+          <p className="text-white text-lg font-medium mb-2">Error Loading Dashboard</p>
+          <p className="text-gray-400 mb-4">{error}</p>
           <button 
             onClick={() => window.location.reload()} 
-            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-          >
-            Retry
+            className="btn-primary">
+            Try Again
           </button>
         </div>
       </div>
@@ -838,21 +845,21 @@ export const TPODashboard: React.FC = () => {
   const availableCompanies = companies.filter((company: any) => !companiesWithActiveDrives.has(company.name));
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-dark-bg pt-20">
       <ToastContainer position="top-right" autoClose={3000} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Tabs */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-          <div className="border-b border-gray-200 dark:border-gray-700">
+        <div className="glass-panel">
+          <div className="border-b border-white/10">
             <nav className="flex space-x-8 px-6" aria-label="Tabs">
               {tabs.map((tab: any) => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 transition-colors ${
+                  className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 transition-all duration-300 ${
                     activeTab === tab.id
-                      ? 'border-blue-500 text-blue-600 dark:text-blue-400'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+                      ? 'border-indigo-500 text-white'
+                      : 'border-transparent text-gray-400 hover:text-gray-300 hover:border-white/20'
                   }`}
                 >
                   {tab.icon && React.createElement(tab.icon, { className: "h-4 w-4" })}
@@ -863,7 +870,24 @@ export const TPODashboard: React.FC = () => {
           </div>
 
           <div className="p-6">
-            {activeTab === 'overview' && renderOverviewTab()}
+            {activeTab === 'overview' && (
+              <OverviewSection
+                tpoProfile={tpoProfile}
+                stats={stats}
+                placementTrends={placementTrends}
+                branchWiseApplications={branchWiseApplications}
+                applications={applications}
+                jobDrives={jobDrives}
+                getStatusColor={getStatusColor}
+                initializeDriveForm={initializeDriveForm}
+                setEditingDrive={setEditingDrive}
+                setShowDriveModal={setShowDriveModal}
+                setShowInternshipModal={setShowInternshipModal}
+                setEditingInternship={setEditingInternship}
+                setInternshipForm={setInternshipForm}
+                setActiveTab={setActiveTab}
+              />
+            )}
             {activeTab === 'drives' && (
               <DrivesSection
                 jobDrives={jobDrives}
@@ -925,34 +949,43 @@ export const TPODashboard: React.FC = () => {
       </div>
       {/* DRIVE MODAL */}
       {showDriveModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-lg md:max-w-xl relative flex flex-col" style={{ maxHeight: '90vh' }}>
-            <div className="flex flex-col md:flex-row items-start md:items-center px-6 py-4 rounded-t-2xl bg-gradient-to-r from-blue-700 to-purple-700 relative">
-              <Briefcase className="w-8 h-8 text-white mr-3 mb-2 md:mb-0" />
-              <div className="flex-1">
-                <h2 className="text-xl font-bold text-white">{editingDrive ? 'Edit Drive' : 'Add New Drive'}</h2>
-                <p className="text-white text-xs opacity-80 mt-1">Fill in the details to create or update a job drive.</p>
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-gradient-to-br from-slate-900/95 to-slate-800/95 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl w-full max-w-3xl relative flex flex-col"
+            style={{ maxHeight: '90vh' }}
+          >
+            <div className="flex items-center justify-between p-6 border-b border-white/10">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600">
+                  <Briefcase className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold text-white">{editingDrive ? 'Edit Drive' : 'Post New Drive'}</h2>
+                  <p className="text-white/60 text-sm mt-1">Fill in the details to create or update a job drive</p>
+                </div>
               </div>
-              <button onClick={() => setShowDriveModal(false)} className="absolute top-3 right-3 z-10 text-white hover:text-gray-200 focus:outline-none bg-black/20 rounded-full p-1">
-                <X className="w-6 h-6" />
+              <button onClick={() => setShowDriveModal(false)} className="p-2 hover:bg-white/10 rounded-lg transition-colors">
+                <X className="w-5 h-5 text-white/70" />
               </button>
             </div>
-            <form id="drive-form" onSubmit={e => { e.preventDefault(); handleDriveSubmit(); }} className="flex-1 overflow-y-auto px-6 py-4 space-y-6">
+            <form id="drive-form" onSubmit={e => { e.preventDefault(); handleDriveSubmit(); }} className="flex-1 overflow-y-auto px-6 py-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="relative">
-                  <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">Company</label>
+                  <label className="block text-sm font-semibold mb-2 text-white">Company</label>
                   <div className="relative">
-                    <Building2 className="absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-400 w-5 h-5" />
+                    <Building2 className="absolute left-3 top-1/2 transform -translate-y-1/2 text-indigo-400 w-5 h-5" />
                     {editingDrive ? (
                       <input
                         type="text"
-                        className="w-full pl-10 pr-3 py-2 border rounded-lg bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white"
+                        className="input-glass w-full pl-10 opacity-70"
                         value={driveForm.companyName}
                         disabled
                       />
                     ) : (
                       <select
-                        className="w-full pl-10 pr-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white"
+                        className="input-glass w-full pl-10"
                         value={driveForm.companyName}
                         onChange={e => setDriveForm({ ...driveForm, companyName: e.target.value })}
                         required
@@ -969,58 +1002,58 @@ export const TPODashboard: React.FC = () => {
                   </div>
                 </div>
                 <div className="relative">
-                  <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">Position</label>
+                  <label className="block text-sm font-semibold mb-2 text-white">Position</label>
                   <div className="relative">
                     <UserPlus className="absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-400 w-5 h-5" />
-                    <input type="text" className="w-full pl-10 pr-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white" value={driveForm.position} onChange={e => setDriveForm({ ...driveForm, position: e.target.value })} required />
+                    <input type="text" className="input-glass w-full pl-10" value={driveForm.position} onChange={e => setDriveForm({ ...driveForm, position: e.target.value })} required />
                   </div>
                 </div>
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">Description</label>
-                  <textarea className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white" value={driveForm.description} onChange={e => setDriveForm({ ...driveForm, description: e.target.value })} required />
+                  <label className="block text-sm font-semibold mb-2 text-white">Description</label>
+                  <textarea className="input-glass w-full resize-none" rows={3} value={driveForm.description} onChange={e => setDriveForm({ ...driveForm, description: e.target.value })} required />
                 </div>
                 <div className="relative">
-                  <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">CTC</label>
+                  <label className="block text-sm font-semibold mb-2 text-white">CTC</label>
                   <div className="relative">
-                    <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-green-400 w-5 h-5" />
-                    <input type="text" className="w-full pl-10 pr-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white" value={driveForm.ctc} onChange={e => setDriveForm({ ...driveForm, ctc: e.target.value })} required />
+                    <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-emerald-400 w-5 h-5" />
+                    <input type="text" className="input-glass w-full pl-10" value={driveForm.ctc} onChange={e => setDriveForm({ ...driveForm, ctc: e.target.value })} required />
                   </div>
                 </div>
                 <div className="relative">
-                  <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">Location</label>
+                  <label className="block text-sm font-semibold mb-2 text-white">Location</label>
                   <div className="relative">
                     <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400 w-5 h-5" />
-                    <input type="text" className="w-full pl-10 pr-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white" value={driveForm.location} onChange={e => setDriveForm({ ...driveForm, location: e.target.value })} required />
+                    <input type="text" className="input-glass w-full pl-10" value={driveForm.location} onChange={e => setDriveForm({ ...driveForm, location: e.target.value })} required />
                   </div>
                 </div>
                 <div className="relative">
-                  <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">Deadline</label>
+                  <label className="block text-sm font-semibold mb-2 text-white">Deadline</label>
                   <div className="relative">
                     <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-red-400 w-5 h-5" />
-                    <input type="date" className="w-full pl-10 pr-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white" value={driveForm.deadline} onChange={e => setDriveForm({ ...driveForm, deadline: e.target.value })} required />
+                    <input type="date" className="input-glass w-full pl-10" value={driveForm.deadline} onChange={e => setDriveForm({ ...driveForm, deadline: e.target.value })} required />
                   </div>
-                  <p className="text-xs text-gray-400 mt-1 ml-1">Last date to apply.</p>
+                  <p className="text-xs text-white/50 mt-2 ml-1">Last date to apply</p>
                 </div>
                 <div className="relative">
-                  <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">External Application URL (Optional)</label>
+                  <label className="block text-sm font-semibold mb-2 text-white">External Application URL (Optional)</label>
                   <div className="relative">
-                    <ExternalLink className="absolute left-3 top-1/2 transform -translate-y-1/2 text-green-400 w-5 h-5" />
+                    <ExternalLink className="absolute left-3 top-1/2 transform -translate-y-1/2 text-emerald-400 w-5 h-5" />
                     <input 
                       type="url" 
                       placeholder="https://company.com/apply (optional)" 
-                      className="w-full pl-10 pr-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white" 
+                      className="input-glass w-full pl-10" 
                       value={driveForm.externalApplicationUrl} 
                       onChange={e => setDriveForm({ ...driveForm, externalApplicationUrl: e.target.value })} 
                     />
                   </div>
-                  <p className="text-xs text-gray-400 mt-1 ml-1">If provided, students will see an additional "Application Link" button.</p>
+                  <p className="text-xs text-white/50 mt-2 ml-1">Students will see an additional "Application Link" button</p>
                 </div>
                 <div className="relative">
-                  <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">Work Mode</label>
+                  <label className="block text-sm font-semibold mb-2 text-white">Work Mode</label>
                   <div className="relative">
-                    <Building2 className="absolute left-3 top-1/2 transform -translate-y-1/2 text-indigo-400 w-5 h-5" />
+                    <Building2 className="absolute left-3 top-1/2 transform -translate-y-1/2 text-pink-400 w-5 h-5" />
                     <select 
-                      className="w-full pl-10 pr-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white" 
+                      className="input-glass w-full pl-10" 
                       value={driveForm.workMode} 
                       onChange={e => setDriveForm({ ...driveForm, workMode: e.target.value })}
                     >
@@ -1032,18 +1065,18 @@ export const TPODashboard: React.FC = () => {
                   </div>
                 </div>
               </div>
-              <div className="border-t border-gray-200 dark:border-gray-700 pt-4 mt-2">
-                <h3 className="text-base font-semibold mb-2 text-gray-900 dark:text-white flex items-center"><Shield className="w-5 h-5 mr-2 text-blue-500" /> Eligibility Criteria</h3>
+              <div className="border-t border-white/10 pt-6 mt-4">
+                <h3 className="text-base font-bold mb-4 text-white flex items-center gap-2"><Shield className="w-5 h-5 text-indigo-400" /> Eligibility Criteria</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="relative">
-                    <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">Min CGPA</label>
-                    <input type="number" step="0.01" className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white" value={driveForm.eligibility.minCGPA} onChange={e => setDriveForm({ ...driveForm, eligibility: { ...driveForm.eligibility, minCGPA: e.target.value } })} />
+                    <label className="block text-sm font-semibold mb-2 text-white">Min CGPA</label>
+                    <input type="number" step="0.01" className="input-glass w-full" value={driveForm.eligibility.minCGPA} onChange={e => setDriveForm({ ...driveForm, eligibility: { ...driveForm.eligibility, minCGPA: e.target.value } })} />
                   </div>
                   <div className="relative">
-                    <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">Allowed Branches</label>
+                    <label className="block text-sm font-semibold mb-2 text-white">Allowed Branches</label>
                     <select
                       multiple
-                      className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white"
+                      className="input-glass w-full"
                       value={driveForm.eligibility.allowedBranches}
                       onChange={e => {
                         const options = Array.from(e.target.selectedOptions, option => option.value);
@@ -1054,42 +1087,46 @@ export const TPODashboard: React.FC = () => {
                         <option key={`dept-${branch}`} value={branch}>{branch}</option>
                       ))}
                     </select>
-                    <p className="text-xs text-gray-400 mt-1 ml-1">Hold Ctrl (Windows) or Cmd (Mac) to select multiple.</p>
+                    <p className="text-xs text-white/50 mt-2 ml-1">Hold Ctrl (Windows) or Cmd (Mac) to select multiple</p>
                   </div>
                   <div className="relative">
-                    <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">Max Backlogs</label>
-                    <input type="number" className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white" value={driveForm.eligibility.maxBacklogs} onChange={e => setDriveForm({ ...driveForm, eligibility: { ...driveForm.eligibility, maxBacklogs: e.target.value } })} />
+                    <label className="block text-sm font-semibold mb-2 text-white">Max Backlogs</label>
+                    <input type="number" className="input-glass w-full" value={driveForm.eligibility.maxBacklogs} onChange={e => setDriveForm({ ...driveForm, eligibility: { ...driveForm.eligibility, maxBacklogs: e.target.value } })} />
                   </div>
                   <div className="relative">
-                    <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">Min Year</label>
-                    <input type="number" className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white" value={driveForm.eligibility.minYear} onChange={e => setDriveForm({ ...driveForm, eligibility: { ...driveForm.eligibility, minYear: e.target.value } })} />
+                    <label className="block text-sm font-semibold mb-2 text-white">Min Year</label>
+                    <input type="number" className="input-glass w-full" value={driveForm.eligibility.minYear} onChange={e => setDriveForm({ ...driveForm, eligibility: { ...driveForm.eligibility, minYear: e.target.value } })} />
                   </div>
                 </div>
               </div>
-              {driveModalError && <div className="text-red-500 text-center mt-2">{driveModalError}</div>}
+              {driveModalError && (
+                <div className="mt-4 p-3 rounded-lg bg-red-500/10 border border-red-500/20">
+                  <p className="text-red-400 text-sm text-center">{driveModalError}</p>
+                </div>
+              )}
             </form>
-            <div className="sticky bottom-0 left-0 w-full bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 flex flex-col md:flex-row md:justify-end gap-2 px-6 py-3 z-20">
-              <button type="button" onClick={() => { setShowDriveModal(false); setEditingDrive(null); }} className="px-4 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-semibold hover:bg-gray-300 dark:hover:bg-gray-600 transition-all">Cancel</button>
+            <div className="flex justify-end gap-3 px-6 py-4 border-t border-white/10">
+              <button type="button" onClick={() => { setShowDriveModal(false); setEditingDrive(null); }} className="btn-secondary">Cancel</button>
               <button 
                 type="submit" 
                 form="drive-form" 
                 disabled={isSubmittingDrive}
-                className={`px-4 py-2 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all flex items-center justify-center ${isSubmittingDrive ? 'opacity-50 cursor-not-allowed' : ''}`}
+                className={`btn-primary flex items-center gap-2 ${isSubmittingDrive ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
                 {isSubmittingDrive ? (
                   <>
-                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
                     {editingDrive ? 'Updating...' : 'Creating...'}
                   </>
                 ) : (
                   <>
-                    <UserPlus className="w-5 h-5 inline-block mr-2 -mt-1" /> 
+                    <UserPlus className="w-5 h-5" /> 
                     {editingDrive ? 'Update Drive' : 'Create Drive'}
                   </>
                 )}
               </button>
             </div>
-          </div>
+          </motion.div>
         </div>
       )}
       {/* END DRIVE MODAL */}
@@ -1109,56 +1146,69 @@ export const TPODashboard: React.FC = () => {
       {/* END DELETE CONFIRMATION */}
       {/* INTERNSHIP MODAL */}
       {showInternshipModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-lg md:max-w-xl relative flex flex-col" style={{ maxHeight: '90vh' }}>
-            <div className="flex flex-col md:flex-row items-start md:items-center px-6 py-4 rounded-t-2xl bg-gradient-to-r from-purple-700 to-blue-700 relative">
-              <Building2 className="w-8 h-8 text-white mr-3 mb-2 md:mb-0" />
-              <div className="flex-1">
-                <h2 className="text-xl font-bold text-white">{editingInternship ? 'Edit Internship' : 'Add New Internship'}</h2>
-                <p className="text-white text-xs opacity-80 mt-1">Fill in the details to create or update an internship opportunity.</p>
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-gradient-to-br from-slate-900/95 to-slate-800/95 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl w-full max-w-2xl relative flex flex-col"
+            style={{ maxHeight: '90vh' }}
+          >
+            <div className="flex items-center justify-between p-6 border-b border-white/10">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-gradient-to-br from-purple-500 to-indigo-600">
+                  <Building2 className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold text-white">{editingInternship ? 'Edit Internship' : 'Add New Internship'}</h2>
+                  <p className="text-white/60 text-sm mt-1">Fill in the details to create or update an internship opportunity</p>
+                </div>
               </div>
-              <button onClick={() => setShowInternshipModal(false)} className="absolute top-3 right-3 z-10 text-white hover:text-gray-200 focus:outline-none bg-black/20 rounded-full p-1">
-                <X className="w-6 h-6" />
+              <button onClick={() => setShowInternshipModal(false)} className="p-2 hover:bg-white/10 rounded-lg transition-colors">
+                <X className="w-5 h-5 text-white/70" />
               </button>
             </div>
-            <form id="internship-form" onSubmit={e => { e.preventDefault(); handleInternshipSubmit(); }} className="flex-1 overflow-y-auto px-6 py-4 space-y-6">
+            <form id="internship-form" onSubmit={e => { e.preventDefault(); handleInternshipSubmit(); }} className="flex-1 overflow-y-auto px-6 py-6">
               <div className="space-y-4">
                 <div className="relative">
-                  <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">Title</label>
+                  <label className="block text-sm font-semibold mb-2 text-white">Title</label>
                   <div className="relative">
                     <Briefcase className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400 w-5 h-5" />
-                    <input type="text" className="w-full pl-10 pr-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white" value={internshipForm.title} onChange={e => setInternshipForm({ ...internshipForm, title: e.target.value })} required />
+                    <input type="text" className="input-glass w-full pl-10" value={internshipForm.title} onChange={e => setInternshipForm({ ...internshipForm, title: e.target.value })} required />
                   </div>
                 </div>
                 <div className="relative">
-                  <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">Company</label>
+                  <label className="block text-sm font-semibold mb-2 text-white">Company</label>
                   <div className="relative">
-                    <Building2 className="absolute left-3 top-1/2 transform -translate-y-1/2 text-green-400 w-5 h-5" />
-                    <input type="text" className="w-full pl-10 pr-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white" value={internshipForm.company} onChange={e => setInternshipForm({ ...internshipForm, company: e.target.value })} required />
+                    <Building2 className="absolute left-3 top-1/2 transform -translate-y-1/2 text-emerald-400 w-5 h-5" />
+                    <input type="text" className="input-glass w-full pl-10" value={internshipForm.company} onChange={e => setInternshipForm({ ...internshipForm, company: e.target.value })} required />
                   </div>
                 </div>
                 <div className="relative">
-                  <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">Description</label>
-                  <textarea className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white" rows={4} value={internshipForm.description} onChange={e => setInternshipForm({ ...internshipForm, description: e.target.value })} required />
+                  <label className="block text-sm font-semibold mb-2 text-white">Description</label>
+                  <textarea className="input-glass w-full resize-none" rows={4} value={internshipForm.description} onChange={e => setInternshipForm({ ...internshipForm, description: e.target.value })} required />
                 </div>
                 <div className="relative">
-                  <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">External Link</label>
+                  <label className="block text-sm font-semibold mb-2 text-white">External Link</label>
                   <div className="relative">
-                    <ExternalLink className="absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-400 w-5 h-5" />
-                    <input type="url" className="w-full pl-10 pr-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white" value={internshipForm.externalLink} onChange={e => setInternshipForm({ ...internshipForm, externalLink: e.target.value })} required />
+                    <ExternalLink className="absolute left-3 top-1/2 transform -translate-y-1/2 text-indigo-400 w-5 h-5" />
+                    <input type="url" className="input-glass w-full pl-10" value={internshipForm.externalLink} onChange={e => setInternshipForm({ ...internshipForm, externalLink: e.target.value })} required />
                   </div>
-                  <p className="text-xs text-gray-400 mt-1 ml-1">Link to the internship application page</p>
+                  <p className="text-xs text-white/50 mt-2 ml-1">Link to the internship application page</p>
                 </div>
               </div>
-              {internshipModalError && <div className="text-red-500 text-center mt-2">{internshipModalError}</div>}
+              {internshipModalError && (
+                <div className="mt-4 p-3 rounded-lg bg-red-500/10 border border-red-500/20">
+                  <p className="text-red-400 text-sm text-center">{internshipModalError}</p>
+                </div>
+              )}
             </form>
-            <div className="sticky bottom-0 left-0 w-full bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 flex flex-col md:flex-row md:justify-end gap-2 px-6 py-3 z-20">
-              <button type="button" onClick={() => { setShowInternshipModal(false); setEditingInternship(null); }} className="px-4 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-semibold hover:bg-gray-300 dark:hover:bg-gray-600 transition-all">Cancel</button>
-              <button type="submit" form="internship-form" className="px-4 py-2 rounded-lg bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold hover:from-purple-700 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all flex items-center justify-center">
-                <Building2 className="w-5 h-5 inline-block mr-2 -mt-1" /> {editingInternship ? 'Update Internship' : 'Create Internship'}
+            <div className="flex justify-end gap-3 px-6 py-4 border-t border-white/10">
+              <button type="button" onClick={() => { setShowInternshipModal(false); setEditingInternship(null); }} className="btn-secondary">Cancel</button>
+              <button type="submit" form="internship-form" className="btn-primary flex items-center gap-2">
+                <Building2 className="w-5 h-5" /> {editingInternship ? 'Update Internship' : 'Create Internship'}
               </button>
             </div>
-          </div>
+          </motion.div>
         </div>
       )}
       {/* END INTERNSHIP MODAL */}

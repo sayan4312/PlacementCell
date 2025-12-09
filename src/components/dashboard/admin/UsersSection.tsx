@@ -69,7 +69,8 @@ const UsersSection = ({
         key={user._id}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className={`bg-white dark:bg-gray-800 rounded-xl ${compact ? 'p-4' : 'p-6'} shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-shadow`}
+        whileHover={{ scale: 1.01 }}
+        className={`glass-card ${compact ? 'p-4' : 'p-6'} hover:bg-white/10 transition-all duration-300`}
       >
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-start space-x-3">
@@ -168,15 +169,17 @@ const UsersSection = ({
     const sectionUsers = groupedUsers[roleKey];
 
     return (
-      <div className="bg-gray-50 dark:bg-gray-900 rounded-xl p-4">
+      <div className="glass-card p-6">
         <button
           onClick={() => toggleSection(roleKey)}
-          className="w-full flex items-center justify-between p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+          className="w-full flex items-center justify-between p-3 hover:bg-white/5 rounded-lg transition-all duration-300"
         >
           <div className="flex items-center space-x-3">
-            <Icon className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-            <h4 className="text-lg font-semibold text-gray-900 dark:text-white">{title}</h4>
-            <span className="bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-2 py-1 rounded-full text-sm font-medium">
+            <div className="p-2 rounded-lg bg-indigo-500/10">
+              <Icon className="w-5 h-5 text-indigo-400" />
+            </div>
+            <h4 className="text-lg font-semibold text-white">{title}</h4>
+            <span className="bg-white/5 text-gray-300 px-3 py-1 rounded-full text-sm font-medium">
               {count}
             </span>
           </div>
@@ -202,12 +205,14 @@ const UsersSection = ({
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h3 className="text-xl font-semibold text-gray-900 dark:text-white">User Management</h3>
-        <button className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors" onClick={onShowTpoModal}>
-          <UserPlus className="w-4 h-4" />
-          <span>Create TPO</span>
+    <div className="space-y-6 animate-fade-in">
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h3 className="text-2xl font-bold text-white mb-1">User Management</h3>
+          <p className="text-gray-400 text-sm">Manage TPOs, students, and administrators</p>
+        </div>
+        <button className="btn-primary px-6" onClick={onShowTpoModal}>
+          <UserPlus className="w-4 h-4" /> Create TPO
         </button>
       </div>
       

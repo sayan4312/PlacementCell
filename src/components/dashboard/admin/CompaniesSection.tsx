@@ -146,24 +146,21 @@ const CompaniesSection: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-6 animate-fade-in">
+      <div className="flex items-center justify-between mb-6">
         <div>
-          <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Companies</h3>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+          <h3 className="text-2xl font-bold text-white mb-1">Companies</h3>
+          <p className="text-sm text-gray-400">
             Manage company records and view their placement activities
           </p>
         </div>
-        <button
-          className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-          onClick={openAddModal}
-        >
+        <button className="btn-primary px-6" onClick={openAddModal}>
           + Add Company
         </button>
       </div>
 
       {error && (
-        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4">
+        <div className="glass-card border-l-4 border-red-500 p-4 bg-red-500/10">
           <div className="flex">
             <div className="flex-shrink-0">
               <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
@@ -171,7 +168,7 @@ const CompaniesSection: React.FC = () => {
               </svg>
             </div>
             <div className="ml-3">
-              <p className="text-sm text-red-800 dark:text-red-200">{error}</p>
+              <p className="text-sm text-red-400">{error}</p>
             </div>
           </div>
         </div>
@@ -182,41 +179,42 @@ const CompaniesSection: React.FC = () => {
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
         </div>
       ) : (
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div className="glass-card overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-              <thead className="bg-gray-50 dark:bg-gray-700">
+            <table className="min-w-full divide-y divide-white/10">
+              <thead className="bg-white/5">
                 <tr>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                     Company Name
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                     Contact Info
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                     Notes
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+              <tbody className="divide-y divide-white/5">
                 {companies.map((company, index) => (
                   <motion.tr
                     key={company._id}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.05 }}
+                    className="hover:bg-white/5 transition-colors"
                   >
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900 dark:text-white">{company.name}</div>
+                      <div className="text-sm font-medium text-white">{company.name}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-600 dark:text-gray-300">{company.contactInfo || '-'}</div>
+                      <div className="text-sm text-gray-300">{company.contactInfo || '-'}</div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="text-sm text-gray-600 dark:text-gray-300 max-w-xs truncate">
+                      <div className="text-sm text-gray-300 max-w-xs truncate">
                         {company.notes || '-'}
                       </div>
                     </td>
@@ -273,30 +271,34 @@ const CompaniesSection: React.FC = () => {
 
       {/* Modal for add/edit */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-md p-8 relative">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="glass-card w-full max-w-md relative border border-white/10 max-h-[90vh] flex flex-col"
+          >
+            <div className="flex items-center justify-between px-6 py-4 border-b border-white/10">
+              <h2 className="text-xl font-bold text-white">
                 {editingCompany ? 'Edit Company' : 'Add Company'}
               </h2>
               <button
                 onClick={() => setShowModal(false)}
-                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+                className="text-gray-400 hover:text-white transition-colors"
               >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             </div>
             
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-semibold mb-2 text-gray-700 dark:text-gray-200">
+                <label className="block text-sm font-medium mb-2 text-gray-300">
                   Company Name *
                 </label>
                 <input
                   type="text"
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                  className="input-glass"
                   value={form.name}
                   onChange={e => setForm({ ...form, name: e.target.value })}
                   placeholder="Enter company name"
@@ -305,12 +307,12 @@ const CompaniesSection: React.FC = () => {
               </div>
               
               <div>
-                <label className="block text-sm font-semibold mb-2 text-gray-700 dark:text-gray-200">
+                <label className="block text-sm font-medium mb-2 text-gray-300">
                   Contact Information
                 </label>
                 <input
                   type="text"
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                  className="input-glass"
                   value={form.contactInfo}
                   onChange={e => setForm({ ...form, contactInfo: e.target.value })}
                   placeholder="Email, phone, or address"
@@ -318,11 +320,11 @@ const CompaniesSection: React.FC = () => {
               </div>
               
               <div>
-                <label className="block text-sm font-semibold mb-2 text-gray-700 dark:text-gray-200">
+                <label className="block text-sm font-medium mb-2 text-gray-300">
                   Notes
                 </label>
                 <textarea
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 resize-none"
+                  className="input-glass resize-none"
                   value={form.notes}
                   onChange={e => setForm({ ...form, notes: e.target.value })}
                   placeholder="Additional notes about the company"
@@ -331,22 +333,22 @@ const CompaniesSection: React.FC = () => {
               </div>
               
               {formError && (
-                <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4">
-                  <p className="text-sm text-red-800 dark:text-red-200">{formError}</p>
+                <div className="glass-card border-l-4 border-red-500 p-4 bg-red-500/10">
+                  <p className="text-sm text-red-400">{formError}</p>
                 </div>
               )}
               
-              <div className="flex justify-end gap-3 pt-4">
+              <div className="flex justify-end gap-3 pt-4 border-t border-white/10">
                 <button
                   type="button"
-                  className="px-6 py-3 rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-semibold hover:bg-gray-300 dark:hover:bg-gray-600 transition-all"
+                  className="btn-secondary"
                   onClick={() => setShowModal(false)}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                  className="btn-primary"
                   disabled={loading}
                 >
                   {loading ? (
@@ -360,7 +362,7 @@ const CompaniesSection: React.FC = () => {
                 </button>
               </div>
             </form>
-          </div>
+          </motion.div>
         </div>
       )}
 

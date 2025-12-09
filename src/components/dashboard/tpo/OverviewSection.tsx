@@ -1,5 +1,5 @@
-import React from 'react';
-import { Plus, Building2, BarChart3, LucideIcon } from 'lucide-react';
+import React, { useState } from 'react';
+import { Plus, Building2, BarChart3, LucideIcon, TrendingUp, Users, FileText, CheckCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { ResponsiveContainer, LineChart, CartesianGrid, XAxis, YAxis, Tooltip, Line, PieChart, Pie, Cell } from 'recharts';
 
@@ -106,90 +106,119 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({
   setEditingInternship,
   setInternshipForm,
   setActiveTab
-}) => (
-  <div className="space-y-6">
-    {/* TPO Profile Header */}
-    <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 text-white">
-      <div className="flex items-center justify-between flex-wrap gap-4">
-        <div className="flex items-center space-x-6">
-          <img
-            src={tpoProfile?.avatar || 'https://ui-avatars.com/api/?name=TPO'}
-            alt={tpoProfile?.name || 'TPO'}
-            className="w-20 h-20 rounded-full object-cover border-4 border-white/20 bg-gray-200"
-          />
-          <div>
-            <h2 className="text-3xl font-bold mb-2 drop-shadow-sm">{tpoProfile?.name || 'TPO Name'}</h2>
-            <p className="text-blue-100 text-lg mb-2">{tpoProfile?.department || 'Department'}</p>
-            <p className="text-blue-100">{tpoProfile?.experience || 'Experience'} experience • {tpoProfile?.qualification || 'Qualification'}</p>
-          </div>
-        </div>
-        <div className="text-right min-w-[120px]">
-          <p className="text-blue-100 text-sm">Total Drives Managed</p>
-          <p className="text-3xl font-bold">{stats?.[0]?.value || 0}</p>
-        </div>
+}) => {
+  const [isCreatingDrive, setIsCreatingDrive] = useState(false);
+  const [isCreatingInternship, setIsCreatingInternship] = useState(false);
+  const [showAllDrives, setShowAllDrives] = useState(false);
+
+  const handleCreateDrive = () => {
+    setIsCreatingDrive(true);
+    initializeDriveForm();
+    setEditingDrive(null);
+    setShowDriveModal(true);
+    setTimeout(() => setIsCreatingDrive(false), 1000);
+  };
+
+  const handleCreateInternship = () => {
+    setIsCreatingInternship(true);
+    setShowInternshipModal(true);
+    setEditingInternship(null);
+    setInternshipForm({ title: '', company: '', description: '', duration: '', stipend: '', location: '', deadline: '', externalLink: '', requirements: [], eligibility: '', notes: '', tags: [], logo: '' });
+    setTimeout(() => setIsCreatingInternship(false), 1000);
+  };
+
+  return (
+  <div className="space-y-6 animate-fade-in">
+    {/* Welcome Section */}
+    <div className="flex justify-between items-center">
+      <div>
+        <h2 className="text-3xl font-bold text-white">Welcome back, {tpoProfile?.name || 'TPO'}!</h2>
+        <p className="text-gray-400">
+          {tpoProfile?.department || 'Department'} • {tpoProfile?.experience || 'Experience'}
+        </p>
       </div>
     </div>
 
     {/* Stats Grid */}
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       {stats.length === 0 ? (
-        <div className="col-span-4 text-center text-gray-400 dark:text-gray-500 py-8">No stats available.</div>
-      ) : stats.map((stat: Stat, index: number) => (
-        <motion.div
-          key={`stat-${index}-${stat.label}`}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: index * 0.1 }}
-          className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-shadow flex flex-col gap-2"
-        >
-          <div className="flex items-center justify-between mb-4">
-            <div className={`p-3 rounded-full bg-${stat.color}-100 dark:bg-${stat.color}-900 flex items-center justify-center`}>
-              {stat.icon && React.createElement(stat.icon, { className: `h-6 w-6 text-${stat.color}-600 dark:text-${stat.color}-400` })}
+        <div className="col-span-4 text-center text-gray-400 py-8">No stats available.</div>
+      ) : stats.map((stat: Stat, index: number) => {
+        const iconBgColors: Record<string, string> = {
+          blue: 'bg-indigo-500/10',
+          green: 'bg-emerald-500/10',
+          purple: 'bg-purple-500/10',
+          orange: 'bg-pink-500/10'
+        };
+        const iconColors: Record<string, string> = {
+          blue: 'text-indigo-400',
+          green: 'text-emerald-400',
+          purple: 'text-purple-400',
+          orange: 'text-pink-400'
+        };
+        return (
+          <motion.div
+            key={`stat-${index}-${stat.label}`}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.1 }}
+            className="glass-card p-6 hover:scale-[1.02] transition-transform duration-300 cursor-pointer"
+          >
+            <div className="flex justify-between items-start">
+              <div>
+                <p className="text-gray-400 text-sm">{stat.label}</p>
+                <h3 className="text-3xl font-bold text-white mt-1">{stat.value}</h3>
+              </div>
+              <div className={`p-3 rounded-xl ${iconBgColors[stat.color] || 'bg-indigo-500/10'}`}>
+                {stat.icon && React.createElement(stat.icon, { className: `h-6 w-6 ${iconColors[stat.color] || 'text-indigo-400'}`, size: 24 })}
+              </div>
             </div>
-            <span className="text-sm text-green-600 dark:text-green-400 font-medium">
-              {stat.change}
-            </span>
-          </div>
-          <div>
-            <p className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
-              {stat.value}
+            <p className="text-emerald-400 text-sm mt-4 flex items-center gap-1">
+              <TrendingUp size={16} /> {stat.change}
             </p>
-            <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
-              {stat.label}
-            </p>
-            <p className="text-xs text-gray-500 dark:text-gray-400">
-              {stat.description}
-            </p>
-          </div>
-        </motion.div>
-      ))}
+          </motion.div>
+        );
+      })}
     </div>
 
     {/* Charts Section */}
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Placement Trends</h3>
+      <div className="glass-card p-6">
+        <h3 className="text-xl font-bold text-white mb-6">Placement Trends (Last 6 Months)</h3>
         {placementTrends.length === 0 ? (
-          <div className="text-center text-gray-400 dark:text-gray-500 py-12">No data available.</div>
+          <div className="text-center text-gray-400 py-12">No data available.</div>
         ) : (
-          <ResponsiveContainer width="100%" height={250}>
-            <LineChart data={placementTrends}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" stroke="#8884d8" />
-              <YAxis stroke="#8884d8" />
-              <Tooltip />
-              <Line type="monotone" dataKey="drives" stroke="#3B82F6" strokeWidth={2} name="Job Drives" />
-              <Line type="monotone" dataKey="placements" stroke="#10B981" strokeWidth={2} name="Placements" />
+          <div className="h-[300px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={placementTrends}>
+              <defs>
+                <linearGradient id="colorDrives" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#6366f1" stopOpacity={0.8}/>
+                  <stop offset="95%" stopColor="#6366f1" stopOpacity={0.1}/>
+                </linearGradient>
+                <linearGradient id="colorPlacements" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#10b981" stopOpacity={0.8}/>
+                  <stop offset="95%" stopColor="#10b981" stopOpacity={0.1}/>
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+              <XAxis dataKey="month" stroke="#9ca3af" tick={{ fill: '#9ca3af' }} />
+              <YAxis stroke="#9ca3af" tick={{ fill: '#9ca3af' }} />
+              <Tooltip contentStyle={{ backgroundColor: 'rgba(15, 23, 42, 0.9)', borderColor: 'rgba(255,255,255,0.1)', color: '#fff', borderRadius: '0.75rem' }} />
+              <Line type="monotone" dataKey="drives" stroke="#6366f1" strokeWidth={3} fill="url(#colorDrives)" name="Job Drives" />
+              <Line type="monotone" dataKey="placements" stroke="#10b981" strokeWidth={3} fill="url(#colorPlacements)" name="Placements" />
             </LineChart>
           </ResponsiveContainer>
+          </div>
         )}
       </div>
-      <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Applications by Branch</h3>
+      <div className="glass-card p-6">
+        <h3 className="text-xl font-bold text-white mb-6">Applications by Branch</h3>
         {branchWiseApplications.length === 0 ? (
-          <div className="text-center text-gray-400 dark:text-gray-500 py-12">No data available.</div>
+          <div className="text-center text-gray-400 py-12">No data available.</div>
         ) : (
-          <ResponsiveContainer width="100%" height={250}>
+          <div className="h-[300px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
                 data={branchWiseApplications}
@@ -204,23 +233,24 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({
                   <Cell key={`cell-${entry.name || index}`} fill={entry.color} />
                 ))}
               </Pie>
-              <Tooltip />
-            </PieChart>
-          </ResponsiveContainer>
+              <Tooltip contentStyle={{ backgroundColor: 'rgba(15, 23, 42, 0.9)', borderColor: 'rgba(255,255,255,0.1)', color: '#fff', borderRadius: '0.75rem' }} />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
         )}
       </div>
     </div>
 
     {/* Recent Activity */}
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Recent Applications</h3>
+      <div className="glass-card p-6">
+        <h3 className="text-xl font-bold text-white mb-6">Recent Applications</h3>
         {applications.length === 0 ? (
-          <div className="text-center text-gray-400 dark:text-gray-500 py-8">No recent applications.</div>
+          <div className="text-center text-gray-400 py-8">No recent applications.</div>
         ) : (
           <div className="space-y-4">
             {applications.slice(0, 3).map((app: Application) => (
-              <div key={app._id || app.id || `app-${Math.random()}`} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+              <div key={app._id || app.id || `app-${Math.random()}`} className="flex items-center justify-between p-3 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 transition-colors">
                 <div className="flex items-center space-x-3">
                   <img
                     src={app.student?.avatar || 'https://ui-avatars.com/api/?name=Student'}
@@ -228,10 +258,10 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({
                     className="w-10 h-10 rounded-full object-cover bg-gray-200"
                   />
                   <div>
-                    <p className="font-medium text-gray-900 dark:text-white">
+                    <p className="font-medium text-white">
                       {app.student?.name || "Unknown Student"}
                     </p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                    <p className="text-sm text-gray-400">
                       {app.drive?.position || "Unknown Position"} at {app.drive?.company?.companyName || "Unknown Company"}
                     </p>
                   </div>
@@ -244,82 +274,118 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({
           </div>
         )}
       </div>
-      <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Active Drives</h3>
+      <div className="glass-card p-6">
+        <h3 className="text-xl font-bold text-white mb-6">Active Drives</h3>
         {jobDrives.filter((drive: JobDrive) => drive.status === 'active').length === 0 ? (
-          <div className="text-center text-gray-400 dark:text-gray-500 py-8">No active drives.</div>
+          <div className="text-center text-gray-400 py-8">No active drives.</div>
         ) : (
-          <div className="space-y-4">
-            {jobDrives.filter((drive: JobDrive) => drive.status === 'active').map((drive: JobDrive) => (
-              <motion.div
-                key={drive._id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 flex items-center justify-between shadow-sm border border-gray-200 dark:border-gray-600"
+          <>
+            <div className="space-y-4">
+              {jobDrives
+                .filter((drive: JobDrive) => drive.status === 'active')
+                .slice(0, showAllDrives ? undefined : 3)
+                .map((drive: JobDrive) => (
+                  <motion.div
+                    key={drive._id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="bg-white/5 border border-white/10 rounded-lg p-4 flex items-center justify-between hover:bg-white/10 transition-colors"
+                  >
+                    <div className="flex items-center space-x-4">
+                      <img
+                        src={drive.logo || 'https://ui-avatars.com/api/?name=Company&background=random'}
+                        alt={drive.company?.companyName || drive.companyName || 'Company'}
+                        className="w-12 h-12 rounded object-cover bg-gray-200"
+                      />
+                      <div>
+                        <div className="flex items-center space-x-2">
+                          <span className="font-semibold text-white text-base">{drive.companyName}</span>
+                          <span className="text-xs px-2 py-1 rounded-full font-medium bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">{drive.status}</span>
+                        </div>
+                        <div className="text-sm text-gray-300">{drive.company?.companyName || drive.companyName}</div>
+                        <div className="text-xs text-gray-400 flex space-x-2 mt-1">
+                          <span>CTC: {drive.ctc}</span>
+                          <span>•</span>
+                          <span>{drive.location}</span>
+                          <span>•</span>
+                          <span>Applications: {Array.isArray(drive.applicants) ? drive.applicants.length : 0}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+            </div>
+            {jobDrives.filter((drive: JobDrive) => drive.status === 'active').length > 3 && (
+              <button
+                onClick={() => setShowAllDrives(!showAllDrives)}
+                className="mt-4 w-full py-2 px-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg transition-colors text-white text-sm font-medium"
               >
-                <div className="flex items-center space-x-4">
-                  <img
-                    src={drive.logo || 'https://ui-avatars.com/api/?name=Company&background=random'}
-                    alt={drive.company?.companyName || drive.companyName || 'Company'}
-                    className="w-12 h-12 rounded object-cover bg-gray-200"
-                  />
-                  <div>
-                    <div className="flex items-center space-x-2">
-                      <span className="font-semibold text-gray-900 dark:text-white text-base">{drive.companyName}</span>
-                      <span className="text-xs px-2 py-1 rounded-full font-medium bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300">{drive.status}</span>
-                    </div>
-                    <div className="text-sm text-gray-600 dark:text-gray-300">{drive.company?.companyName || drive.companyName}</div>
-                    <div className="text-xs text-gray-500 dark:text-gray-400 flex space-x-2 mt-1">
-                      <span>CTC: {drive.ctc}</span>
-                      <span>•</span>
-                      <span>{drive.location}</span>
-                      <span>•</span>
-                      <span>Applications: {Array.isArray(drive.applicants) ? drive.applicants.length : 0}</span>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+                {showAllDrives ? 'Show Less' : `Show ${jobDrives.filter((drive: JobDrive) => drive.status === 'active').length - 3} More`}
+              </button>
+            )}
+          </>
         )}
       </div>
     </div>
 
     {/* Quick Actions */}
-    <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
-      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Quick Actions</h3>
+    <div className="glass-card p-6">
+      <h3 className="text-xl font-bold text-white mb-6">Quick Actions</h3>
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <button
-          className="flex items-center space-x-3 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer"
-          onClick={() => { initializeDriveForm(); setEditingDrive(null); setShowDriveModal(true); }}
+          onClick={handleCreateDrive}
+          disabled={isCreatingDrive}
+          className={`flex items-center space-x-3 p-4 rounded-lg transition-all ${
+            isCreatingDrive
+              ? 'bg-white/5 cursor-not-allowed'
+              : 'bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/20 hover:scale-[1.02]'
+          }`}
         >
-          <Plus className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-          <span className="text-blue-700 dark:text-blue-300 font-medium">Post Job Drive</span>
+          {isCreatingDrive ? (
+            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-indigo-400"></div>
+          ) : (
+            <Plus className="w-5 h-5 text-indigo-400" />
+          )}
+          <span className="text-white font-medium">
+            {isCreatingDrive ? 'Opening...' : 'Post Job Drive'}
+          </span>
         </button>
         <button
-          className="flex items-center space-x-3 p-4 bg-green-50 dark:bg-green-900/20 rounded-lg hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors focus:outline-none focus:ring-2 focus:ring-green-400 cursor-pointer"
-          onClick={() => { setShowInternshipModal(true); setEditingInternship(null); setInternshipForm({ title: '', company: '', description: '', duration: '', stipend: '', location: '', deadline: '', externalLink: '', requirements: [], eligibility: '', notes: '', tags: [], logo: '' }); }}
+          onClick={handleCreateInternship}
+          disabled={isCreatingInternship}
+          className={`flex items-center space-x-3 p-4 rounded-lg transition-all ${
+            isCreatingInternship
+              ? 'bg-white/5 cursor-not-allowed'
+              : 'bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 hover:scale-[1.02]'
+          }`}
         >
-          <Building2 className="w-5 h-5 text-green-600 dark:text-green-400" />
-          <span className="text-green-700 dark:text-green-300 font-medium">Add Internship</span>
+          {isCreatingInternship ? (
+            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-emerald-400"></div>
+          ) : (
+            <Building2 className="w-5 h-5 text-emerald-400" />
+          )}
+          <span className="text-white font-medium">
+            {isCreatingInternship ? 'Opening...' : 'Add Internship'}
+          </span>
         </button>
         <button
-          className="flex items-center space-x-3 p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-colors focus:outline-none focus:ring-2 focus:ring-purple-400 cursor-pointer"
           onClick={() => setActiveTab('applications')}
+          className="flex items-center space-x-3 p-4 bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 rounded-lg hover:scale-[1.02] transition-all"
         >
-          <span className="inline-block w-5 h-5" />
-          <span className="text-purple-700 dark:text-purple-300 font-medium">Review Applications</span>
+          <FileText className="w-5 h-5 text-purple-400" />
+          <span className="text-white font-medium">Review Applications</span>
         </button>
         <button
-          className="flex items-center space-x-3 p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg hover:bg-orange-100 dark:hover:bg-orange-900/30 transition-colors focus:outline-none focus:ring-2 focus:ring-orange-400 cursor-pointer"
-          onClick={() => setActiveTab('overview') /* or show a toast if no reports tab */}
+          onClick={() => setActiveTab('students')}
+          className="flex items-center space-x-3 p-4 bg-pink-500/10 hover:bg-pink-500/20 border border-pink-500/20 rounded-lg hover:scale-[1.02] transition-all"
         >
-          <BarChart3 className="w-5 h-5 text-orange-600 dark:text-orange-400" />
-          <span className="text-orange-700 dark:text-orange-300 font-medium">View Reports</span>
+          <Users className="w-5 h-5 text-pink-400" />
+          <span className="text-white font-medium">Manage Students</span>
         </button>
       </div>
     </div>
   </div>
 );
+};
 
 export default OverviewSection; 

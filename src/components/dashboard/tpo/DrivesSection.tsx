@@ -33,10 +33,10 @@ const DrivesSection: React.FC<DrivesSectionProps> = ({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fade-in">
       <div className="flex items-center justify-between">
-        <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Job Drives</h3>
-        <button className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors" onClick={() => { initializeDriveForm(); setEditingDrive(null); setShowDriveModal(true); }}>
+        <h3 className="text-2xl font-bold text-white">Job Drives</h3>
+        <button className="btn-primary" onClick={() => { initializeDriveForm(); setEditingDrive(null); setShowDriveModal(true); }}>
           <Plus className="w-4 h-4" />
           <span>Post New Drive</span>
         </button>
@@ -49,7 +49,7 @@ const DrivesSection: React.FC<DrivesSectionProps> = ({
           placeholder="Search drives..."
           value={driveSearch}
           onChange={e => setDriveSearch(e.target.value)}
-          className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent w-64"
+          className="input-glass w-64"
         />
       </div>
       {/* END DRIVES TAB SEARCH */}
@@ -65,20 +65,20 @@ const DrivesSection: React.FC<DrivesSectionProps> = ({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.05 }}
-            className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-shadow"
+            className="glass-card p-6 hover:scale-[1.01] transition-all duration-300"
           >
             <div className="flex items-start justify-between mb-6">
               <div className="flex items-start space-x-4">
                 <div>
-                  <h4 className="text-xl font-semibold text-gray-900 dark:text-white mb-1 flex items-center gap-2">
-                    <Briefcase className="w-5 h-5 text-blue-500 mr-1" />
+                  <h4 className="text-xl font-semibold text-white mb-1 flex items-center gap-2">
+                    <Briefcase className="w-5 h-5 text-indigo-400 mr-1" />
                     {typeof drive.position === 'object' ? drive.position?.name || drive.position?.title || 'Unknown Position' : drive.position || 'Unknown Position'}
                   </h4>
-                  <p className="text-base font-semibold text-blue-700 dark:text-blue-300 mb-1 flex items-center gap-2">
-                    <Building2 className="w-5 h-5 text-purple-500 mr-1" />
+                  <p className="text-base font-semibold text-indigo-300 mb-1 flex items-center gap-2">
+                    <Building2 className="w-5 h-5 text-purple-400 mr-1" />
                     {typeof drive.company === 'object' ? drive.company?.companyName || drive.companyName || 'Unknown Company' : drive.company || drive.companyName || 'Unknown Company'}
                   </p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                  <p className="text-sm text-gray-400">
                     {typeof drive.description === 'object' ? drive.description?.text || 'No description' : drive.description || 'No description'}
                   </p>
                 </div>
@@ -92,8 +92,8 @@ const DrivesSection: React.FC<DrivesSectionProps> = ({
               <div className="flex items-center space-x-2">
                 <DollarSign className="h-4 w-4 text-gray-400" />
                 <div>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Package</p>
-                  <p className="font-semibold text-gray-900 dark:text-white">
+                  <p className="text-sm text-gray-400">Package</p>
+                  <p className="font-semibold text-white">
                     {typeof drive.ctc === 'object' ? drive.ctc?.value || 'N/A' : drive.ctc || 'N/A'}
                   </p>
                 </div>
@@ -101,8 +101,8 @@ const DrivesSection: React.FC<DrivesSectionProps> = ({
               <div className="flex items-center space-x-2">
                 <MapPin className="h-4 w-4 text-gray-400" />
                 <div>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Location</p>
-                  <p className="font-semibold text-gray-900 dark:text-white">
+                  <p className="text-sm text-gray-400">Location</p>
+                  <p className="font-semibold text-white">
                     {typeof drive.location === 'object' ? drive.location?.name || 'N/A' : drive.location || 'N/A'}
                   </p>
                 </div>
@@ -110,35 +110,35 @@ const DrivesSection: React.FC<DrivesSectionProps> = ({
               <div className="flex items-center space-x-2">
                 <Calendar className="h-4 w-4 text-gray-400" />
                 <div>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Deadline</p>
-                  <p className="font-semibold text-gray-900 dark:text-white">{formatDate(drive.deadline)}</p>
+                  <p className="text-sm text-gray-400">Deadline</p>
+                  <p className="font-semibold text-white">{formatDate(drive.deadline)}</p>
                 </div>
               </div>
               <div className="flex items-center space-x-2">
                 <span className="inline-block w-4 h-4" />
                 <div>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Applications</p>
-                  <p className="font-semibold text-gray-900 dark:text-white">{Array.isArray(drive.applicants) ? drive.applicants.length : 0}</p>
+                  <p className="text-sm text-gray-400">Applications</p>
+                  <p className="font-semibold text-white">{Array.isArray(drive.applicants) ? drive.applicants.length : 0}</p>
                 </div>
               </div>
             </div>
 
             <div className="mb-4">
-              <h5 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Eligibility Criteria</h5>
+              <h5 className="text-sm font-medium text-gray-300 mb-2">Eligibility Criteria</h5>
               <div className="flex flex-wrap gap-2">
-                <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-md text-sm">
+                <span className="px-2 py-1 bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 rounded-md text-sm">
                   Min CGPA: {drive.eligibility?.minCGPA ?? '-'}
                 </span>
-                <span className="px-2 py-1 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded-md text-sm">
+                <span className="px-2 py-1 bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 rounded-md text-sm">
                   Max Backlogs: {drive.eligibility?.maxBacklogs ?? '-'}
                 </span>
-                <span className="px-2 py-1 bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 rounded-md text-sm">
+                <span className="px-2 py-1 bg-purple-500/20 text-purple-300 border border-purple-500/30 rounded-md text-sm">
                   {typeof drive.workMode === 'object' ? drive.workMode?.name || 'N/A' : drive.workMode || 'N/A'}
                 </span>
                 {drive.eligibility?.allowedBranches && Array.isArray(drive.eligibility.allowedBranches) && drive.eligibility.allowedBranches.map((branch: string, index: number) => (
                   <span
                     key={`branch-${drive._id}-${index}-${branch}`}
-                    className="px-2 py-1 bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200 rounded-md text-sm"
+                    className="px-2 py-1 bg-pink-500/20 text-pink-300 border border-pink-500/30 rounded-md text-sm"
                   >
                     {branch}
                   </span>
@@ -147,14 +147,14 @@ const DrivesSection: React.FC<DrivesSectionProps> = ({
             </div>
 
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-500 dark:text-gray-400">
+              <span className="text-sm text-gray-400">
                 Posted on {drive.createdAt ? new Date(drive.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '-'}
               </span>
               <div className="flex items-center space-x-2">
-                <button className="px-3 py-1 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors" onClick={() => handleEditDrive(drive)}>
+                <button className="btn-secondary" onClick={() => handleEditDrive(drive)}>
                   Edit
                 </button>
-                <button className="px-3 py-1 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors" onClick={() => setDeletingDriveId(drive._id)}>
+                <button className="px-3 py-1 text-red-400 hover:bg-red-500/10 border border-red-500/30 rounded-lg transition-colors" onClick={() => setDeletingDriveId(drive._id)}>
                   Delete
                 </button>
               </div>

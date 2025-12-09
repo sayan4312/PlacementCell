@@ -12,7 +12,7 @@ interface ApplicationsSectionProps {
   handleApplicationStatus: (appId: string, status: string) => void;
   applicationActionLoading: string | null;
   tpoProfile: any;
-  jobDrives: any[]; // Add drives prop for drive-specific filtering
+  jobDrives: any[]; 
 }
 
 const ApplicationsSection: React.FC<ApplicationsSectionProps> = ({ applications, tpoProfile, jobDrives, ...props }) => {
@@ -84,18 +84,18 @@ const ApplicationsSection: React.FC<ApplicationsSectionProps> = ({ applications,
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fade-in">
       <div className="flex items-center justify-between mb-2 space-x-2">
-        <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Student Applications</h3>
+        <h3 className="text-2xl font-bold text-white">Student Applications</h3>
         <div className="flex gap-2">
           <button
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 focus:outline-none"
+            className="btn-primary"
             onClick={handleExportCSV}
           >
             Export Applicants
           </button>
           <div className="relative group">
-            <label className="inline-block px-4 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 focus:outline-none cursor-pointer font-medium">
+            <label className="inline-block btn-secondary cursor-pointer">
               Import Shortlist
               <input
                 type="file"
@@ -150,7 +150,7 @@ const ApplicationsSection: React.FC<ApplicationsSectionProps> = ({ applications,
               }}
             />
             </label>
-            <div className="absolute bottom-full mb-2 left-0 bg-gray-800 text-white text-xs rounded-lg p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 w-80 pointer-events-none shadow-lg">
+            <div className="absolute bottom-full mb-2 left-0 bg-dark-bg border border-white/20 backdrop-blur-xl text-white text-xs rounded-lg p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 w-80 pointer-events-none shadow-lg">
               <strong>Import Instructions:</strong>
               <br />• Use the same format as <strong>Export Applicants</strong>
               <br />• CSV columns: <strong>Application ID, Student Name, Email, Status, Position, Company</strong>
@@ -165,15 +165,15 @@ const ApplicationsSection: React.FC<ApplicationsSectionProps> = ({ applications,
       </div>
       
       {/* Drive Selection Filter */}
-      <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+      <div className="glass-card p-4">
         <div className="flex items-center gap-4 mb-4">
-          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          <label className="text-sm font-medium text-gray-300">
             Select Drive for Export/Import:
           </label>
           <select
             value={selectedDriveId}
             onChange={(e) => setSelectedDriveId(e.target.value)}
-            className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="input-glass"
           >
             <option value="all">All Drives</option>
             {jobDrives?.map((drive) => (
@@ -183,24 +183,24 @@ const ApplicationsSection: React.FC<ApplicationsSectionProps> = ({ applications,
             ))}
           </select>
           {selectedDriveId !== 'all' && (
-            <span className="text-sm text-green-600 dark:text-green-400">
+            <span className="text-sm text-emerald-400">
               ✓ Drive selected for import/export
             </span>
           )}
         </div>
       </div>
-      <div className="flex flex-wrap items-center gap-4 mb-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
         <input
           type="text"
           placeholder="Search applications..."
           value={props.applicationSearch}
           onChange={e => props.setApplicationSearch(e.target.value)}
-          className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent w-64"
+          className="input-glass"
         />
         <select
           value={props.applicationStatusFilter}
           onChange={e => props.setApplicationStatusFilter(e.target.value)}
-          className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white min-w-[160px]"
+          className="input-glass"
         >
           <option value="all">All Statuses</option>
           <option value="pending">Pending</option>
@@ -210,7 +210,7 @@ const ApplicationsSection: React.FC<ApplicationsSectionProps> = ({ applications,
         <select
           value={companyFilter}
           onChange={e => setCompanyFilter(e.target.value)}
-          className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white min-w-[160px]"
+          className="input-glass"
         >
           <option value="all">All Companies</option>
           {uniqueCompanies.map(company => (
@@ -218,20 +218,20 @@ const ApplicationsSection: React.FC<ApplicationsSectionProps> = ({ applications,
           ))}
         </select>
       </div>
-      <div>
-        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+      <div className="glass-card overflow-hidden">
+        <table className="min-w-full divide-y divide-white/10">
           <thead>
-            <tr>
-              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase">Name</th>
-              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase">Branch</th>
-              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase">CGPA</th>
-              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase">Position</th>
-              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase">Company</th>
-              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase">Applied Date</th>
-              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase">Status</th>
+            <tr className="bg-white/5">
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Name</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Branch</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">CGPA</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Position</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Company</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Applied Date</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Status</th>
             </tr>
           </thead>
-          <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+          <tbody className="divide-y divide-white/10">
             {filteredApplications.filter((app: any) => {
               const studentName = app.student?.name || '';
               const position = app.drive?.position || '';
@@ -246,8 +246,8 @@ const ApplicationsSection: React.FC<ApplicationsSectionProps> = ({ applications,
                  company.toLowerCase().includes(props.applicationSearch.toLowerCase()))
               );
             }).map((app: any) => (
-              <tr key={app._id} className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                <td className="px-4 py-2 whitespace-nowrap text-gray-900 dark:text-gray-100 flex items-center gap-2">
+              <tr key={app._id} className="hover:bg-white/5 transition-colors">
+                <td className="px-4 py-3 whitespace-nowrap text-white flex items-center gap-2">
                   <img
                     src={app.student?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(app.student?.name || 'Student')}&background=random&color=fff&bold=true&rounded=true`}
                     alt={app.student?.name || 'Student'}
@@ -255,18 +255,18 @@ const ApplicationsSection: React.FC<ApplicationsSectionProps> = ({ applications,
                   />
                   <span>{app.student?.name || 'Unknown Student'}</span>
                 </td>
-                <td className="px-4 py-2 whitespace-nowrap text-gray-900 dark:text-gray-100">{app.student?.branch || 'N/A'}</td>
-                <td className="px-4 py-2 whitespace-nowrap text-gray-900 dark:text-gray-100">{app.student?.cgpa ?? 'N/A'}</td>
-                <td className="px-4 py-2 whitespace-nowrap text-gray-900 dark:text-gray-100">{app.drive?.position || app.position || 'Unknown Position'}</td>
-                <td className="px-4 py-2 whitespace-nowrap text-gray-900 dark:text-gray-100">{app.drive?.companyName || app.drive?.company?.companyName || app.companyName || 'Unknown Company'}</td>
-                <td className="px-4 py-2 whitespace-nowrap text-gray-900 dark:text-gray-100">{formatDate(app.appliedAt)}</td>
-                <td className="px-4 py-2 whitespace-nowrap">
+                <td className="px-4 py-3 whitespace-nowrap text-gray-300">{app.student?.branch || 'N/A'}</td>
+                <td className="px-4 py-3 whitespace-nowrap text-gray-300">{app.student?.cgpa ?? 'N/A'}</td>
+                <td className="px-4 py-3 whitespace-nowrap text-gray-300">{app.drive?.position || app.position || 'Unknown Position'}</td>
+                <td className="px-4 py-3 whitespace-nowrap text-gray-300">{app.drive?.companyName || app.drive?.company?.companyName || app.companyName || 'Unknown Company'}</td>
+                <td className="px-4 py-3 whitespace-nowrap text-gray-300">{formatDate(app.appliedAt)}</td>
+                <td className="px-4 py-3 whitespace-nowrap">
                   <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                    app.status === 'applied' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' :
-                    app.status === 'pending' ? 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200' :
-                    app.status === 'shortlisted' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' :
-                    app.status === 'rejected' ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200' :
-                    'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200'
+                    app.status === 'applied' ? 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30' :
+                    app.status === 'pending' ? 'bg-gray-500/20 text-gray-300 border border-gray-500/30' :
+                    app.status === 'shortlisted' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' :
+                    app.status === 'rejected' ? 'bg-red-500/20 text-red-300 border border-red-500/30' :
+                    'bg-gray-500/20 text-gray-300 border border-gray-500/30'
                   }`}>
                     {app.status.charAt(0).toUpperCase() + app.status.slice(1)}
                   </span>

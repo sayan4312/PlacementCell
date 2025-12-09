@@ -166,7 +166,7 @@ const DrivesSection: React.FC<DrivesSectionProps> = ({
             {hasActiveFilters && (
               <button
                 onClick={clearFilters}
-                className="text-sm text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 flex items-center space-x-1"
+                className="text-sm text-pink-400 hover:text-pink-300 flex items-center space-x-1"
               >
                 <X className="w-4 h-4" />
                 <span>Clear All</span>
@@ -175,13 +175,13 @@ const DrivesSection: React.FC<DrivesSectionProps> = ({
           </div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-400 mb-2">
                 Status
               </label>
               <select
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="input-glass"
               >
                 <option value="all">All Status</option>
                 <option value="eligible">Eligible</option>
@@ -190,7 +190,7 @@ const DrivesSection: React.FC<DrivesSectionProps> = ({
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-400 mb-2">
                 Location
               </label>
               <input
@@ -198,11 +198,11 @@ const DrivesSection: React.FC<DrivesSectionProps> = ({
                 placeholder="Filter by location"
                 value={locationFilter}
                 onChange={(e) => setLocationFilter(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="input-glass"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-400 mb-2">
                 Package
               </label>
               <input
@@ -210,11 +210,11 @@ const DrivesSection: React.FC<DrivesSectionProps> = ({
                 placeholder="Filter by CTC"
                 value={ctcFilter}
                 onChange={(e) => setCtcFilter(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="input-glass"
               />
             </div>
             <div className="flex items-end">
-              <div className="text-sm text-gray-500 dark:text-gray-400">
+              <div className="text-sm text-gray-400">
                 {filteredDrives.length} of {drives.length} drives
               </div>
             </div>
@@ -224,14 +224,14 @@ const DrivesSection: React.FC<DrivesSectionProps> = ({
 
       {/* Results Summary */}
       {hasActiveFilters && (
-        <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
+        <div className="bg-indigo-500/10 rounded-lg p-4 border border-indigo-500/20">
           <div className="flex items-center justify-between">
-            <div className="text-sm text-blue-800 dark:text-blue-200">
+            <div className="text-sm text-indigo-400">
               Showing {filteredDrives.length} drives matching your filters
             </div>
             <button
               onClick={clearFilters}
-              className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+              className="text-sm text-indigo-400 hover:text-indigo-300"
             >
               Clear filters
             </button>
@@ -243,10 +243,10 @@ const DrivesSection: React.FC<DrivesSectionProps> = ({
         {filteredDrives.length === 0 ? (
           <div className="text-center py-12">
             <Search className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-500 dark:text-gray-400 text-lg mb-2">
+            <p className="text-white text-lg mb-2">
               {hasActiveFilters ? 'No drives match your filters' : 'No drives available'}
             </p>
-            <p className="text-gray-400 dark:text-gray-500">
+            <p className="text-gray-400">
               {hasActiveFilters ? 'Try adjusting your search criteria' : 'Check back later for new opportunities'}
             </p>
           </div>
@@ -257,32 +257,32 @@ const DrivesSection: React.FC<DrivesSectionProps> = ({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.05 }}
-              className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all duration-300"
+              className="glass-card p-6 hover:scale-[1.01] transition-all duration-300"
             >
-              <div className="p-6">
-                <p className="text-lg font-semibold text-gray-900 dark:text-white mb-2 flex items-center gap-3">
-                  <Building2 className="h-7 w-7 text-purple-600 dark:text-purple-400" />
-                  {drive.position} <span className="font-normal text-gray-500 dark:text-gray-400">at</span> {drive.company?.companyName || drive.companyName || "Unknown Company"}
+              <div>
+                <p className="text-lg font-semibold text-white mb-2 flex items-center gap-3">
+                  <Building2 className="h-7 w-7 text-purple-400" />
+                  {drive.position} <span className="font-normal text-gray-400">at</span> {drive.company?.companyName || drive.companyName || "Unknown Company"}
                 </p>
-                <p className="text-gray-500 dark:text-gray-400 mb-4">{drive.description}</p>
+                <p className="text-gray-400 mb-4">{drive.description}</p>
                 <div className="flex flex-wrap gap-6 mb-4">
                   <div className="flex items-center space-x-2">
                     <MapPin className="h-4 w-4 text-gray-400" />
                     <div>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">Location</p>
-                      <p className="font-semibold text-gray-900 dark:text-white">{drive.location}</p>
+                      <p className="text-sm text-gray-400">Location</p>
+                      <p className="font-semibold text-white">{drive.location}</p>
                     </div>
                   </div>
                   <div className="flex items-center space-x-2">
                     <Calendar className="h-4 w-4 text-gray-400" />
                     <div>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">Deadline</p>
-                      <p className="font-semibold text-gray-900 dark:text-white">{formatDate(drive.deadline)}</p>
+                      <p className="text-sm text-gray-400">Deadline</p>
+                      <p className="font-semibold text-white">{formatDate(drive.deadline)}</p>
                     </div>
                   </div>
                 </div>
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
+                  <div className="flex items-center space-x-4 text-sm text-gray-400">
                     <span>Min CGPA: {drive.eligibility.minCGPA}</span>
                     <span>•</span>
                     <span>{drive.eligibility.workMode || 'On-site'}</span>
@@ -294,15 +294,15 @@ const DrivesSection: React.FC<DrivesSectionProps> = ({
                     <button 
                       onClick={() => handleApply(drive._id)}
                       disabled={drive.status !== 'eligible' || applyingDriveId === drive._id}
-                      className={`px-4 py-2 text-white rounded-lg transition-colors flex items-center space-x-2 ${
+                      className={`px-4 py-2 rounded-lg transition-all flex items-center space-x-2 ${
                         drive.status === 'eligible' && applyingDriveId !== drive._id
-                          ? 'bg-blue-600 hover:bg-blue-700' 
-                          : 'bg-gray-300 cursor-not-allowed text-gray-600'
+                          ? 'btn-primary' 
+                          : 'bg-white/5 cursor-not-allowed text-gray-500'
                       }`}
                     >
                       {applyingDriveId === drive._id ? (
                         <>
-                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-indigo-400"></div>
                           <span>Applying...</span>
                         </>
                       ) : (
@@ -323,7 +323,7 @@ const DrivesSection: React.FC<DrivesSectionProps> = ({
                     {/* Application Link Button - always show for testing */}
                     <button 
                       onClick={() => handleExternalLink(drive)}
-                      className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors flex items-center space-x-2"
+                      className="px-4 py-2 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 rounded-lg border border-emerald-500/20 transition-all flex items-center space-x-2"
                     >
                       <ExternalLink className="w-4 h-4" />
                       <span>Application Link</span>

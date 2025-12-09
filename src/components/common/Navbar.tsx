@@ -120,12 +120,14 @@ export const Navbar: React.FC = () => {
   };
 
   return (
-    <nav className="bg-white dark:bg-gray-800 shadow-lg border-b border-gray-200 dark:border-gray-700">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          <Link to="/" className="flex items-center space-x-2">
-            <GraduationCap className="h-8 w-8 text-blue-600" />
-            <span className="text-xl font-bold text-gray-900 dark:text-white">
+    <nav className="fixed top-0 left-0 right-0 z-50 px-6 py-6 backdrop-blur-md border-b border-white/5 bg-dark-bg/80">
+      <div className="max-w-7xl mx-auto">
+        <div className="flex justify-between items-center">
+          <Link to="/" className="flex items-center space-x-3 group">
+            <div className="w-10 h-10 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+              <GraduationCap className="h-6 w-6 text-white" />
+            </div>
+            <span className="text-xl font-bold text-gradient-premium">
               Placement Cell
             </span>
           </Link>
@@ -138,13 +140,13 @@ export const Navbar: React.FC = () => {
                 <motion.button
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
-                    className="p-2 rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 relative"
+                    className="p-2.5 rounded-xl bg-glass-100 backdrop-blur-md border border-glass-border text-gray-300 hover:bg-glass-200 hover:text-white transition-all duration-300 relative"
                     onClick={() => setDropdownOpen((open) => !open)}
                     aria-label="Notifications"
                 >
                   <Bell size={20} />
                     {unreadCount > 0 && (
-                      <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5">
+                      <span className="absolute -top-1 -right-1 bg-gradient-to-r from-pink-500 to-red-500 text-white text-xs font-bold rounded-full px-1.5 py-0.5 shadow-lg">
                         {unreadCount}
                       </span>
                     )}
@@ -156,25 +158,25 @@ export const Navbar: React.FC = () => {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -10 }}
                         transition={{ duration: 0.2 }}
-                        className="absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 shadow-xl rounded-lg border border-gray-200 dark:border-gray-700 z-50"
+                        className="absolute right-0 mt-2 w-80 glass-panel z-50"
                       >
-                        <div className="p-4 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
-                          <span className="font-semibold text-gray-900 dark:text-white">Notifications</span>
+                        <div className="p-4 border-b border-white/10 flex items-center justify-between">
+                          <span className="font-semibold text-white">Notifications</span>
                           <button
-                            className="text-xs text-blue-600 hover:underline"
+                            className="text-xs text-indigo-400 hover:text-indigo-300 transition-colors"
                             onClick={() => { fetchNotifications(); }}
                           >
                             Refresh
                           </button>
                         </div>
-                        <div className="max-h-96 overflow-y-auto divide-y divide-gray-100 dark:divide-gray-700">
+                        <div className="max-h-96 overflow-y-auto divide-y divide-white/5">
                           {notifications.length === 0 ? (
-                            <div className="p-4 text-center text-gray-500 dark:text-gray-400">No notifications</div>
+                            <div className="p-4 text-center text-gray-400">No notifications</div>
                           ) : (
                             notifications.slice(0, 8).map((n) => (
                               <div
                                 key={n._id}
-                                className={`flex items-start gap-3 px-4 py-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition ${n.read ? 'opacity-70' : ''}`}
+                                className={`flex items-start gap-3 px-4 py-3 cursor-pointer hover:bg-glass-100 transition-all duration-300 ${n.read ? 'opacity-70' : ''}`}
                                 onClick={() => {
                                   markAsRead(n._id);
                                   if (n.actionUrl) {
@@ -185,19 +187,19 @@ export const Navbar: React.FC = () => {
                                 <div className="mt-1">{getNotificationIcon(n.type)}</div>
                                 <div className="flex-1 min-w-0">
                                   <div className="flex items-center justify-between">
-                                    <span className={`font-medium text-sm ${n.read ? 'text-gray-600 dark:text-gray-400' : 'text-gray-900 dark:text-white'}`}>{n.title}</span>
-                                    <span className="text-xs text-gray-400 ml-2">{formatDate(n.createdAt)}</span>
+                                    <span className={`font-medium text-sm ${n.read ? 'text-gray-400' : 'text-white'}`}>{n.title}</span>
+                                    <span className="text-xs text-gray-500 ml-2">{formatDate(n.createdAt)}</span>
                                   </div>
-                                  <div className={`text-xs ${n.read ? 'text-gray-400 dark:text-gray-500' : 'text-gray-700 dark:text-gray-300'}`}>{n.message}</div>
+                                  <div className={`text-xs ${n.read ? 'text-gray-500' : 'text-gray-300'}`}>{n.message}</div>
                                 </div>
                               </div>
                             ))
                           )}
                         </div>
-                        <div className="p-2 border-t border-gray-100 dark:border-gray-700 text-center">
+                        <div className="p-2 border-t border-white/10 text-center">
                           <Link
                             to={getDashboardLink() + '/dashboard?tab=notifications'}
-                            className="text-blue-600 hover:underline text-sm font-medium"
+                            className="text-indigo-400 hover:text-indigo-300 text-sm font-medium transition-colors"
                             onClick={() => setDropdownOpen(false)}
                           >
                             View all notifications
@@ -209,7 +211,7 @@ export const Navbar: React.FC = () => {
                 </div>
                 <Link 
                   to={getDashboardLink()}
-                  className="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                  className="flex items-center space-x-2 px-3 py-2 rounded-xl bg-glass-100 backdrop-blur-md border border-glass-border text-gray-300 hover:bg-glass-200 hover:text-white transition-all duration-300"
                 >
                   <User size={20} />
                   <span className="hidden sm:block">{user.name}</span>
@@ -218,7 +220,7 @@ export const Navbar: React.FC = () => {
                   onClick={handleLogout}
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
-                  className="p-2 rounded-full text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                  className="p-2.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 hover:text-red-300 transition-all duration-300"
                 >
                   <LogOut size={20} />
                 </motion.button>

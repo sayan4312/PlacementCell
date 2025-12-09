@@ -166,26 +166,26 @@ const NotificationsSection: React.FC<NotificationsSectionProps> = ({ notificatio
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between mb-6">
         <div>
-          <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Notifications</h3>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+          <h3 className="text-2xl font-bold text-white">Notifications</h3>
+          <p className="text-sm text-white/60 mt-1">
             {unreadCount} unread notification{unreadCount !== 1 ? 's' : ''}
           </p>
         </div>
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center gap-2">
           {hasSelection && (
             <>
               <button
                 onClick={deleteSelectedNotifications}
-                className="flex items-center space-x-1 px-3 py-1 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                className="btn-secondary flex items-center gap-2 text-red-400 hover:text-red-300"
               >
                 <Trash2 className="w-4 h-4" />
                 <span>Delete Selected</span>
               </button>
               <button
                 onClick={clearSelection}
-                className="px-3 py-1 text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                className="btn-secondary"
               >
                 Clear
               </button>
@@ -193,7 +193,7 @@ const NotificationsSection: React.FC<NotificationsSectionProps> = ({ notificatio
           )}
           <button
             onClick={markAllAsRead}
-            className="flex items-center space-x-1 px-3 py-1 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
+            className="btn-primary flex items-center gap-2"
           >
             <Check className="w-4 h-4" />
             <span>Mark All Read</span>
@@ -202,27 +202,27 @@ const NotificationsSection: React.FC<NotificationsSectionProps> = ({ notificatio
       </div>
 
       {/* Search and Filters */}
-      <div className="space-y-4">
+      <div className="glass-card p-4 space-y-4">
         {/* Search Bar */}
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-white/40" />
           <input
             type="text"
             placeholder="Search notifications..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="input-glass w-full pl-10"
           />
         </div>
 
         {/* Filters */}
-        <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-2">
-            <Filter className="w-4 h-4 text-gray-400" />
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <Filter className="w-4 h-4 text-white/60" />
             <select
               value={filterType}
               onChange={(e) => setFilterType(e.target.value as any)}
-              className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="input-glass"
             >
               <option value="all">All</option>
               <option value="unread">Unread</option>
@@ -231,7 +231,7 @@ const NotificationsSection: React.FC<NotificationsSectionProps> = ({ notificatio
           </div>
           <button
             onClick={selectAllFiltered}
-            className="px-3 py-1 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
+            className="btn-secondary text-sm"
           >
             Select All
           </button>
@@ -241,9 +241,9 @@ const NotificationsSection: React.FC<NotificationsSectionProps> = ({ notificatio
       {/* Notifications List */}
       <div className="space-y-3">
         {filteredNotifications.length === 0 ? (
-          <div className="text-center py-12">
-            <Bell className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-500 dark:text-gray-400">No notifications found</p>
+          <div className="glass-card p-12 text-center">
+            <Bell className="w-12 h-12 text-white/40 mx-auto mb-4" />
+            <p className="text-white/60">No notifications found</p>
           </div>
         ) : (
           filteredNotifications.map((notification) => (
@@ -251,15 +251,13 @@ const NotificationsSection: React.FC<NotificationsSectionProps> = ({ notificatio
               key={notification._id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className={`border-l-4 rounded-lg p-4 cursor-pointer transition-all hover:shadow-md ${
-                notification.read 
-                  ? 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700' 
-                  : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700'
-              } ${selectedNotifications.includes(notification._id) ? 'ring-2 ring-blue-500' : ''}`}
+              className={`glass-card p-4 cursor-pointer transition-all hover:scale-[1.01] ${
+                !notification.read && 'border-l-4 border-indigo-500'
+              } ${selectedNotifications.includes(notification._id) ? 'ring-2 ring-indigo-500' : ''}`}
               onClick={() => handleNotificationClick(notification)}
             >
               <div className="flex items-start justify-between">
-                <div className="flex items-start space-x-3 flex-1">
+                <div className="flex items-start gap-3 flex-1">
                   <input
                     type="checkbox"
                     checked={selectedNotifications.includes(notification._id)}
@@ -267,38 +265,36 @@ const NotificationsSection: React.FC<NotificationsSectionProps> = ({ notificatio
                       e.stopPropagation();
                       toggleNotificationSelection(notification._id);
                     }}
-                    className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    className="mt-1 h-4 w-4 text-indigo-500 focus:ring-indigo-500 bg-white/10 border-white/20 rounded"
                   />
-                  <div className="flex items-start space-x-3 flex-1">
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-2 mb-1">
-                        <h4 className={`font-medium ${notification.read ? 'text-gray-700 dark:text-gray-300' : 'text-gray-900 dark:text-white'}`}>
-                          {notification.title || 'No Title'}
-                        </h4>
-                        {!notification.read && (
-                          <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
-                        )}
-                      </div>
-                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                        {notification.message || 'No message'}
-                      </p>
-                      <div className="flex items-center space-x-4 text-xs text-gray-500 dark:text-gray-500">
-                        <span>{notification.createdAt ? formatDate(notification.createdAt) : 'Unknown date'}</span>
-                        {notification.actionUrl && (
-                          <span className="text-blue-600 dark:text-blue-400">Click to view</span>
-                        )}
-                      </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <h4 className={`font-semibold ${notification.read ? 'text-white/70' : 'text-white'}`}>
+                        {notification.title || 'No Title'}
+                      </h4>
+                      {!notification.read && (
+                        <span className="w-2 h-2 bg-indigo-500 rounded-full animate-pulse"></span>
+                      )}
+                    </div>
+                    <p className="text-sm text-white/60 mb-2">
+                      {notification.message || 'No message'}
+                    </p>
+                    <div className="flex items-center gap-4 text-xs text-white/40">
+                      <span>{notification.createdAt ? formatDate(notification.createdAt) : 'Unknown date'}</span>
+                      {notification.actionUrl && (
+                        <span className="text-indigo-400">Click to view</span>
+                      )}
                     </div>
                   </div>
                 </div>
-                <div className="flex items-center space-x-1">
+                <div className="flex items-center gap-1">
                   {!notification.read && (
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         markAsRead(notification._id);
                       }}
-                      className="p-1 text-gray-400 hover:text-green-600 rounded"
+                      className="p-2 text-white/40 hover:text-emerald-400 hover:bg-white/10 rounded-lg transition-colors"
                     >
                       <Check className="w-4 h-4" />
                     </button>
@@ -308,7 +304,7 @@ const NotificationsSection: React.FC<NotificationsSectionProps> = ({ notificatio
                       e.stopPropagation();
                       deleteNotification(notification._id);
                     }}
-                    className="p-1 text-gray-400 hover:text-red-600 rounded"
+                    className="p-2 text-white/40 hover:text-red-400 hover:bg-white/10 rounded-lg transition-colors"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>

@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Calendar, Building2, Clock, CheckCircle, XCircle, AlertCircle, Filter, SortAsc, SortDesc, Eye, Download, X } from 'lucide-react';
+import { Calendar, Clock, CheckCircle, XCircle, AlertCircle, Filter, SortAsc, SortDesc, X } from 'lucide-react';
 import { toast } from 'react-toastify';
 
 interface Application {
@@ -53,15 +53,6 @@ const ApplicationsSection: React.FC<ApplicationsSectionProps> = ({ applications,
       case 'rejected': return <XCircle className="w-4 h-4" />;
       case 'interview_scheduled': return <AlertCircle className="w-4 h-4" />;
       default: return <Clock className="w-4 h-4" />;
-    }
-  };
-
-  const handleSort = (field: string) => {
-    if (sortBy === field) {
-      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortBy(field);
-      setSortOrder('desc');
     }
   };
 
@@ -122,30 +113,17 @@ const ApplicationsSection: React.FC<ApplicationsSectionProps> = ({ applications,
     setExpandedApplication(expandedApplication === applicationId ? null : applicationId);
   };
 
-  const handleViewDetails = (application: Application) => {
-    const position = application.drive?.position || 'Unknown Position';
-    const company = application.drive?.companyName || 'Unknown Company';
-    toast.info(`Viewing details for ${position} at ${company}`);
-    // In a real app, this would open a modal or navigate to a details page
-  };
-
-  const handleDownloadResume = (application: Application) => {
-    const position = application.drive?.position || 'Unknown Position';
-    toast.success(`Downloading resume for ${position} application`);
-    // In a real app, this would trigger a download
-  };
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h3 className="text-xl font-semibold text-gray-900 dark:text-white">My Applications</h3>
+        <h3 className="text-xl font-semibold text-white">My Applications</h3>
         <div className="flex items-center space-x-4">
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-colors ${
+            className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-all ${
               showFilters 
-                ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300' 
-                : 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                ? 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/20' 
+                : 'bg-white/5 text-gray-300 hover:bg-white/10 border border-white/10'
             }`}
           >
             <Filter className="w-4 h-4" />
@@ -167,7 +145,7 @@ const ApplicationsSection: React.FC<ApplicationsSectionProps> = ({ applications,
             {hasActiveFilters && (
               <button
                 onClick={clearFilters}
-                className="text-sm text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 flex items-center space-x-1"
+                className="text-sm text-pink-400 hover:text-pink-300 flex items-center space-x-1"
               >
                 <X className="w-4 h-4" />
                 <span>Clear All</span>
@@ -176,13 +154,13 @@ const ApplicationsSection: React.FC<ApplicationsSectionProps> = ({ applications,
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-400 mb-2">
                 Status Filter
               </label>
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="input-glass"
               >
                 <option value="all">All Status</option>
                 <option value="pending">Pending</option>
@@ -193,13 +171,13 @@ const ApplicationsSection: React.FC<ApplicationsSectionProps> = ({ applications,
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-400 mb-2">
                 Sort By
               </label>
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="input-glass"
               >
                 <option value="appliedAt">Application Date</option>
                 <option value="company">Company</option>
@@ -210,7 +188,7 @@ const ApplicationsSection: React.FC<ApplicationsSectionProps> = ({ applications,
             <div className="flex items-end">
               <button
                 onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
-                className="flex items-center space-x-2 px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                className="flex items-center space-x-2 px-3 py-2 bg-white/5 text-gray-300 rounded-lg hover:bg-white/10 border border-white/10 transition-all"
               >
                 {sortOrder === 'asc' ? <SortAsc className="w-4 h-4" /> : <SortDesc className="w-4 h-4" />}
                 <span>{sortOrder === 'asc' ? 'Ascending' : 'Descending'}</span>
@@ -222,14 +200,14 @@ const ApplicationsSection: React.FC<ApplicationsSectionProps> = ({ applications,
 
       {/* Results Summary */}
       {hasActiveFilters && (
-        <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
+        <div className="bg-indigo-500/10 rounded-lg p-4 border border-indigo-500/20">
           <div className="flex items-center justify-between">
-            <div className="text-sm text-blue-800 dark:text-blue-200">
+            <div className="text-sm text-indigo-400">
               Showing {filteredAndSortedApplications.length} applications matching your filters
             </div>
             <button
               onClick={clearFilters}
-              className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+              className="text-sm text-indigo-400 hover:text-indigo-300"
             >
               Clear filters
             </button>
@@ -241,10 +219,10 @@ const ApplicationsSection: React.FC<ApplicationsSectionProps> = ({ applications,
         {filteredAndSortedApplications.length === 0 ? (
           <div className="text-center py-12">
             <Calendar className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-500 dark:text-gray-400 text-lg mb-2">
+            <p className="text-white text-lg mb-2">
               {hasActiveFilters ? 'No applications match your filters' : 'No applications yet'}
             </p>
-            <p className="text-gray-400 dark:text-gray-500">
+            <p className="text-gray-400">
               {hasActiveFilters ? 'Try adjusting your filter criteria' : 'Start applying to job drives to see your applications here'}
             </p>
           </div>
@@ -255,23 +233,23 @@ const ApplicationsSection: React.FC<ApplicationsSectionProps> = ({ applications,
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.05 }}
-              className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all duration-300"
+              className="glass-card p-6 hover:scale-[1.01] transition-all duration-300"
             >
-              <div className="p-6">
+              <div>
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-start space-x-4">
-                    <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center text-white font-bold">
+                    <div className="w-12 h-12 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg flex items-center justify-center text-white font-bold">
                       {application.drive?.companyName ? 
                         application.drive.companyName.split(' ').map((n: string) => n[0]).join('') : 
                         'N/A'
                       }
                     </div>
                     <div>
-                      <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
+                      <h4 className="text-lg font-semibold text-white mb-1">
                         {application.drive?.position || 'Unknown Position'}
                       </h4>
-                      <p className="text-gray-600 dark:text-gray-400 mb-2">{application.drive?.companyName || 'Unknown Company'}</p>
-                      <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-500">
+                      <p className="text-gray-400 mb-2">{application.drive?.companyName || 'Unknown Company'}</p>
+                      <div className="flex items-center space-x-4 text-sm text-gray-400">
                         <span>Applied: {formatDate(application.appliedAt)}</span>
                         {application.nextStep && (
                           <>
@@ -309,7 +287,7 @@ const ApplicationsSection: React.FC<ApplicationsSectionProps> = ({ applications,
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: 'auto' }}
                     exit={{ opacity: 0, height: 0 }}
-                    className="border-t border-gray-200 dark:border-gray-700 pt-4 mt-4"
+                    className="border-t border-white/10 pt-4 mt-4"
                   >
                     {/* Timeline */}
                     {(() => {
@@ -328,7 +306,7 @@ const ApplicationsSection: React.FC<ApplicationsSectionProps> = ({ applications,
                       }, {});
                       return (
                         <div className="mb-4">
-                          <h5 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Application Timeline</h5>
+                          <h5 className="text-sm font-medium text-white mb-3">Application Timeline</h5>
                           <div className="space-y-3">
                             {canonicalSteps.map((stepName, index) => {
                               const step = timelineMap[stepName] || { step: stepName, completed: false };
@@ -344,9 +322,9 @@ const ApplicationsSection: React.FC<ApplicationsSectionProps> = ({ applications,
                               return (
                                 <div key={index} className="flex items-center space-x-3">
                                   <div className={`w-3 h-3 rounded-full flex items-center justify-center ${
-                                    stepStatus === 'completed' ? 'bg-green-500' : 
-                                    stepStatus === 'current' ? 'bg-blue-500 animate-pulse' : 
-                                    'bg-gray-300 dark:bg-gray-600'
+                                    stepStatus === 'completed' ? 'bg-emerald-500' : 
+                                    stepStatus === 'current' ? 'bg-indigo-500 animate-pulse' : 
+                                    'bg-white/20'
                                   }`}>
                                     {stepStatus === 'completed' && (
                                       <svg className="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20">

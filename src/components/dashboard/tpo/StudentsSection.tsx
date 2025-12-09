@@ -34,17 +34,17 @@ const StudentsSection: React.FC<StudentsSectionProps> = ({
   const filteredStudents = students.filter(student => student.branch === tpoProfile?.department);
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Student Management</h3>
-        <div className="flex gap-2">
+    <div className="space-y-6 animate-fade-in">
+      <div className="flex items-center justify-between mb-6">
+        <h3 className="text-2xl font-bold text-white">Student Management</h3>
+        <div className="flex gap-3">
           <button
             onClick={() => setShowStudentModal(true)}
-            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 focus:outline-none"
+            className="btn-primary flex items-center gap-2"
           >
-            <Plus className="w-4 h-4 mr-2" /> Add Student
+            <Plus className="w-4 h-4" /> Add Student
           </button>
-          <label className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 focus:outline-none cursor-pointer">
+          <label className="btn-secondary flex items-center gap-2 cursor-pointer">
             Import Students
             <input
               type="file"
@@ -86,111 +86,121 @@ const StudentsSection: React.FC<StudentsSectionProps> = ({
           <a
             href="/sample-students-template.csv"
             download
-            className="inline-flex items-center px-4 py-2 bg-gray-200 text-gray-800 rounded-lg shadow hover:bg-gray-300 focus:outline-none"
+            className="btn-secondary flex items-center gap-2"
           >
             Download Template
           </a>
         </div>
       </div>
       {importError && (
-        <div className="text-red-600 text-sm text-center mt-2">{importError}</div>
+        <div className="glass-card p-3 text-center">
+          <p className="text-red-400 text-sm">{importError}</p>
+        </div>
       )}
-      <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-          <thead>
-            <tr>
-              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase">NAME</th>
-              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase">EMAIL</th>
-              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase">STUDENT ID</th>
-              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase">BRANCH</th>
-              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase">YEAR</th>
-              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase">CGPA</th>
-              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase">BACKLOGS</th>
-              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase">PHONE</th>
-              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase">ADDRESS</th>
-            </tr>
-          </thead>
-          <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+      <div className="glass-card p-1 overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="min-w-full">
+            <thead>
+              <tr className="border-b border-white/10">
+                <th className="px-4 py-3 text-left text-xs font-semibold text-white/70 uppercase tracking-wider bg-white/5">NAME</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-white/70 uppercase tracking-wider bg-white/5">EMAIL</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-white/70 uppercase tracking-wider bg-white/5">STUDENT ID</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-white/70 uppercase tracking-wider bg-white/5">BRANCH</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-white/70 uppercase tracking-wider bg-white/5">YEAR</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-white/70 uppercase tracking-wider bg-white/5">CGPA</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-white/70 uppercase tracking-wider bg-white/5">BACKLOGS</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-white/70 uppercase tracking-wider bg-white/5">PHONE</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-white/70 uppercase tracking-wider bg-white/5">ADDRESS</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-white/10">
             {filteredStudents.map((student, index, arr) => (
               <tr
                 key={student._id}
-                className={
-                  `${index === 0 ? 'rounded-t-xl' : ''} ${index === arr.length - 1 ? 'rounded-b-xl' : ''} hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors`
-                }
+                className="hover:bg-white/5 transition-all duration-200"
               >
-                <td className="px-4 py-2 whitespace-nowrap text-gray-900 dark:text-gray-100">
+                <td className="px-4 py-3 whitespace-nowrap text-white/90">
                   {typeof student.name === 'object' ? student.name?.value || 'Unknown' : student.name || 'Unknown'}
                 </td>
-                <td className="px-4 py-2 whitespace-nowrap text-gray-900 dark:text-gray-100">
+                <td className="px-4 py-3 whitespace-nowrap text-white/90">
                   {typeof student.email === 'object' ? student.email?.value || 'No Email' : student.email || 'No Email'}
                 </td>
-                <td className="px-4 py-2 whitespace-nowrap text-gray-900 dark:text-gray-100">
+                <td className="px-4 py-3 whitespace-nowrap text-white/90">
                   {typeof student.studentId === 'object' ? student.studentId?.value || 'N/A' : student.studentId || 'N/A'}
                 </td>
-                <td className="px-4 py-2 whitespace-nowrap text-gray-900 dark:text-gray-100">
+                <td className="px-4 py-3 whitespace-nowrap text-white/90">
                   {typeof student.branch === 'object' ? student.branch?.name || 'N/A' : student.branch || 'N/A'}
                 </td>
-                <td className="px-4 py-2 whitespace-nowrap text-gray-900 dark:text-gray-100">
+                <td className="px-4 py-3 whitespace-nowrap text-white/90">
                   {typeof student.year === 'object' ? student.year?.value || 'N/A' : student.year || 'N/A'}
                 </td>
-                <td className="px-4 py-2 whitespace-nowrap text-gray-900 dark:text-gray-100">
+                <td className="px-4 py-3 whitespace-nowrap text-white/90">
                   {typeof student.cgpa === 'object' ? student.cgpa?.value || 'N/A' : student.cgpa || 'N/A'}
                 </td>
-                <td className="px-4 py-2 whitespace-nowrap text-gray-900 dark:text-gray-100">
+                <td className="px-4 py-3 whitespace-nowrap text-white/90">
                   {typeof student.backlogs === 'object' ? student.backlogs?.value || 'N/A' : student.backlogs || 'N/A'}
                 </td>
-                <td className="px-4 py-2 whitespace-nowrap text-gray-900 dark:text-gray-100">
+                <td className="px-4 py-3 whitespace-nowrap text-white/90">
                   {typeof student.phone === 'object' ? student.phone?.value || 'N/A' : student.phone || 'N/A'}
                 </td>
-                <td className="px-4 py-2 whitespace-nowrap text-gray-900 dark:text-gray-100">
+                <td className="px-4 py-3 whitespace-nowrap text-white/90">
                   {typeof student.address === 'object' ? student.address?.value || 'N/A' : student.address || 'N/A'}
                 </td>
               </tr>
             ))}
-          </tbody>
-        </table>
+            </tbody>
+          </table>
+        </div>
       </div>
       {/* Add Student Modal */}
       {showStudentModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-lg md:max-w-xl relative flex flex-col" style={{ maxHeight: '90vh' }}>
-            <div className="flex flex-col md:flex-row items-start md:items-center px-6 py-4 rounded-t-2xl bg-gradient-to-r from-blue-700 to-purple-700 relative">
-              <GraduationCap className="w-8 h-8 text-white mr-3 mb-2 md:mb-0" />
-              <div className="flex-1">
-                <h2 className="text-xl font-bold text-white">Add Student</h2>
-                <p className="text-white text-xs opacity-80 mt-1">Fill in the details to create a new student account for your department.</p>
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-gradient-to-br from-slate-900/95 to-slate-800/95 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl w-full max-w-2xl relative flex flex-col" style={{ maxHeight: '90vh' }}
+          >
+            <div className="flex items-center justify-between p-6 border-b border-white/10">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600">
+                  <GraduationCap className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold text-white">Add Student</h2>
+                  <p className="text-white/60 text-sm mt-1">Fill in the details to create a new student account</p>
+                </div>
               </div>
-              <button onClick={() => setShowStudentModal(false)} className="absolute top-3 right-3 z-10 text-white hover:text-gray-200 focus:outline-none bg-black/20 rounded-full p-1">
-                <X className="w-6 h-6" />
+              <button onClick={() => setShowStudentModal(false)} className="p-2 hover:bg-white/10 rounded-lg transition-colors">
+                <X className="w-5 h-5 text-white/70" />
               </button>
             </div>
-            <form onSubmit={e => { e.preventDefault(); handleAddStudent(); }} className="flex-1 overflow-y-auto px-6 py-4 space-y-6">
+            <form onSubmit={e => { e.preventDefault(); handleAddStudent(); }} className="flex-1 overflow-y-auto px-6 py-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">Name</label>
-                  <input type="text" className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white" value={studentForm.name} onChange={e => setStudentForm({ ...studentForm, name: e.target.value })} required />
+                  <label className="block text-sm font-semibold mb-2 text-white">Name</label>
+                  <input type="text" className="input-glass w-full" value={studentForm.name} onChange={e => setStudentForm({ ...studentForm, name: e.target.value })} required />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">Email</label>
-                  <input type="email" className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white" value={studentForm.email} onChange={e => setStudentForm({ ...studentForm, email: e.target.value })} required />
+                  <label className="block text-sm font-semibold mb-2 text-white">Email</label>
+                  <input type="email" className="input-glass w-full" value={studentForm.email} onChange={e => setStudentForm({ ...studentForm, email: e.target.value })} required />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">Student ID (Roll No.)</label>
-                  <input type="text" className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white" value={studentForm.studentId} onChange={e => setStudentForm({ ...studentForm, studentId: e.target.value })} required />
+                  <label className="block text-sm font-semibold mb-2 text-white">Student ID (Roll No.)</label>
+                  <input type="text" className="input-glass w-full" value={studentForm.studentId} onChange={e => setStudentForm({ ...studentForm, studentId: e.target.value })} required />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">Branch/Department</label>
+                  <label className="block text-sm font-semibold mb-2 text-white">Branch/Department</label>
                   <input
                     type="text"
-                    className="w-full px-3 py-2 border rounded-lg bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white"
+                    className="input-glass w-full opacity-70"
                     value={tpoProfile?.department || ''}
                     disabled
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">Year</label>
+                  <label className="block text-sm font-semibold mb-2 text-white">Year</label>
                   <select
-                    className="w-full px-3 py-2 border rounded-lg bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="input-glass w-full"
                     value={studentForm.year}
                     onChange={e => setStudentForm({ ...studentForm, year: e.target.value })}
                     required
@@ -202,28 +212,33 @@ const StudentsSection: React.FC<StudentsSectionProps> = ({
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">CGPA</label>
-                  <input type="number" step="0.01" className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white" value={studentForm.cgpa} onChange={e => setStudentForm({ ...studentForm, cgpa: e.target.value })} />
+                  <label className="block text-sm font-semibold mb-2 text-white">CGPA</label>
+                  <input type="number" step="0.01" className="input-glass w-full" value={studentForm.cgpa} onChange={e => setStudentForm({ ...studentForm, cgpa: e.target.value })} />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">Backlogs</label>
-                  <input type="number" className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white" value={studentForm.backlogs} onChange={e => setStudentForm({ ...studentForm, backlogs: e.target.value })} />
+                  <label className="block text-sm font-semibold mb-2 text-white">Backlogs</label>
+                  <input type="number" className="input-glass w-full" value={studentForm.backlogs} onChange={e => setStudentForm({ ...studentForm, backlogs: e.target.value })} />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">Phone</label>
-                  <input type="text" className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white" value={studentForm.phone} onChange={e => setStudentForm({ ...studentForm, phone: e.target.value })} />
+                  <label className="block text-sm font-semibold mb-2 text-white">Phone</label>
+                  <input type="text" className="input-glass w-full" value={studentForm.phone} onChange={e => setStudentForm({ ...studentForm, phone: e.target.value })} />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">Address</label>
-                  <input type="text" className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white" value={studentForm.address} onChange={e => setStudentForm({ ...studentForm, address: e.target.value })} />
+                  <label className="block text-sm font-semibold mb-2 text-white">Address</label>
+                  <input type="text" className="input-glass w-full" value={studentForm.address} onChange={e => setStudentForm({ ...studentForm, address: e.target.value })} />
                 </div>
               </div>
-              {studentModalError && <div className="text-red-600 text-sm text-center">{studentModalError}</div>}
-              <div className="flex justify-end mt-4">
-                <button type="submit" className="px-6 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 focus:outline-none">Add Student</button>
+              {studentModalError && (
+                <div className="mt-4 p-3 rounded-lg bg-red-500/10 border border-red-500/20">
+                  <p className="text-red-400 text-sm text-center">{studentModalError}</p>
+                </div>
+              )}
+              <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-white/10">
+                <button type="button" onClick={() => setShowStudentModal(false)} className="btn-secondary">Cancel</button>
+                <button type="submit" className="btn-primary">Add Student</button>
               </div>
             </form>
-          </div>
+          </motion.div>
         </div>
       )}
       {/* ToastContainer for toast notifications */}
