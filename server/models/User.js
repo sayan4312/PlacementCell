@@ -26,7 +26,7 @@ const userSchema = new mongoose.Schema({
   },
   isApproved: {
     type: Boolean,
-    default: function() {
+    default: function () {
       return this.role === 'student';
     }
   },
@@ -42,7 +42,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: null
   },
-  
+
   // Student specific fields
   studentId: {
     type: String,
@@ -51,8 +51,8 @@ const userSchema = new mongoose.Schema({
   },
   branch: {
     type: String,
-    enum: ['Computer Science', 'Information Technology', 'Electronics & Communication', 
-           'Electrical Engineering', 'Mechanical Engineering', 'Civil Engineering','Data Science','AIML']
+    enum: ['Computer Science', 'Information Technology', 'Electronics & Communication',
+      'Electrical Engineering', 'Mechanical Engineering', 'Civil Engineering', 'Data Science', 'AIML']
   },
   year: {
     type: String,
@@ -83,13 +83,15 @@ const userSchema = new mongoose.Schema({
   resume: {
     filename: String,
     uploadDate: Date,
-    size: String
+    size: String,
+    url: String,
+    public_id: String
   },
   profileCompleted: {
     type: Boolean,
     default: false
   },
-  
+
   // Company specific fields
   companyName: {
     type: String,
@@ -98,8 +100,8 @@ const userSchema = new mongoose.Schema({
   },
   industry: {
     type: String,
-    enum: ['Technology', 'Finance', 'Healthcare', 'Manufacturing', 'Retail', 
-           'Consulting', 'Education', 'Other']
+    enum: ['Technology', 'Finance', 'Healthcare', 'Manufacturing', 'Retail',
+      'Consulting', 'Education', 'Other']
   },
   website: String,
   description: String,
@@ -107,13 +109,13 @@ const userSchema = new mongoose.Schema({
   founded: String,
   benefits: [String],
   culture: [String],
-  
+
   // TPO specific fields
   department: String,
   experience: String,
   qualification: String,
   specialization: String,
-  
+
   // Common fields
   lastActive: {
     type: Date,
@@ -134,9 +136,9 @@ userSchema.index({ role: 1 });
 userSchema.index({ isApproved: 1 });
 
 // Hash password before saving
-userSchema.pre('save', async function(next) {
+userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();
-  
+
   try {
     const salt = await bcrypt.genSalt(12);
     this.password = await bcrypt.hash(this.password, salt);
@@ -147,16 +149,16 @@ userSchema.pre('save', async function(next) {
 });
 
 // Compare password method
-userSchema.methods.comparePassword = async function(candidatePassword) {
+userSchema.methods.comparePassword = async function (candidatePassword) {
   return bcrypt.compare(candidatePassword, this.password);
 };
 
 // Calculate profile score for students
-userSchema.methods.calculateProfileScore = function() {
+userSchema.methods.calculateProfileScore = function () {
   if (this.role !== 'student') return 0;
-  
+
   let score = 0;
-  
+
   // Basic info (30%)
   if (this.name) score += 5;
   if (this.email) score += 5;
@@ -164,28 +166,28 @@ userSchema.methods.calculateProfileScore = function() {
   if (this.address) score += 5;
   if (this.dateOfBirth) score += 5;
   if (this.studentId) score += 5;
-  
+
   // Academic info (25%)
   if (this.branch) score += 5;
   if (this.year) score += 5;
   if (this.cgpa) score += 10;
   if (this.backlogs !== undefined) score += 5;
-  
+
   // Skills and experience (25%)
   if (this.skills && this.skills.length > 0) score += 10;
   if (this.projects && this.projects.length > 0) score += 10;
   if (this.certifications && this.certifications.length > 0) score += 5;
-  
+
   // Resume and achievements (20%)
   if (this.resume && this.resume.filename) score += 10;
   if (this.achievements && this.achievements.length > 0) score += 10;
-  
+
   this.profileScore = score;
   return score;
 };
 
 // Update last active timestamp
-userSchema.methods.updateLastActive = function() {
+userSchema.methods.updateLastActive = function () {
   this.lastActive = new Date();
   return this.save();
 };

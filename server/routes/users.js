@@ -60,12 +60,20 @@ router.post('/resume', [
   upload.single('resume')
 ], userController.uploadResume);
 
+// @route   DELETE /api/users/resume
+// @desc    Delete resume (Student only)
+// @access  Private (Student)
+router.delete('/resume', [
+  auth,
+  authorizeStudent
+], userController.deleteResume);
+
 // @route   POST /api/users/student
 // @desc    Create Student account (TPO only)
 // @access  Private (TPO)
 router.post('/student', [
   auth,
-  authorizeTPOOrCompany, 
+  authorizeTPOOrCompany,
   body('name').trim().isLength({ min: 2 }).withMessage('Name must be at least 2 characters'),
   body('email').isEmail().normalizeEmail().withMessage('Please provide a valid email'),
   body('studentId').notEmpty().withMessage('Student ID is required'),

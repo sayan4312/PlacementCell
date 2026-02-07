@@ -11,21 +11,21 @@ interface OverviewSectionProps {
 }
 
 const OverviewSection: React.FC<OverviewSectionProps> = ({ user, stats, applicationTrends, setActiveTab }) => {
-  const [isUploading, setIsUploading] = useState(false);
+  /* eslint-disable @typescript-eslint/no-unused-vars */
   const [isEditing, setIsEditing] = useState(false);
 
   // Calculate profile completion percentage
   const calculateProfileCompletion = () => {
     if (!user) return 0;
-    
+
     const fields = [
       user.name, user.email, user.phone, user.address, user.dateOfBirth,
       user.studentId, user.branch, user.year, user.cgpa, user.backlogs,
-      user.skills?.length > 0, user.projects?.length > 0, 
+      user.skills?.length > 0, user.projects?.length > 0,
       user.certifications?.length > 0, user.achievements?.length > 0,
       user.resume?.filename
     ];
-    
+
     const completedFields = fields.filter(Boolean).length;
     return Math.round((completedFields / fields.length) * 100);
   };
@@ -44,52 +44,32 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({ user, stats, applicat
   // Get profile improvement suggestions
   const getProfileSuggestions = () => {
     const suggestions = [];
-    
+
     if (!user.skills || user.skills.length < 3) {
       suggestions.push('Add more technical skills to your profile');
     }
-    
+
     if (!user.projects || user.projects.length < 2) {
       suggestions.push('Showcase your projects to stand out');
     }
-    
+
     if (!user.resume?.filename) {
       suggestions.push('Upload your resume to complete your profile');
     }
-    
+
     if (!user.certifications || user.certifications.length === 0) {
       suggestions.push('Add certifications to boost your profile');
     }
-    
+
     return suggestions.slice(0, 3); // Show top 3 suggestions
   };
 
   const suggestions = getProfileSuggestions();
 
-  const handleUpdateResume = async () => {
-    setIsUploading(true);
-    try {
-      // Create a file input element
-      const input = document.createElement('input');
-      input.type = 'file';
-      input.accept = '.pdf,.doc,.docx';
-      input.onchange = async (e) => {
-        const file = (e.target as HTMLInputElement).files?.[0];
-        if (file) {
-          // Here you would typically upload to your server
-          console.log('Uploading resume:', file.name);
-          // Simulate upload delay
-          await new Promise(resolve => setTimeout(resolve, 2000));
-          alert('Resume updated successfully!');
-        }
-        setIsUploading(false);
-      };
-      input.click();
-    } catch (error) {
-      console.error('Error updating resume:', error);
-      alert('Failed to update resume. Please try again.');
-      setIsUploading(false);
-    }
+  const handleUpdateResume = () => {
+    setActiveTab('profile');
+    // Optional: You could pass a state or query param to auto-open the resume upload modal in ProfileSection
+    // but simply navigating there is a good first step.
   };
 
   const handleEditProfile = () => {
@@ -130,10 +110,10 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({ user, stats, applicat
           <h3 className="text-lg font-semibold text-white">Profile Completion</h3>
           <span className="text-2xl font-bold text-gradient-premium">{profileCompletion}%</span>
         </div>
-        
+
         <div className="mb-4">
           <div className="w-full bg-white/10 rounded-full h-3">
-            <div 
+            <div
               className="bg-gradient-to-r from-blue-500 to-purple-500 h-3 rounded-full transition-all duration-500"
               style={{ width: `${profileCompletion}%` }}
             ></div>
@@ -309,33 +289,23 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({ user, stats, applicat
       <div className="glass-card p-6">
         <h3 className="text-xl font-bold text-white mb-6">Quick Actions</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <button 
+          <button
             onClick={handleUpdateResume}
-            disabled={isUploading}
-            className={`flex items-center space-x-3 p-4 rounded-lg transition-all ${
-              isUploading 
-                ? 'bg-white/5 cursor-not-allowed' 
-                : 'bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/20'
-            }`}
+            className="flex items-center space-x-3 p-4 rounded-lg transition-all bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/20"
           >
-            {isUploading ? (
-              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-indigo-400"></div>
-            ) : (
-              <Upload className="w-5 h-5 text-indigo-400" />
-            )}
+            <Upload className="w-5 h-5 text-indigo-400" />
             <span className="text-white font-medium">
-              {isUploading ? 'Uploading...' : 'Update Resume'}
+              Update Resume
             </span>
           </button>
-          
-          <button 
+
+          <button
             onClick={handleEditProfile}
             disabled={isEditing}
-            className={`flex items-center space-x-3 p-4 rounded-lg transition-all ${
-              isEditing 
-                ? 'bg-white/5 cursor-not-allowed' 
-                : 'bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20'
-            }`}
+            className={`flex items-center space-x-3 p-4 rounded-lg transition-all ${isEditing
+              ? 'bg-white/5 cursor-not-allowed'
+              : 'bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20'
+              }`}
           >
             {isEditing ? (
               <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-emerald-400"></div>
@@ -346,8 +316,8 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({ user, stats, applicat
               {isEditing ? 'Opening...' : 'Edit Profile'}
             </span>
           </button>
-          
-          <button 
+
+          <button
             onClick={handleBrowseJobs}
             className="flex items-center space-x-3 p-4 bg-purple-500/10 hover:bg-purple-500/20 rounded-lg border border-purple-500/20 transition-all"
           >

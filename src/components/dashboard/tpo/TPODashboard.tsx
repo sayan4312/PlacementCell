@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { 
-  Briefcase, 
+import {
+  Briefcase,
   Plus,
   Calendar,
   MapPin,
@@ -16,14 +16,14 @@ import {
   Shield,
   X,
   ChevronDown,
-  Filter
+  Filter,
+  CheckCircle
 } from 'lucide-react';
 import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
 import { PieChart, Pie, Cell } from 'recharts';
 import apiClient from '../../../services/apiClient';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { useThemeStore } from '../../../store/themeStore';
 import DrivesSection from './DrivesSection';
 import InternshipsSection from './InternshipsSection';
 import ApplicationsSection from './ApplicationsSection';
@@ -31,6 +31,7 @@ import StudentsSection from './StudentsSection';
 import NotificationsSection from './NotificationsSection';
 import OverviewSection from './OverviewSection';
 import { useLocation } from 'react-router-dom';
+import OfferVerificationTable from '../../offers/OfferVerificationTable';
 
 // Add these above the component
 const YEAR_OPTIONS = [
@@ -126,7 +127,7 @@ export const TPODashboard: React.FC = () => {
     externalApplicationUrl: ''
   });
   const [driveModalError, setDriveModalError] = useState('');
-  const [deletingDriveId, setDeletingDriveId] = useState<string|null>(null);
+  const [deletingDriveId, setDeletingDriveId] = useState<string | null>(null);
   const [isSubmittingDrive, setIsSubmittingDrive] = useState(false);
 
   // --- INTERNSHIP STATE ---
@@ -139,7 +140,7 @@ export const TPODashboard: React.FC = () => {
     externalLink: ''
   });
   const [internshipModalError, setInternshipModalError] = useState('');
-  const [deletingInternshipId, setDeletingInternshipId] = useState<string|null>(null);
+  const [deletingInternshipId, setDeletingInternshipId] = useState<string | null>(null);
 
   const [applicationActionLoading, setApplicationActionLoading] = useState<string | null>(null);
 
@@ -148,7 +149,7 @@ export const TPODashboard: React.FC = () => {
   const [internshipSearch, setInternshipSearch] = useState('');
   const [applicationSearch, setApplicationSearch] = useState('');
   const [applicationStatusFilter, setApplicationStatusFilter] = useState('all');
-  
+
   // Active Drives filter state
   const [activeDrivesFilter, setActiveDrivesFilter] = useState('all');
   const [showActiveDrivesDropdown, setShowActiveDrivesDropdown] = useState(false);
@@ -178,7 +179,7 @@ export const TPODashboard: React.FC = () => {
   const [companiesLoading, setCompaniesLoading] = useState(true);
   const [companiesError, setCompaniesError] = useState('');
 
-  const { } = useThemeStore();
+
 
   const location = useLocation();
 
@@ -194,7 +195,7 @@ export const TPODashboard: React.FC = () => {
       apiClient.get('/analytics/applications-by-branch'),
       apiClient.get('/notifications'),
     ])
-              .then(([profileRes, drivesRes, applicationsRes, dashboardStatsRes, trendsRes, branchAppsRes, notificationsRes]) => {
+      .then(([profileRes, drivesRes, applicationsRes, dashboardStatsRes, trendsRes, branchAppsRes, notificationsRes]) => {
         const profile = profileRes.data?.user || profileRes.data;
         const drives = Array.isArray(drivesRes.data?.drives) ? drivesRes.data.drives : [];
         const applications = Array.isArray(applicationsRes.data?.applications) ? applicationsRes.data.applications : [];
@@ -245,8 +246,8 @@ export const TPODashboard: React.FC = () => {
   const filterValidApplications = (applications: any[]) => {
     return applications.filter((app: any) => {
       const hasValidPosition = app.drive?.position && app.drive.position !== "Unknown Position";
-      const hasValidCompany = (app.drive?.companyName && app.drive.companyName !== "Unknown Company") || 
-                             (app.company?.companyName && app.company.companyName !== "Unknown Company");
+      const hasValidCompany = (app.drive?.companyName && app.drive.companyName !== "Unknown Company") ||
+        (app.company?.companyName && app.company.companyName !== "Unknown Company");
       return hasValidPosition && hasValidCompany;
     });
   };
@@ -540,18 +541,18 @@ export const TPODashboard: React.FC = () => {
           ) : (
             <ResponsiveContainer width="100%" height={250}>
               <PieChart>
-                                 <Pie
-                   data={branchWiseApplications}
-                   cx="50%"
-                   cy="50%"
-                   outerRadius={80}
-                   fill="#8884d8"
-                   dataKey="value"
-                   label={(props: any) => `${props.name}: ${props.value || 0}`}
-                 >
-                                  {branchWiseApplications.map((entry: any, index: number) => (
-                  <Cell key={`cell-${entry.name || index}`} fill={entry.color} />
-                ))}
+                <Pie
+                  data={branchWiseApplications}
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={80}
+                  fill="#8884d8"
+                  dataKey="value"
+                  label={(props: any) => `${props.name}: ${props.value || 0}`}
+                >
+                  {branchWiseApplications.map((entry: any, index: number) => (
+                    <Cell key={`cell-${entry.name || index}`} fill={entry.color} />
+                  ))}
                 </Pie>
                 <Tooltip />
               </PieChart>
@@ -567,7 +568,7 @@ export const TPODashboard: React.FC = () => {
           {(() => {
             // Filter out applications with unknown position or company
             const validApplications = filterValidApplications(applications);
-            
+
             return validApplications.length === 0 ? (
               <div className="text-center text-gray-400 dark:text-gray-500 py-8">No recent applications.</div>
             ) : (
@@ -608,13 +609,13 @@ export const TPODashboard: React.FC = () => {
               >
                 <Filter className="w-4 h-4" />
                 <span className="text-sm">
-                  {activeDrivesFilter === 'all' ? 'All Drives' : 
-                   activeDrivesFilter === 'high-ctc' ? 'High CTC' :
-                   activeDrivesFilter === 'recent' ? 'Recent' : 'Most Applications'}
+                  {activeDrivesFilter === 'all' ? 'All Drives' :
+                    activeDrivesFilter === 'high-ctc' ? 'High CTC' :
+                      activeDrivesFilter === 'recent' ? 'Recent' : 'Most Applications'}
                 </span>
                 <ChevronDown className={`w-4 h-4 transition-transform ${showActiveDrivesDropdown ? 'rotate-180' : ''}`} />
               </button>
-              
+
               {showActiveDrivesDropdown && (
                 <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-10">
                   <div className="py-2">
@@ -630,9 +631,8 @@ export const TPODashboard: React.FC = () => {
                           setActiveDrivesFilter(option.value);
                           setShowActiveDrivesDropdown(false);
                         }}
-                        className={`w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
-                          activeDrivesFilter === option.value ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400' : 'text-gray-700 dark:text-gray-300'
-                        }`}
+                        className={`w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${activeDrivesFilter === option.value ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400' : 'text-gray-700 dark:text-gray-300'
+                          }`}
                       >
                         {option.label}
                       </button>
@@ -642,10 +642,10 @@ export const TPODashboard: React.FC = () => {
               )}
             </div>
           </div>
-          
+
           {(() => {
             let filteredDrives = jobDrives.filter((drive: any) => drive.status === 'active');
-            
+
             // Apply additional filtering based on dropdown selection
             switch (activeDrivesFilter) {
               case 'high-ctc':
@@ -655,13 +655,13 @@ export const TPODashboard: React.FC = () => {
                 });
                 break;
               case 'recent':
-                filteredDrives = filteredDrives.sort((a: any, b: any) => 
+                filteredDrives = filteredDrives.sort((a: any, b: any) =>
                   new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
                 );
                 break;
               case 'most-applications':
-                filteredDrives = filteredDrives.sort((a: any, b: any) => 
-                  (Array.isArray(b.applicants) ? b.applicants.length : 0) - 
+                filteredDrives = filteredDrives.sort((a: any, b: any) =>
+                  (Array.isArray(b.applicants) ? b.applicants.length : 0) -
                   (Array.isArray(a.applicants) ? a.applicants.length : 0)
                 );
                 break;
@@ -669,10 +669,10 @@ export const TPODashboard: React.FC = () => {
                 // 'all' - no additional filtering
                 break;
             }
-            
+
             const drivesToShow = showAllActiveDrives ? filteredDrives : filteredDrives.slice(0, 3);
             const hasMoreDrives = filteredDrives.length > 3;
-            
+
             return filteredDrives.length === 0 ? (
               <div className="text-center text-gray-400 dark:text-gray-500 py-8">
                 {activeDrivesFilter === 'all' ? 'No active drives.' : `No drives match the selected filter.`}
@@ -709,7 +709,7 @@ export const TPODashboard: React.FC = () => {
                     </div>
                   </motion.div>
                 ))}
-                
+
                 {hasMoreDrives && (
                   <button
                     onClick={() => setShowAllActiveDrives(!showAllActiveDrives)}
@@ -770,6 +770,7 @@ export const TPODashboard: React.FC = () => {
     { id: 'internships', label: 'Internships', icon: Building2 },
     { id: 'applications', label: 'Applications', icon: FileText },
     { id: 'students', label: 'Students', icon: UserPlus },
+    { id: 'offers', label: 'Offer Verification', icon: CheckCircle },
     { id: 'companies', label: 'Companies', icon: Building2 },
     { id: 'notifications', label: 'Notifications', icon: Bell }
   ];
@@ -831,8 +832,8 @@ export const TPODashboard: React.FC = () => {
           </div>
           <p className="text-white text-lg font-medium mb-2">Error Loading Dashboard</p>
           <p className="text-gray-400 mb-4">{error}</p>
-          <button 
-            onClick={() => window.location.reload()} 
+          <button
+            onClick={() => window.location.reload()}
             className="btn-primary">
             Try Again
           </button>
@@ -851,19 +852,19 @@ export const TPODashboard: React.FC = () => {
         {/* Tabs */}
         <div className="glass-panel">
           <div className="border-b border-white/10">
-            <nav className="flex space-x-8 px-6" aria-label="Tabs">
+            <nav className="flex overflow-x-auto scrollbar-hide px-4 sm:px-6 -mb-px" aria-label="Tabs">
               {tabs.map((tab: any) => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 transition-all duration-300 ${
-                    activeTab === tab.id
-                      ? 'border-indigo-500 text-white'
-                      : 'border-transparent text-gray-400 hover:text-gray-300 hover:border-white/20'
-                  }`}
+                  className={`py-3 sm:py-4 px-3 sm:px-4 border-b-2 font-medium text-xs sm:text-sm flex items-center space-x-1.5 sm:space-x-2 transition-all duration-300 whitespace-nowrap flex-shrink-0 ${activeTab === tab.id
+                    ? 'border-indigo-500 text-white'
+                    : 'border-transparent text-gray-400 hover:text-gray-300 hover:border-white/20'
+                    }`}
                 >
                   {tab.icon && React.createElement(tab.icon, { className: "h-4 w-4" })}
-                  <span>{tab.label}</span>
+                  <span className="hidden xs:inline sm:inline">{tab.label}</span>
+                  <span className="xs:hidden sm:hidden">{tab.label.split(' ')[0]}</span>
                 </button>
               ))}
             </nav>
@@ -941,6 +942,7 @@ export const TPODashboard: React.FC = () => {
               />
             )}
             {activeTab === 'companies' && <CompaniesList />}
+            {activeTab === 'offers' && <OfferVerificationTable />}
             {activeTab === 'notifications' && (
               <NotificationsSection notifications={notifications} tpoProfile={tpoProfile} />
             )}
@@ -1038,12 +1040,12 @@ export const TPODashboard: React.FC = () => {
                   <label className="block text-sm font-semibold mb-2 text-white">External Application URL (Optional)</label>
                   <div className="relative">
                     <ExternalLink className="absolute left-3 top-1/2 transform -translate-y-1/2 text-emerald-400 w-5 h-5" />
-                    <input 
-                      type="url" 
-                      placeholder="https://company.com/apply (optional)" 
-                      className="input-glass w-full pl-10" 
-                      value={driveForm.externalApplicationUrl} 
-                      onChange={e => setDriveForm({ ...driveForm, externalApplicationUrl: e.target.value })} 
+                    <input
+                      type="url"
+                      placeholder="https://company.com/apply (optional)"
+                      className="input-glass w-full pl-10"
+                      value={driveForm.externalApplicationUrl}
+                      onChange={e => setDriveForm({ ...driveForm, externalApplicationUrl: e.target.value })}
                     />
                   </div>
                   <p className="text-xs text-white/50 mt-2 ml-1">Students will see an additional "Application Link" button</p>
@@ -1052,9 +1054,9 @@ export const TPODashboard: React.FC = () => {
                   <label className="block text-sm font-semibold mb-2 text-white">Work Mode</label>
                   <div className="relative">
                     <Building2 className="absolute left-3 top-1/2 transform -translate-y-1/2 text-pink-400 w-5 h-5" />
-                    <select 
-                      className="input-glass w-full pl-10" 
-                      value={driveForm.workMode} 
+                    <select
+                      className="input-glass w-full pl-10"
+                      value={driveForm.workMode}
                       onChange={e => setDriveForm({ ...driveForm, workMode: e.target.value })}
                     >
                       <option value="">Select Work Mode</option>
@@ -1107,9 +1109,9 @@ export const TPODashboard: React.FC = () => {
             </form>
             <div className="flex justify-end gap-3 px-6 py-4 border-t border-white/10">
               <button type="button" onClick={() => { setShowDriveModal(false); setEditingDrive(null); }} className="btn-secondary">Cancel</button>
-              <button 
-                type="submit" 
-                form="drive-form" 
+              <button
+                type="submit"
+                form="drive-form"
                 disabled={isSubmittingDrive}
                 className={`btn-primary flex items-center gap-2 ${isSubmittingDrive ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
@@ -1120,7 +1122,7 @@ export const TPODashboard: React.FC = () => {
                   </>
                 ) : (
                   <>
-                    <UserPlus className="w-5 h-5" /> 
+                    <UserPlus className="w-5 h-5" />
                     {editingDrive ? 'Update Drive' : 'Create Drive'}
                   </>
                 )}

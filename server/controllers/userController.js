@@ -1,7 +1,7 @@
 const { validationResult } = require('express-validator');
 const User = require('../models/User');
 const upload = require('../middleware/upload');
-const { uploadToCloudinary } = require('../config/cloudinary');
+const { uploadFromBuffer, deleteFromCloudinary } = require('../config/cloudinary');
 const fs = require('fs');
 
 // @desc    Get logged-in user info
@@ -27,13 +27,13 @@ const getMe = async (req, res) => {
 const getAllUsers = async (req, res) => {
   try {
     const { role, status, page = 1, limit = 10 } = req.query;
-    
+
     const query = {};
     if (role) query.role = role;
     if (status) query.isApproved = status === 'approved';
 
     const skip = (page - 1) * limit;
-    
+
     const users = await User.find(query)
       .select('-password')
       .sort({ createdAt: -1 })
@@ -65,12 +65,12 @@ const getUsersByRole = async (req, res) => {
   try {
     const { role } = req.params;
     const { status, page = 1, limit = 10 } = req.query;
-    
+
     const query = { role };
     if (status) query.isApproved = status === 'approved';
 
     const skip = (page - 1) * limit;
-    
+
     const users = await User.find(query)
       .select('-password')
       .sort({ createdAt: -1 })
@@ -133,9 +133,9 @@ const createTPO = async (req, res) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ 
-        message: 'Validation failed', 
-        errors: errors.array() 
+      return res.status(400).json({
+        message: 'Validation failed',
+        errors: errors.array()
       });
     }
 
@@ -294,16 +294,17 @@ const uploadResume = async (req, res) => {
       return res.status(403).json({ message: 'Only students can upload resumes' });
     }
 
-    // Upload to Cloudinary
-    const cloudinaryResult = await uploadToCloudinary(req.file, 'resumes');
-
-    // Delete local file after upload (promise version)
-    try {
-      console.log('Deleting local file:', req.file.path);
-      await fs.promises.unlink(req.file.path);
-    } catch (err) {
-      console.error('Error deleting local resume file:', err);
+    // Delete old resume from Cloudinary if exists
+    if (user.resume && user.resume.public_id) {
+      try {
+        await deleteFromCloudinary(user.resume.public_id);
+      } catch (err) {
+        console.error('Error deleting old resume from Cloudinary:', err);
+      }
     }
+
+    // Upload to Cloudinary from buffer (memoryStorage)
+    const cloudinaryResult = await uploadFromBuffer(req.file.buffer, 'resumes');
 
     user.resume = {
       filename: req.file.originalname,
@@ -327,6 +328,40 @@ const uploadResume = async (req, res) => {
   }
 };
 
+// @desc    Delete resume
+// @route   DELETE /api/users/resume
+// @access  Private (Student)
+const deleteResume = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    if (user.role !== 'student') {
+      return res.status(403).json({ message: 'Only students can delete resumes' });
+    }
+
+    if (!user.resume || !user.resume.public_id) {
+      return res.status(404).json({ message: 'No resume found to delete' });
+    }
+
+    // Delete from Cloudinary
+    await deleteFromCloudinary(user.resume.public_id);
+
+    // Clear resume from user
+    user.resume = undefined;
+    user.calculateProfileScore();
+    await user.save();
+
+    res.json({ message: 'Resume deleted successfully' });
+  } catch (error) {
+    console.error('Delete resume error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+
 // @desc    Get eligible students for drive
 // @route   GET /api/users/eligible/:driveId
 // @access  Private (TPO/Company)
@@ -334,17 +369,17 @@ const getEligibleStudents = async (req, res) => {
   try {
     const { driveId } = req.params;
     const Drive = require('../models/Drive');
-    
+
     const drive = await Drive.findById(driveId);
     if (!drive) {
       return res.status(404).json({ message: 'Drive not found' });
     }
 
     // Get all approved students
-    const students = await User.find({ 
-      role: 'student', 
-      isApproved: true, 
-      isActive: true 
+    const students = await User.find({
+      role: 'student',
+      isApproved: true,
+      isActive: true
     }).select('-password');
 
     // Filter eligible students
@@ -388,9 +423,9 @@ const getUserStats = async (req, res) => {
     ]);
 
     const totalUsers = await User.countDocuments();
-    const pendingApprovals = await User.countDocuments({ 
-      isApproved: false, 
-      role: { $in: ['company', 'tpo'] } 
+    const pendingApprovals = await User.countDocuments({
+      isApproved: false,
+      role: { $in: ['company', 'tpo'] }
     });
 
     // Map roles to icons and colors
@@ -637,6 +672,7 @@ module.exports = {
   createStudentByTPO,
   updateProfile,
   uploadResume,
+  deleteResume,
   getEligibleStudents,
   getUserStats,
   addSkill,

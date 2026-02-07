@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Edit, Star, CheckCircle, Mail, Phone, Calendar, Globe, FileText, Eye, Download, Plus, X } from 'lucide-react';
+import { Edit, Star, CheckCircle, Mail, Phone, Calendar, Globe, FileText, Eye, Download, Plus, Trash2 } from 'lucide-react';
 import apiClient from '../../../services/apiClient';
 import Toast from './Toast';
 import Modal from './Modal';
@@ -169,33 +169,52 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, onUserUpdate }) =
     }
   };
 
+  const getResumeUrl = () => {
+    console.log('Resume debug info:', localUser?.resume);
+    if (!localUser?.resume) return null;
+    return localUser.resume.url || null;
+  };
+
   const handleViewResume = () => {
-    if (localUser?.resume?.url) {
-      window.open(localUser.resume.url, '_blank');
-    } else if (localUser?.resume?.filename) {
-      window.open(`/api/users/resume/${localUser.resume.filename}`, '_blank');
+    const url = getResumeUrl();
+    if (url) {
+      window.open(url, '_blank');
     } else {
       showToast('No resume uploaded yet', 'error');
     }
   };
 
   const handleDownloadResume = () => {
-    if (localUser?.resume?.url) {
+    const url = getResumeUrl();
+    if (url) {
       const link = document.createElement('a');
-      link.href = localUser.resume.url;
-      link.download = localUser.resume.filename || 'resume.pdf';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    } else if (localUser?.resume?.filename) {
-      const link = document.createElement('a');
-      link.href = `/api/users/resume/${localUser.resume.filename}`;
-      link.download = localUser.resume.filename;
+      link.href = url;
+      link.download = localUser?.resume?.filename || 'resume.pdf';
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
     } else {
       showToast('No resume uploaded yet', 'error');
+    }
+  };
+
+  const handleDeleteResume = async () => {
+    if (!localUser?.resume?.url) {
+      showToast('No resume to delete', 'error');
+      return;
+    }
+
+    if (!window.confirm('Are you sure you want to delete your resume?')) {
+      return;
+    }
+
+    try {
+      await apiClient.delete('/users/resume');
+      updateLocalUser({ resume: undefined });
+      showToast('Resume deleted successfully!', 'success');
+    } catch (error: any) {
+      console.error('Error deleting resume:', error);
+      showToast(error.response?.data?.message || 'Failed to delete resume', 'error');
     }
   };
 
@@ -286,11 +305,10 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, onUserUpdate }) =
           <button
             onClick={handleEditProfile}
             disabled={isEditing}
-            className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all ${
-              isEditing
-                ? 'bg-white/5 cursor-not-allowed'
-                : 'btn-primary'
-            }`}
+            className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all ${isEditing
+              ? 'bg-white/5 cursor-not-allowed'
+              : 'btn-primary'
+              }`}
           >
             {isEditing ? (
               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-indigo-400"></div>
@@ -334,7 +352,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, onUserUpdate }) =
       <div className="glass-card p-6">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-xl font-semibold text-white">Technical Skills</h3>
-          <button 
+          <button
             onClick={handleAddSkill}
             className="text-indigo-400 hover:text-indigo-300 font-medium flex items-center space-x-1"
           >
@@ -342,13 +360,13 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, onUserUpdate }) =
             <span>Add Skill</span>
           </button>
         </div>
-        
+
         {isAddingSkill && (
           <div className="mb-6 bg-white/[0.03] backdrop-blur-xl rounded-2xl border border-white/10 p-6">
             <div className="flex items-center justify-between mb-4">
               <h4 className="text-lg font-semibold text-white">Add New Skill</h4>
             </div>
-            
+
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -363,7 +381,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, onUserUpdate }) =
                   onKeyPress={(e) => e.key === 'Enter' && handleSaveSkill()}
                 />
               </div>
-              
+
               <div className="flex items-center gap-3 pt-2">
                 <button
                   onClick={handleSaveSkill}
@@ -382,7 +400,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, onUserUpdate }) =
             </div>
           </div>
         )}
-        
+
         <div className="flex flex-wrap gap-2">
           {localUser?.skills?.map((skill: string, index: number) => (
             <span
@@ -399,7 +417,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, onUserUpdate }) =
       <div className="glass-card p-6">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-xl font-semibold text-white">Projects</h3>
-          <button 
+          <button
             onClick={handleAddProject}
             className="text-indigo-400 hover:text-indigo-300 font-medium flex items-center space-x-1"
           >
@@ -407,13 +425,13 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, onUserUpdate }) =
             <span>Add Project</span>
           </button>
         </div>
-        
+
         {isAddingProject && (
           <div className="mb-6 bg-white/[0.03] backdrop-blur-xl rounded-2xl border border-white/10 p-6">
             <div className="flex items-center justify-between mb-6">
               <h4 className="text-lg font-semibold text-white">Add New Project</h4>
             </div>
-            
+
             <div className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
@@ -423,12 +441,12 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, onUserUpdate }) =
                   <input
                     type="text"
                     value={newProject.name}
-                    onChange={(e) => setNewProject({...newProject, name: e.target.value})}
+                    onChange={(e) => setNewProject({ ...newProject, name: e.target.value })}
                     placeholder="e.g., E-commerce Platform"
                     className="input-glass w-full"
                   />
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">
                     Technologies Used <span className="text-red-400">*</span>
@@ -436,26 +454,26 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, onUserUpdate }) =
                   <input
                     type="text"
                     value={newProject.tech}
-                    onChange={(e) => setNewProject({...newProject, tech: e.target.value})}
+                    onChange={(e) => setNewProject({ ...newProject, tech: e.target.value })}
                     placeholder="e.g., React, Node.js, MongoDB"
                     className="input-glass w-full"
                   />
                 </div>
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
                   Project Description <span className="text-red-400">*</span>
                 </label>
                 <textarea
                   value={newProject.description}
-                  onChange={(e) => setNewProject({...newProject, description: e.target.value})}
+                  onChange={(e) => setNewProject({ ...newProject, description: e.target.value })}
                   placeholder="Describe your project, its features, and your role..."
                   rows={4}
                   className="input-glass w-full resize-none"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
                   GitHub URL <span className="text-gray-500">(Optional)</span>
@@ -463,12 +481,12 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, onUserUpdate }) =
                 <input
                   type="url"
                   value={newProject.github}
-                  onChange={(e) => setNewProject({...newProject, github: e.target.value})}
+                  onChange={(e) => setNewProject({ ...newProject, github: e.target.value })}
                   placeholder="https://github.com/username/repository"
                   className="input-glass w-full"
                 />
               </div>
-              
+
               <div className="flex items-center gap-3 pt-2">
                 <button
                   onClick={handleSaveProject}
@@ -487,7 +505,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, onUserUpdate }) =
             </div>
           </div>
         )}
-        
+
         <div className="space-y-4">
           {localUser?.projects?.map((project: any, index: number) => (
             <div key={index} className="p-5 bg-white/5 rounded-xl border border-white/10 hover:bg-white/10 transition-all flex flex-col gap-2 mb-4">
@@ -521,12 +539,11 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, onUserUpdate }) =
       <div className="glass-card p-6">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-xl font-semibold text-white">Resume</h3>
-          <button 
+          <button
             onClick={handleUploadResume}
             disabled={isUploadingResume}
-            className={`text-indigo-400 hover:text-indigo-300 font-medium flex items-center space-x-1 ${
-              isUploadingResume ? 'opacity-50 cursor-not-allowed' : ''
-            }`}
+            className={`text-indigo-400 hover:text-indigo-300 font-medium flex items-center space-x-1 ${isUploadingResume ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
           >
             {isUploadingResume ? (
               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-indigo-400"></div>
@@ -549,20 +566,29 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, onUserUpdate }) =
             </div>
           </div>
           <div className="flex items-center space-x-2">
-            <button 
+            <button
               onClick={handleViewResume}
               className="p-2 text-gray-400 hover:bg-white/10 rounded-lg transition-colors"
               title="View Resume"
             >
               <Eye className="w-4 h-4" />
             </button>
-            <button 
+            <button
               onClick={handleDownloadResume}
               className="p-2 text-gray-400 hover:bg-white/10 rounded-lg transition-colors"
               title="Download Resume"
             >
               <Download className="w-4 h-4" />
             </button>
+            {localUser?.resume?.url && (
+              <button
+                onClick={handleDeleteResume}
+                className="p-2 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+                title="Delete Resume"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+            )}
           </div>
         </div>
       </div>

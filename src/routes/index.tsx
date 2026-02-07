@@ -12,6 +12,7 @@ import ChangePasswordPage from '../pages/auth/ChangePasswordPage';
 import AdminDashboard from '../components/dashboard/admin/AdminDashboard';
 import { TPODashboard } from '../components/dashboard/tpo/TPODashboard';
 import { StudentDashboard } from '../components/dashboard/student/StudentDashboard';
+import ReportGenerator from '../components/dashboard/admin/ReportGenerator';
 
 // Common Components
 import { Layout } from '../components/common/Layout';
@@ -41,7 +42,7 @@ const AppRoutes: React.FC = () => {
   // Redirect authenticated users to their dashboard
   const AuthenticatedRedirect = () => {
     if (!isAuthenticated) return <Navigate to="/login" />;
-    
+
     switch (user?.role) {
       case 'admin':
         return <Navigate to="/admin/dashboard" />;
@@ -60,10 +61,10 @@ const AppRoutes: React.FC = () => {
         {/* Public Routes */}
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
-        
+
         {/* Password Change Route */}
         <Route path="/change-password" element={<ChangePasswordPage />} />
-        
+
         {/* Protected Dashboard Routes */}
         <Route
           path="/admin/dashboard"
@@ -75,7 +76,18 @@ const AppRoutes: React.FC = () => {
             </AdminRoute>
           }
         />
-        
+
+        <Route
+          path="/admin/reports"
+          element={
+            <AdminRoute>
+              <Layout>
+                <ReportGenerator />
+              </Layout>
+            </AdminRoute>
+          }
+        />
+
         <Route
           path="/tpo/dashboard"
           element={
@@ -86,7 +98,7 @@ const AppRoutes: React.FC = () => {
             </TPORoute>
           }
         />
-        
+
         <Route
           path="/student/dashboard"
           element={
@@ -100,7 +112,7 @@ const AppRoutes: React.FC = () => {
 
         {/* Default redirect for authenticated users */}
         <Route path="/dashboard" element={<AuthenticatedRedirect />} />
-        
+
         {/* Catch all route */}
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>

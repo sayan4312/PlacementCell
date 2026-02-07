@@ -1,20 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import { 
-  Shield, 
-  Users, 
-  Building2, 
+import { useState, useEffect } from 'react';
+import {
+  Shield,
+  Users,
+  Building2,
   GraduationCap,
   BarChart3,
-  Activity,
-  Bell
+  Bell,
+  FileText
 } from 'lucide-react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart as RechartsPieChart, Cell, LineChart, Line, AreaChart, Area, Pie } from 'recharts';
 import apiClient from '../../../services/apiClient';
 import CompaniesSection from './CompaniesSection';
 import OverviewSection from './OverviewSection';
 import UsersSection from './UsersSection';
 import AnalyticsSection from './AnalyticsSection';
-import NotificationsSection from './NotificationsSection';
+import NotificationSection from './NotificationsSection';
+import ReportGenerator from './ReportGenerator';
 import { toast } from 'react-toastify';
 import { useLocation } from 'react-router-dom';
 
@@ -25,8 +25,7 @@ export default function AdminDashboard() {
 
   // Backend data states
   const [stats, setStats] = useState<any[]>([]);
-  const [placementData, setPlacementData] = useState<any[]>([]);
-  const [branchWiseData, setBranchWiseData] = useState<any[]>([]);
+  // Unused state removed: placementData, branchWiseData
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -100,9 +99,9 @@ export default function AdminDashboard() {
     ])
       .then(([
         statsRes,
-        placementRes,
-        roleDistRes,
-        branchWiseRes,
+        _placementRes,
+        _roleDistRes,
+        _branchWiseRes,
         usersRes,
         activeUsersRes,
         jobAppsRes,
@@ -112,8 +111,8 @@ export default function AdminDashboard() {
         notificationsRes
       ]) => {
         setStats(statsRes.data.stats || []);
-        setPlacementData(placementRes.data.placementData || []);
-        setBranchWiseData(branchWiseRes.data.branchWiseData || []);
+        // placementData, roleDist, branchWiseData unused in this scope
+
         // Filter out admin users
         const filteredUsers = (usersRes.data.users || []).filter((u: any) => u.role !== 'admin');
         setUsers(filteredUsers);
@@ -263,6 +262,7 @@ export default function AdminDashboard() {
     { id: 'users', label: 'User Management', icon: Users },
     { id: 'companies', label: 'Companies', icon: Building2 },
     { id: 'analytics', label: 'Analytics', icon: BarChart3 },
+    { id: 'reports', label: 'Reports', icon: FileText },
     { id: 'notifications', label: 'Notifications', icon: Bell }
   ];
 
@@ -272,19 +272,19 @@ export default function AdminDashboard() {
         {/* Tabs */}
         <div className="glass-panel">
           <div className="border-b border-white/10">
-            <nav className="flex space-x-8 px-6" aria-label="Tabs">
+            <nav className="flex overflow-x-auto scrollbar-hide px-4 sm:px-6 -mb-px" aria-label="Tabs">
               {tabs.map((tab: any) => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 transition-all duration-300 ${
-                    activeTab === tab.id
-                      ? 'border-indigo-500 text-white'
-                      : 'border-transparent text-gray-400 hover:text-gray-300 hover:border-white/20'
-                  }`}
+                  className={`py-3 sm:py-4 px-3 sm:px-4 border-b-2 font-medium text-xs sm:text-sm flex items-center space-x-1.5 sm:space-x-2 transition-all duration-300 whitespace-nowrap flex-shrink-0 ${activeTab === tab.id
+                    ? 'border-indigo-500 text-white'
+                    : 'border-transparent text-gray-400 hover:text-gray-300 hover:border-white/20'
+                    }`}
                 >
                   {tab.icon && <tab.icon className="h-4 w-4" />}
-                  <span>{tab.label}</span>
+                  <span className="hidden xs:inline sm:inline">{tab.label}</span>
+                  <span className="xs:hidden sm:hidden">{tab.label.split(' ')[0]}</span>
                 </button>
               ))}
             </nav>
@@ -335,11 +335,10 @@ export default function AdminDashboard() {
                     monthlySuccessRate={monthlySuccessRate}
                     systemUptime={systemUptime}
                     companyEngagement={companyEngagement}
-                    placementData={placementData}
-                    branchWiseData={branchWiseData}
                   />
                 )}
-                {activeTab === 'notifications' && <NotificationsSection notifications={notifications} />}
+                {activeTab === 'reports' && <ReportGenerator />}
+                {activeTab === 'notifications' && <NotificationSection notifications={notifications} />}
               </>
             )}
           </div>
@@ -366,33 +365,33 @@ export default function AdminDashboard() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium mb-2 text-gray-300">Name *</label>
-                  <input 
-                    type="text" 
-                    className="input-glass" 
-                    value={tpoForm.name} 
-                    onChange={e => setTpoForm({ ...tpoForm, name: e.target.value })} 
+                  <input
+                    type="text"
+                    className="input-glass"
+                    value={tpoForm.name}
+                    onChange={e => setTpoForm({ ...tpoForm, name: e.target.value })}
                     placeholder="Enter name"
-                    required 
+                    required
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-2 text-gray-300">Email *</label>
-                  <input 
-                    type="email" 
-                    className="input-glass" 
-                    value={tpoForm.email} 
-                    onChange={e => setTpoForm({ ...tpoForm, email: e.target.value })} 
+                  <input
+                    type="email"
+                    className="input-glass"
+                    value={tpoForm.email}
+                    onChange={e => setTpoForm({ ...tpoForm, email: e.target.value })}
                     placeholder="Enter email"
-                    required 
+                    required
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium mb-2 text-gray-300">Department</label>
-                  <select 
-                    className="input-glass" 
-                    value={tpoForm.department} 
-                    onChange={e => setTpoForm({ ...tpoForm, department: e.target.value })} 
+                  <select
+                    className="input-glass"
+                    value={tpoForm.department}
+                    onChange={e => setTpoForm({ ...tpoForm, department: e.target.value })}
                   >
                     <option value="">Select Department</option>
                     <option value="Computer Science">Computer Science</option>
@@ -407,20 +406,20 @@ export default function AdminDashboard() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-2 text-gray-300">Experience</label>
-                  <input 
-                    type="text" 
-                    className="input-glass" 
-                    value={tpoForm.experience} 
-                    onChange={e => setTpoForm({ ...tpoForm, experience: e.target.value })} 
+                  <input
+                    type="text"
+                    className="input-glass"
+                    value={tpoForm.experience}
+                    onChange={e => setTpoForm({ ...tpoForm, experience: e.target.value })}
                     placeholder="e.g., 5 years"
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-2 text-gray-300">Qualification</label>
-                  <select 
-                    className="input-glass" 
-                    value={tpoForm.qualification} 
-                    onChange={e => setTpoForm({ ...tpoForm, qualification: e.target.value })} 
+                  <select
+                    className="input-glass"
+                    value={tpoForm.qualification}
+                    onChange={e => setTpoForm({ ...tpoForm, qualification: e.target.value })}
                   >
                     <option value="">Select Qualification</option>
                     <option value="B.Tech">B.Tech</option>
@@ -432,11 +431,11 @@ export default function AdminDashboard() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-2 text-gray-300">Specialization</label>
-                  <input 
-                    type="text" 
-                    className="input-glass" 
-                    value={tpoForm.specialization} 
-                    onChange={e => setTpoForm({ ...tpoForm, specialization: e.target.value })} 
+                  <input
+                    type="text"
+                    className="input-glass"
+                    value={tpoForm.specialization}
+                    onChange={e => setTpoForm({ ...tpoForm, specialization: e.target.value })}
                     placeholder="Enter specialization"
                   />
                 </div>
@@ -455,71 +454,71 @@ export default function AdminDashboard() {
         </div>
       )}
 
-{showEditTpoModal && editTpo && (
-  <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-    <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-lg md:max-w-xl relative flex flex-col" style={{ maxHeight: '90vh' }}>
-      <div className="flex flex-col md:flex-row items-start md:items-center px-6 py-4 rounded-t-2xl bg-gradient-to-r from-green-700 to-blue-700 relative">
-        <Users className="w-8 h-8 text-white mr-3 mb-2 md:mb-0" />
-        <div className="flex-1">
-          <h2 className="text-xl font-bold text-white">Edit TPO</h2>
-          <p className="text-white text-xs opacity-80 mt-1">Update TPO information.</p>
+      {showEditTpoModal && editTpo && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-lg md:max-w-xl relative flex flex-col" style={{ maxHeight: '90vh' }}>
+            <div className="flex flex-col md:flex-row items-start md:items-center px-6 py-4 rounded-t-2xl bg-gradient-to-r from-green-700 to-blue-700 relative">
+              <Users className="w-8 h-8 text-white mr-3 mb-2 md:mb-0" />
+              <div className="flex-1">
+                <h2 className="text-xl font-bold text-white">Edit TPO</h2>
+                <p className="text-white text-xs opacity-80 mt-1">Update TPO information.</p>
+              </div>
+              <button onClick={() => setShowEditTpoModal(false)} className="absolute top-3 right-3 z-10 text-white hover:text-gray-200 focus:outline-none bg-black/20 rounded-full p-1">
+                <span className="text-xl">&times;</span>
+              </button>
+            </div>
+            <form onSubmit={e => { e.preventDefault(); handleEditTpoSubmit(); }} className="flex-1 overflow-y-auto px-6 py-4 space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">Name</label>
+                  <input type="text" className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white" value={editTpoForm.name} onChange={e => setEditTpoForm({ ...editTpoForm, name: e.target.value })} required />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">Email</label>
+                  <input type="email" className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white" value={editTpoForm.email} onChange={e => setEditTpoForm({ ...editTpoForm, email: e.target.value })} required />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">Department</label>
+                  <select className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white" value={editTpoForm.department} onChange={e => setEditTpoForm({ ...editTpoForm, department: e.target.value })}>
+                    <option value="">Select Department</option>
+                    <option value="Computer Science">Computer Science</option>
+                    <option value="Information Technology">Information Technology</option>
+                    <option value="Electronics & Communication">Electronics & Communication</option>
+                    <option value="Electrical Engineering">Electrical Engineering</option>
+                    <option value="Mechanical Engineering">Mechanical Engineering</option>
+                    <option value="Civil Engineering">Civil Engineering</option>
+                    <option value="Data Science">Data Science</option>
+                    <option value="AIML">AIML</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">Experience</label>
+                  <input type="text" className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white" value={editTpoForm.experience} onChange={e => setEditTpoForm({ ...editTpoForm, experience: e.target.value })} />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">Qualification</label>
+                  <select className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white" value={editTpoForm.qualification} onChange={e => setEditTpoForm({ ...editTpoForm, qualification: e.target.value })}>
+                    <option value="">Select Qualification</option>
+                    <option value="B.Tech">B.Tech</option>
+                    <option value="M.Tech">M.Tech</option>
+                    <option value="MBA">MBA</option>
+                    <option value="PhD">PhD</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">Specialization</label>
+                  <input type="text" className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white" value={editTpoForm.specialization} onChange={e => setEditTpoForm({ ...editTpoForm, specialization: e.target.value })} />
+                </div>
+              </div>
+              {editTpoError && <div className="text-red-600 text-sm text-center">{editTpoError}</div>}
+              <div className="flex justify-end mt-4">
+                <button type="submit" className="px-6 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 focus:outline-none">Update TPO</button>
+              </div>
+            </form>
+          </div>
         </div>
-        <button onClick={() => setShowEditTpoModal(false)} className="absolute top-3 right-3 z-10 text-white hover:text-gray-200 focus:outline-none bg-black/20 rounded-full p-1">
-          <span className="text-xl">&times;</span>
-        </button>
-      </div>
-      <form onSubmit={e => { e.preventDefault(); handleEditTpoSubmit(); }} className="flex-1 overflow-y-auto px-6 py-4 space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">Name</label>
-            <input type="text" className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white" value={editTpoForm.name} onChange={e => setEditTpoForm({ ...editTpoForm, name: e.target.value })} required />
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">Email</label>
-            <input type="email" className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white" value={editTpoForm.email} onChange={e => setEditTpoForm({ ...editTpoForm, email: e.target.value })} required />
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">Department</label>
-            <select className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white" value={editTpoForm.department} onChange={e => setEditTpoForm({ ...editTpoForm, department: e.target.value })}>
-              <option value="">Select Department</option>
-              <option value="Computer Science">Computer Science</option>
-              <option value="Information Technology">Information Technology</option>
-              <option value="Electronics & Communication">Electronics & Communication</option>
-              <option value="Electrical Engineering">Electrical Engineering</option>
-              <option value="Mechanical Engineering">Mechanical Engineering</option>
-              <option value="Civil Engineering">Civil Engineering</option>
-              <option value="Data Science">Data Science</option>
-              <option value="AIML">AIML</option>
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">Experience</label>
-            <input type="text" className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white" value={editTpoForm.experience} onChange={e => setEditTpoForm({ ...editTpoForm, experience: e.target.value })} />
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">Qualification</label>
-            <select className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white" value={editTpoForm.qualification} onChange={e => setEditTpoForm({ ...editTpoForm, qualification: e.target.value })}>
-              <option value="">Select Qualification</option>
-              <option value="B.Tech">B.Tech</option>
-              <option value="M.Tech">M.Tech</option>
-              <option value="MBA">MBA</option>
-              <option value="PhD">PhD</option>
-              <option value="Other">Other</option>
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">Specialization</label>
-            <input type="text" className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white" value={editTpoForm.specialization} onChange={e => setEditTpoForm({ ...editTpoForm, specialization: e.target.value })} />
-          </div>
-        </div>
-        {editTpoError && <div className="text-red-600 text-sm text-center">{editTpoError}</div>}
-        <div className="flex justify-end mt-4">
-          <button type="submit" className="px-6 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 focus:outline-none">Update TPO</button>
-        </div>
-      </form>
-    </div>
-  </div>
-)}
+      )}
 
     </div>
   );

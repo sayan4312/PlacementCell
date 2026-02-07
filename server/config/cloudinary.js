@@ -42,8 +42,30 @@ const deleteFromCloudinary = async (public_id) => {
   }
 };
 
+const uploadFromBuffer = (buffer, folder = 'offers') => {
+  return new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      {
+        folder: folder,
+        resource_type: 'auto',
+      },
+      (error, result) => {
+        if (error) return reject(error);
+        resolve({
+          url: result.secure_url,
+          public_id: result.public_id,
+          format: result.format,
+          size: result.bytes
+        });
+      }
+    );
+    stream.end(buffer);
+  });
+};
+
 module.exports = {
   configureCloudinary,
   uploadToCloudinary,
+  uploadFromBuffer,
   deleteFromCloudinary
-}; 
+};

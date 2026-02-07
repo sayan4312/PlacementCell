@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  User, 
-  Briefcase, 
-  FileText, 
-  Bell, 
+import {
+  User,
+  Briefcase,
+  FileText,
+  Bell,
   TrendingUp,
-  Building2
+  Building2,
+  CheckCircle
 } from 'lucide-react';
 import apiClient from '../../../services/apiClient';
 import { notificationAPI } from '../../../services/apiClient';
@@ -15,6 +16,7 @@ import DrivesSection from './DrivesSection';
 import InternshipsSection from './InternshipsSection';
 import ApplicationsSection from './ApplicationsSection';
 import NotificationsSection from './NotificationsSection';
+import StudentOffers from '../../offers/StudentOffers';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useLocation } from 'react-router-dom';
@@ -173,21 +175,21 @@ export const StudentDashboard: React.FC = () => {
       setInternships(internshipsRes.data.internships || []);
       setApplications(applicationsRes.data.applications || []);
       setNotifications(notificationsRes.data.notifications || []);
-      
+
       // Process stats
       const statsData = statsRes.data;
       console.log('Stats API response:', statsData); // Debug log
-      
+
       // Convert stats array to object for easier access
-      const statsMap = (statsData.stats && Array.isArray(statsData.stats)) 
+      const statsMap = (statsData.stats && Array.isArray(statsData.stats))
         ? statsData.stats.reduce((acc: any, stat: any) => {
-            acc[stat._id] = stat.count;
-            return acc;
-          }, {})
+          acc[stat._id] = stat.count;
+          return acc;
+        }, {})
         : {};
-      
+
       console.log('Processed stats map:', statsMap); // Debug log
-      
+
       const processedStats: Stats = {
         totalApplications: statsData.totalApplications || 0,
         pendingApplications: statsMap.pending || 0,
@@ -204,34 +206,34 @@ export const StudentDashboard: React.FC = () => {
       const trends = [];
       const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
       const currentDate = new Date();
-      
+
       // Get last 6 months
       for (let i = 5; i >= 0; i--) {
         const targetDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
         const monthName = months[targetDate.getMonth()];
         const monthStart = new Date(targetDate.getFullYear(), targetDate.getMonth(), 1);
         const monthEnd = new Date(targetDate.getFullYear(), targetDate.getMonth() + 1, 0);
-        
+
         // Count applications in this month
         const monthApplications = applications.filter((app: any) => {
           const appDate = new Date(app.appliedAt);
           return appDate >= monthStart && appDate <= monthEnd;
         }).length;
-        
+
         // Count interviews in this month (applications with interview_scheduled status)
         const monthInterviews = applications.filter((app: any) => {
           const appDate = new Date(app.appliedAt);
-          return appDate >= monthStart && appDate <= monthEnd && 
-                 (app.status === 'shortlisted' || app.status === 'selected');
+          return appDate >= monthStart && appDate <= monthEnd &&
+            (app.status === 'shortlisted' || app.status === 'selected');
         }).length;
-        
+
         trends.push({
           month: monthName,
           applications: monthApplications,
           interviews: monthInterviews
         });
       }
-      
+
       setApplicationTrends(trends);
 
     } catch (err: any) {
@@ -275,7 +277,7 @@ export const StudentDashboard: React.FC = () => {
   };
 
   const renderOverviewTab = () => (
-    <OverviewSection 
+    <OverviewSection
       user={user}
       stats={stats}
       applicationTrends={applicationTrends}
@@ -284,14 +286,14 @@ export const StudentDashboard: React.FC = () => {
   );
 
   const renderProfileTab = () => (
-    <ProfileSection 
-      user={user} 
+    <ProfileSection
+      user={user}
       onUserUpdate={(updatedUser) => setUser(updatedUser)}
     />
   );
 
   const renderDrivesTab = () => (
-    <DrivesSection 
+    <DrivesSection
       drives={drives}
       searchTerm={searchTerm}
       setSearchTerm={setSearchTerm}
@@ -303,7 +305,7 @@ export const StudentDashboard: React.FC = () => {
   );
 
   const renderInternshipsTab = () => (
-    <InternshipsSection 
+    <InternshipsSection
       internships={internships}
       searchTerm={internshipSearch}
       setSearchTerm={setInternshipSearch}
@@ -314,7 +316,7 @@ export const StudentDashboard: React.FC = () => {
   );
 
   const renderApplicationsTab = () => (
-    <ApplicationsSection 
+    <ApplicationsSection
       applications={applications}
       formatDate={formatDate}
     />
@@ -330,6 +332,7 @@ export const StudentDashboard: React.FC = () => {
     { id: 'drives', label: 'Job Drives', icon: Briefcase },
     { id: 'internships', label: 'Internships', icon: Building2 },
     { id: 'applications', label: 'My Applications', icon: FileText },
+    { id: 'offers', label: 'Offers', icon: CheckCircle },
     { id: 'notifications', label: 'Notifications', icon: Bell }
   ];
 
@@ -373,19 +376,19 @@ export const StudentDashboard: React.FC = () => {
         {/* Tabs */}
         <div className="glass-panel">
           <div className="border-b border-white/10">
-            <nav className="flex space-x-8 px-6" aria-label="Tabs">
+            <nav className="flex overflow-x-auto scrollbar-hide px-4 sm:px-6 -mb-px" aria-label="Tabs">
               {tabs.map((tab: any) => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 transition-all duration-300 ${
-                    activeTab === tab.id
-                      ? 'border-indigo-500 text-white'
-                      : 'border-transparent text-gray-400 hover:text-gray-300 hover:border-white/20'
-                  }`}
+                  className={`py-3 sm:py-4 px-3 sm:px-4 border-b-2 font-medium text-xs sm:text-sm flex items-center space-x-1.5 sm:space-x-2 transition-all duration-300 whitespace-nowrap flex-shrink-0 ${activeTab === tab.id
+                    ? 'border-indigo-500 text-white'
+                    : 'border-transparent text-gray-400 hover:text-gray-300 hover:border-white/20'
+                    }`}
                 >
                   <tab.icon className="h-4 w-4" />
-                  <span>{tab.label}</span>
+                  <span className="hidden xs:inline sm:inline">{tab.label}</span>
+                  <span className="xs:hidden sm:hidden">{tab.label.split(' ')[0]}</span>
                 </button>
               ))}
             </nav>
@@ -397,6 +400,7 @@ export const StudentDashboard: React.FC = () => {
             {activeTab === 'drives' && renderDrivesTab()}
             {activeTab === 'internships' && renderInternshipsTab()}
             {activeTab === 'applications' && renderApplicationsTab()}
+            {activeTab === 'offers' && <StudentOffers />}
             {activeTab === 'notifications' && renderNotificationsTab()}
           </div>
         </div>

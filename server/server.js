@@ -20,6 +20,8 @@ const adminRoutes = require('./routes/admin');
 const analyticsRoutes = require('./routes/analytics');
 const notificationRoutes = require('./routes/notifications');
 const companyRoutes = require('./routes/company');
+const reportRoutes = require('./routes/reportRoutes');
+const offerRoutes = require('./routes/offerRoutes');
 
 const app = express();
 
@@ -42,8 +44,8 @@ app.use('/uploads', express.static('uploads'));
 
 // Health check endpoint (before auth middleware)
 app.get('/api/health', (req, res) => {
-  res.json({ 
-    status: 'OK', 
+  res.json({
+    status: 'OK',
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
     environment: process.env.NODE_ENV || 'development'
@@ -55,10 +57,10 @@ const initializeServer = async () => {
   try {
     // Connect to database first
     await connectDB();
-    
+
     // Routes (after database connection is established)
-    app.use('/api/auth', authRoutes); 
-    app.use('/api', auth); 
+    app.use('/api/auth', authRoutes);
+    app.use('/api', auth);
     app.use('/api/users', userRoutes);
     app.use('/api/drives', driveRoutes);
     app.use('/api/applications', applicationRoutes);
@@ -67,11 +69,13 @@ const initializeServer = async () => {
     app.use('/api/admin', adminRoutes);
     app.use('/api/analytics', analyticsRoutes);
     app.use('/api/companies', companyRoutes);
+    app.use('/api/reports', reportRoutes);
+    app.use('/api/offers', offerRoutes);
 
     // Error handling middleware
     app.use((err, req, res, next) => {
       console.error(err.stack);
-      
+
       // Handle multer errors
       if (err.name === 'MulterError') {
         if (err.code === 'LIMIT_FILE_SIZE') {
@@ -85,9 +89,9 @@ const initializeServer = async () => {
       // Handle validation errors
       if (err.name === 'ValidationError') {
         const errors = Object.values(err.errors).map(error => error.message);
-        return res.status(400).json({ 
+        return res.status(400).json({
           message: 'Validation failed',
-          errors 
+          errors
         });
       }
 
@@ -107,12 +111,12 @@ const initializeServer = async () => {
 
       if (err.code === 11000) {
         const field = Object.keys(err.keyValue)[0];
-        return res.status(400).json({ 
-          message: `${field} already exists` 
+        return res.status(400).json({
+          message: `${field} already exists`
         });
       }
 
-      res.status(500).json({ 
+      res.status(500).json({
         message: 'Something went wrong!',
         error: process.env.NODE_ENV === 'development' ? err.message : 'Internal server error'
       });

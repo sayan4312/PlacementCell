@@ -9,16 +9,7 @@ if (!fs.existsSync(uploadDir)) {
 }
 
 // Configure storage
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadDir);
-  },
-  filename: (req, file, cb) => {
-    // Generate unique filename
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
-  }
-});
+const storage = multer.memoryStorage();
 
 // File filter
 const fileFilter = (req, file, cb) => {
@@ -50,6 +41,17 @@ const fileFilter = (req, file, cb) => {
       cb(new Error('Only CSV or Excel files are allowed for student import'), false);
     }
   }
+  // Allow PDF and images for offer letters
+  else if (file.fieldname === 'offerLetter') {
+    if (
+      file.mimetype === 'application/pdf' ||
+      file.mimetype.startsWith('image/')
+    ) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only PDF or image files are allowed for offer letters'), false);
+    }
+  }
   else {
     cb(new Error('Unexpected field'), false);
   }
@@ -74,11 +76,11 @@ const handleMulterError = (err, req, res, next) => {
       return res.status(400).json({ message: 'Unexpected field name.' });
     }
   }
-  
+
   if (err.message) {
     return res.status(400).json({ message: err.message });
   }
-  
+
   next(err);
 };
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Shield, GraduationCap, UserCog } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { ResponsiveContainer, AreaChart, CartesianGrid, XAxis, YAxis, Tooltip, Area, PieChart as RechartsPieChart, Pie, Cell } from 'recharts';
+import { ResponsiveContainer, BarChart, Bar, CartesianGrid, XAxis, YAxis, Tooltip, PieChart as RechartsPieChart, Pie, Cell } from 'recharts';
 
 const iconMap: Record<string, any> = {
   Shield,
@@ -34,7 +34,7 @@ const OverviewSection = ({
       {stats.map((stat: any, index: number) => {
         // Define icon background colors based on stat type
         const getIconStyles = () => {
-          switch(stat.label) {
+          switch (stat.label) {
             case 'TPOs':
               return 'bg-blue-500/20 text-blue-400';
             case 'Students':
@@ -47,7 +47,7 @@ const OverviewSection = ({
               return 'bg-indigo-500/20 text-indigo-400';
           }
         };
-        
+
         return (
           <motion.div
             key={index}
@@ -79,29 +79,19 @@ const OverviewSection = ({
     {/* Charts */}
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <div className="glass-card p-6">
-        <h3 className="text-xl font-bold text-white mb-6">Placement Trends</h3>
+        <h3 className="text-xl font-bold text-white mb-6">Student Registration by Branch</h3>
         <div className="h-[300px] w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={overviewPlacementTrends}>
-              <defs>
-                <linearGradient id="colorPlacements" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#818cf8" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="#818cf8" stopOpacity={0} />
-                </linearGradient>
-                <linearGradient id="colorApplications" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
-                </linearGradient>
-              </defs>
+            <BarChart data={overviewBranchWise}>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-              <XAxis dataKey="month" stroke="#9ca3af" tick={{ fill: '#9ca3af' }} />
+              <XAxis dataKey="branch" stroke="#9ca3af" tick={{ fill: '#9ca3af', fontSize: 12 }} interval={0} angle={-30} textAnchor="end" height={60} />
               <YAxis stroke="#9ca3af" tick={{ fill: '#9ca3af' }} />
               <Tooltip
                 contentStyle={{ backgroundColor: 'rgba(15, 23, 42, 0.9)', borderColor: 'rgba(255,255,255,0.1)', color: '#fff', borderRadius: '0.75rem' }}
+                cursor={{ fill: 'rgba(255,255,255,0.05)' }}
               />
-              <Area type="monotone" dataKey="placements" stroke="#818cf8" strokeWidth={3} fillOpacity={1} fill="url(#colorPlacements)" />
-              <Area type="monotone" dataKey="applications" stroke="#10b981" strokeWidth={2} fillOpacity={1} fill="url(#colorApplications)" />
-            </AreaChart>
+              <Bar dataKey="students" name="Registered Students" fill="#818cf8" radius={[4, 4, 0, 0]} />
+            </BarChart>
           </ResponsiveContainer>
         </div>
       </div>

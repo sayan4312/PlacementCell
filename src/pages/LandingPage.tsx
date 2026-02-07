@@ -1,10 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { 
-  GraduationCap, 
-  Building2, 
-  Users, 
+import {
+  GraduationCap,
+  Building2,
+  Users,
   ArrowRight,
 
   Linkedin,
@@ -20,20 +20,9 @@ import {
 } from 'lucide-react';
 import { Navbar } from '../components/common/Navbar';
 import { useAuthStore } from '../store/authStore';
-import { useThemeStore } from '../store/themeStore';
 
 export const LandingPage: React.FC = () => {
   const { user } = useAuthStore();
-  const { isDarkMode } = useThemeStore();
-
-
-  React.useEffect(() => {
-    if (isDarkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [isDarkMode]);
 
   const features = [
     {
@@ -107,7 +96,7 @@ export const LandingPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-dark-bg">
       <Navbar />
-      
+
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 overflow-hidden">
         {/* Background Glow Effects */}
@@ -136,7 +125,7 @@ export const LandingPage: React.FC = () => {
               </h1>
             </motion.div>
 
-            <motion.p 
+            <motion.p
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
@@ -353,11 +342,11 @@ export const LandingPage: React.FC = () => {
             <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">
               Ready to Transform Your Career Journey?
             </h2>
-            
+
             <p className="text-lg text-gray-400 mb-8 max-w-2xl mx-auto">
               Join thousands of students and companies who trust our platform for campus placements.
             </p>
-            
+
             <Link to={user ? getDashboardLink() : '/login'}>
               <button className="btn-primary text-lg">
                 {user ? 'Go to Dashboard' : 'Get Started Today'}
@@ -391,7 +380,7 @@ export const LandingPage: React.FC = () => {
             </motion.div>
 
             {/* Social Links */}
-            <motion.div 
+            <motion.div
               className="flex space-x-4"
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
@@ -417,7 +406,7 @@ export const LandingPage: React.FC = () => {
             </motion.div>
 
             {/* Copyright */}
-            <motion.div 
+            <motion.div
               className="text-gray-500 text-sm text-center md:text-right"
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}

@@ -1,5 +1,5 @@
 import { Activity, BarChart3, TrendingUp, Zap } from 'lucide-react';
-import { ResponsiveContainer, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Bar, LineChart, Line } from 'recharts';
+import { ResponsiveContainer, AreaChart, Area, CartesianGrid, XAxis, YAxis, Tooltip, LineChart, Line } from 'recharts';
 import { motion } from 'framer-motion';
 
 const AnalyticsSection = ({
@@ -7,17 +7,13 @@ const AnalyticsSection = ({
   monthlyJobApplications,
   monthlySuccessRate,
   systemUptime,
-  companyEngagement,
-  placementData,
-  branchWiseData
+  companyEngagement
 }: {
   monthlyActiveUsers: any;
   monthlyJobApplications: any;
   monthlySuccessRate: any;
   systemUptime: any;
   companyEngagement: any;
-  placementData: any;
-  branchWiseData: any;
 }) => {
   const metrics = [
     {
@@ -82,90 +78,70 @@ const AnalyticsSection = ({
       {/* Detailed Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="glass-card p-6">
-          <h4 className="text-lg font-semibold text-white mb-4">Placement Trends</h4>
+          <h4 className="text-lg font-semibold text-white mb-4">Monthly Application Volume</h4>
           <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={placementData}>
+            <AreaChart data={monthlyJobApplications}>
               <defs>
-                <linearGradient id="colorPlacementsAdmin" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#6366f1" stopOpacity={0.8} />
-                  <stop offset="100%" stopColor="#6366f1" stopOpacity={0.3} />
-                </linearGradient>
-                <linearGradient id="colorApplicationsAdmin" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#10b981" stopOpacity={0.8} />
-                  <stop offset="100%" stopColor="#10b981" stopOpacity={0.3} />
+                <linearGradient id="colorApps" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
               <XAxis dataKey="month" stroke="#9ca3af" />
               <YAxis stroke="#9ca3af" />
-              <Tooltip 
-                contentStyle={{ 
-                  backgroundColor: 'rgba(15, 23, 42, 0.9)', 
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: 'rgba(15, 23, 42, 0.9)',
                   border: '1px solid rgba(255, 255, 255, 0.1)',
                   borderRadius: '8px',
                   color: '#fff'
-                }} 
+                }}
               />
-              <Bar dataKey="placements" fill="url(#colorPlacementsAdmin)" name="Successful Placements" radius={[8, 8, 0, 0]} />
-              <Bar dataKey="applications" fill="url(#colorApplicationsAdmin)" name="Total Applications" radius={[8, 8, 0, 0]} />
-            </BarChart>
+              <Area type="monotone" dataKey="applications" stroke="#10b981" fillOpacity={1} fill="url(#colorApps)" strokeWidth={3} />
+            </AreaChart>
           </ResponsiveContainer>
         </motion.div>
+
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="glass-card p-6">
           <h4 className="text-lg font-semibold text-white mb-4">Company Engagement</h4>
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={companyEngagement}>
-              <defs>
-                <linearGradient id="colorCompaniesAdmin" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#a855f7" stopOpacity={0.8} />
-                  <stop offset="100%" stopColor="#a855f7" stopOpacity={0.3} />
-                </linearGradient>
-              </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
               <XAxis dataKey="month" stroke="#9ca3af" />
               <YAxis stroke="#9ca3af" />
-              <Tooltip 
-                contentStyle={{ 
-                  backgroundColor: 'rgba(15, 23, 42, 0.9)', 
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: 'rgba(15, 23, 42, 0.9)',
                   border: '1px solid rgba(255, 255, 255, 0.1)',
                   borderRadius: '8px',
                   color: '#fff'
-                }} 
+                }}
               />
               <Line type="monotone" dataKey="companies" stroke="#a855f7" strokeWidth={3} dot={{ fill: '#a855f7', r: 4 }} />
             </LineChart>
           </ResponsiveContainer>
         </motion.div>
       </div>
-      {/* Performance Metrics */}
+
+      {/* User Growth */}
       <div className="glass-card p-6">
-        <h4 className="text-lg font-semibold text-white mb-4">Branch Performance Comparison</h4>
+        <h4 className="text-lg font-semibold text-white mb-4">User Growth Trends</h4>
         <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={branchWiseData} layout="horizontal">
-            <defs>
-              <linearGradient id="colorStudentsAdmin" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#6366f1" stopOpacity={0.8} />
-                <stop offset="100%" stopColor="#6366f1" stopOpacity={0.3} />
-              </linearGradient>
-              <linearGradient id="colorPlacedAdmin" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#10b981" stopOpacity={0.8} />
-                <stop offset="100%" stopColor="#10b981" stopOpacity={0.3} />
-              </linearGradient>
-            </defs>
+          <LineChart data={monthlyActiveUsers}>
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-            <XAxis type="number" stroke="#9ca3af" />
-            <YAxis dataKey="branch" type="category" width={150} stroke="#9ca3af" />
-            <Tooltip 
-              contentStyle={{ 
-                backgroundColor: 'rgba(15, 23, 42, 0.9)', 
+            <XAxis dataKey="month" stroke="#9ca3af" />
+            <YAxis stroke="#9ca3af" />
+            <Tooltip
+              contentStyle={{
+                backgroundColor: 'rgba(15, 23, 42, 0.9)',
                 border: '1px solid rgba(255, 255, 255, 0.1)',
                 borderRadius: '8px',
                 color: '#fff'
-              }} 
+              }}
             />
-            <Bar dataKey="students" fill="url(#colorStudentsAdmin)" name="Total Students" radius={[0, 8, 8, 0]} />
-            <Bar dataKey="placed" fill="url(#colorPlacedAdmin)" name="Placed Students" radius={[0, 8, 8, 0]} />
-          </BarChart>
+            <Line type="natural" dataKey="users" stroke="#6366f1" strokeWidth={4} dot={{ fill: '#6366f1', r: 4 }} activeDot={{ r: 8 }} />
+          </LineChart>
         </ResponsiveContainer>
       </div>
     </div>
