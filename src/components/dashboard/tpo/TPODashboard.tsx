@@ -17,7 +17,8 @@ import {
   X,
   ChevronDown,
   Filter,
-  CheckCircle
+  CheckCircle,
+  MessageSquare
 } from 'lucide-react';
 import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
 import { PieChart, Pie, Cell } from 'recharts';
@@ -32,6 +33,8 @@ import NotificationsSection from './NotificationsSection';
 import OverviewSection from './OverviewSection';
 import { useLocation } from 'react-router-dom';
 import OfferVerificationTable from '../../offers/OfferVerificationTable';
+import ChatPage from '../../chat/ChatPage';
+import DashboardSidebar from '../../common/DashboardSidebar';
 
 // Add these above the component
 const YEAR_OPTIONS = [
@@ -69,7 +72,7 @@ const CompaniesList: React.FC = () => {
   if (error) return <div className="py-8 text-center text-red-400">{error}</div>;
   if (!companies.length) return <div className="py-8 text-center text-white/50">No companies found.</div>;
   return (
-    <div className="glass-card p-6 overflow-hidden">
+    <div className="bg-slate-900/50 backdrop-blur-sm border border-white/5 rounded-2xl shadow-lg p-6 overflow-hidden">
       <div className="overflow-x-auto">
         <table className="min-w-full">
           <thead>
@@ -107,6 +110,7 @@ export const TPODashboard: React.FC = () => {
   const [branchWiseApplications, setBranchWiseApplications] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [showDriveModal, setShowDriveModal] = useState(false);
   const [editingDrive, setEditingDrive] = useState<any>(null);
   const [driveForm, setDriveForm] = useState({
@@ -217,6 +221,18 @@ export const TPODashboard: React.FC = () => {
         setError('Failed to load dashboard data.');
       })
       .finally(() => setLoading(false));
+
+    // Poll for notifications every 30 seconds
+    const intervalId = setInterval(async () => {
+      try {
+        const res = await apiClient.get('/notifications');
+        setNotifications(res.data?.notifications || []);
+      } catch (error) {
+        console.error('Error polling notifications:', error);
+      }
+    }, 30000);
+
+    return () => clearInterval(intervalId);
   }, []);
 
   useEffect(() => {
@@ -771,8 +787,14 @@ export const TPODashboard: React.FC = () => {
     { id: 'applications', label: 'Applications', icon: FileText },
     { id: 'students', label: 'Students', icon: UserPlus },
     { id: 'offers', label: 'Offer Verification', icon: CheckCircle },
+    { id: 'chat', label: 'Chat', icon: MessageSquare },
     { id: 'companies', label: 'Companies', icon: Building2 },
-    { id: 'notifications', label: 'Notifications', icon: Bell }
+    {
+      id: 'notifications',
+      label: 'Notifications',
+      icon: Bell,
+      badge: notifications.filter((n: any) => !n.read).length
+    }
   ];
 
   // 5. Add effect to fetch students when tab is active
@@ -846,31 +868,23 @@ export const TPODashboard: React.FC = () => {
   const availableCompanies = companies.filter((company: any) => !companiesWithActiveDrives.has(company.name));
 
   return (
-    <div className="min-h-screen bg-dark-bg pt-20">
+    <div className="min-h-screen bg-dark-bg">
       <ToastContainer position="top-right" autoClose={3000} />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Tabs */}
-        <div className="glass-panel">
-          <div className="border-b border-white/10">
-            <nav className="flex overflow-x-auto scrollbar-hide px-4 sm:px-6 -mb-px" aria-label="Tabs">
-              {tabs.map((tab: any) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`py-3 sm:py-4 px-3 sm:px-4 border-b-2 font-medium text-xs sm:text-sm flex items-center space-x-1.5 sm:space-x-2 transition-all duration-300 whitespace-nowrap flex-shrink-0 ${activeTab === tab.id
-                    ? 'border-indigo-500 text-white'
-                    : 'border-transparent text-gray-400 hover:text-gray-300 hover:border-white/20'
-                    }`}
-                >
-                  {tab.icon && React.createElement(tab.icon, { className: "h-4 w-4" })}
-                  <span className="hidden xs:inline sm:inline">{tab.label}</span>
-                  <span className="xs:hidden sm:hidden">{tab.label.split(' ')[0]}</span>
-                </button>
-              ))}
-            </nav>
-          </div>
 
-          <div className="p-6">
+      {/* Sidebar */}
+      <DashboardSidebar
+        tabs={tabs}
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        collapsed={sidebarCollapsed}
+        setCollapsed={setSidebarCollapsed}
+        userInfo={tpoProfile ? { name: tpoProfile.name, role: 'TPO' } : undefined}
+      />
+
+      {/* Main Content */}
+      <main className={`pt-[100px] transition-all duration-300 ml-0 ${sidebarCollapsed ? 'md:ml-24' : 'md:ml-72'}`}>
+        <div className="p-6">
+          <div className="glass-panel p-6">
             {activeTab === 'overview' && (
               <OverviewSection
                 tpoProfile={tpoProfile}
@@ -943,12 +957,13 @@ export const TPODashboard: React.FC = () => {
             )}
             {activeTab === 'companies' && <CompaniesList />}
             {activeTab === 'offers' && <OfferVerificationTable />}
+            {activeTab === 'chat' && tpoProfile && <ChatPage currentUser={{ _id: tpoProfile._id, name: tpoProfile.name, role: 'tpo' }} />}
             {activeTab === 'notifications' && (
               <NotificationsSection notifications={notifications} tpoProfile={tpoProfile} />
             )}
           </div>
         </div>
-      </div>
+      </main>
       {/* DRIVE MODAL */}
       {showDriveModal && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">

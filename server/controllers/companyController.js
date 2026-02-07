@@ -34,7 +34,7 @@ exports.createCompany = async (req, res) => {
     const notifications = admins.map(admin => ({
       user: admin._id,
       title: 'New Company Registered',
-      message: `A new company "${company.companyName}" has registered.`,
+      message: `A new company "${company.name}" has registered.`,
       actionUrl: '/admin/companies'
     }));
     if (notifications.length > 0) await Notification.insertMany(notifications);

@@ -59,8 +59,6 @@ const UsersSection = ({
     admin: users.filter((user: any) => user.role === 'admin')
   };
 
-  console.log('All users:', users);
-  console.log('Grouped TPOs:', groupedUsers.tpo);
 
   const renderUserCard = (user: any, compact = false) => {
     const RoleIcon = getRoleIcon(user.role);
@@ -118,7 +116,7 @@ const UsersSection = ({
             )}
           </div>
         </div>
-        
+
         {!compact && (
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
@@ -189,7 +187,7 @@ const UsersSection = ({
             <ChevronRight className="w-5 h-5 text-gray-400" />
           )}
         </button>
-        
+
         {isExpanded && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
@@ -215,10 +213,10 @@ const UsersSection = ({
           <UserPlus className="w-4 h-4" /> Create TPO
         </button>
       </div>
-      
+
       {loading && <p className="text-center py-8">Loading users...</p>}
       {error && <p className="text-center py-8 text-red-500">{error}</p>}
-      
+
       {!loading && !error && (
         <div className="space-y-4">
           {renderSection('Training & Placement Officers', 'tpo', Users, groupedUsers.tpo.length)}

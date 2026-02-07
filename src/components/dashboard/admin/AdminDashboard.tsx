@@ -17,11 +17,14 @@ import NotificationSection from './NotificationsSection';
 import ReportGenerator from './ReportGenerator';
 import { toast } from 'react-toastify';
 import { useLocation } from 'react-router-dom';
+import DashboardSidebar from '../../common/DashboardSidebar';
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
   const [searchTerm, setSearchTerm] = useState('');
+
   const [filterRole, setFilterRole] = useState('all');
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   // Backend data states
   const [stats, setStats] = useState<any[]>([]);
@@ -68,7 +71,7 @@ export default function AdminDashboard() {
   const fetchUsers = async (search = searchTerm, role = filterRole) => {
     setLoading(true);
     try {
-      let url = '/admin/users?limit=100'; // Increase limit to see more users
+      let url = '/admin/users?limit=1000'; // Increase limit to see more users
       if (role && role !== 'all') url += `&role=${role}`;
       if (search) url += `&search=${encodeURIComponent(search)}`;
       const res = await apiClient.get(url);
@@ -89,7 +92,7 @@ export default function AdminDashboard() {
       apiClient.get('/analytics/placement'),
       apiClient.get('/analytics/role-distribution'),
       apiClient.get('/analytics/branch-wise'),
-      apiClient.get('/users'),
+      apiClient.get('/admin/users?limit=1000'),
       apiClient.get('/analytics/monthly-active-users'),
       apiClient.get('/analytics/monthly-job-applications'),
       apiClient.get('/analytics/monthly-success-rate'),
@@ -256,41 +259,57 @@ export default function AdminDashboard() {
     GraduationCap,
   };
 
-  // Ensure 'tabs' is defined before use
   const tabs = [
     { id: 'overview', label: 'Overview', icon: Shield },
     { id: 'users', label: 'User Management', icon: Users },
     { id: 'companies', label: 'Companies', icon: Building2 },
     { id: 'analytics', label: 'Analytics', icon: BarChart3 },
     { id: 'reports', label: 'Reports', icon: FileText },
-    { id: 'notifications', label: 'Notifications', icon: Bell }
+    {
+      id: 'notifications',
+      label: 'Notifications',
+      icon: Bell,
+      badge: notifications.filter((n: any) => !n.read).length
+    }
   ];
 
-  return (
-    <div className="min-h-screen bg-dark-bg pt-20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Tabs */}
-        <div className="glass-panel">
-          <div className="border-b border-white/10">
-            <nav className="flex overflow-x-auto scrollbar-hide px-4 sm:px-6 -mb-px" aria-label="Tabs">
-              {tabs.map((tab: any) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`py-3 sm:py-4 px-3 sm:px-4 border-b-2 font-medium text-xs sm:text-sm flex items-center space-x-1.5 sm:space-x-2 transition-all duration-300 whitespace-nowrap flex-shrink-0 ${activeTab === tab.id
-                    ? 'border-indigo-500 text-white'
-                    : 'border-transparent text-gray-400 hover:text-gray-300 hover:border-white/20'
-                    }`}
-                >
-                  {tab.icon && <tab.icon className="h-4 w-4" />}
-                  <span className="hidden xs:inline sm:inline">{tab.label}</span>
-                  <span className="xs:hidden sm:hidden">{tab.label.split(' ')[0]}</span>
-                </button>
-              ))}
-            </nav>
-          </div>
+  // Poll for notifications
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const res = await apiClient.get('/notifications');
+        setNotifications(res.data.notifications || []);
+      } catch (error) {
+        console.error('Error fetching notifications:', error);
+      }
+    };
 
-          <div className="p-6">
+    // Initial fetch
+    fetchNotifications();
+
+    // Poll every 30 seconds
+    const intervalId = setInterval(fetchNotifications, 30000);
+
+    return () => clearInterval(intervalId);
+  }, []);
+
+  return (
+    <div className="min-h-screen bg-dark-bg">
+      <DashboardSidebar
+        tabs={tabs}
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        collapsed={sidebarCollapsed}
+        setCollapsed={setSidebarCollapsed}
+        userInfo={{ name: 'Admin', role: 'admin' }}
+      />
+
+      <main className={`pt-[100px] transition-all duration-300 ml-0 ${sidebarCollapsed ? 'md:ml-24' : 'md:ml-72'}`}>
+        <div className="p-6">
+          <div className="glass-panel p-6">
+            <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white via-indigo-200 to-indigo-400 mb-6">
+              {tabs.find(t => t.id === activeTab)?.label || 'Dashboard'}
+            </h2>
             {loading && <p className="text-center py-8">Loading dashboard data...</p>}
             {error && <p className="text-center py-8 text-red-500">{error}</p>}
             {!loading && !error && (
@@ -343,7 +362,7 @@ export default function AdminDashboard() {
             )}
           </div>
         </div>
-      </div>
+      </main>
       {showTpoModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="glass-card w-full max-w-2xl relative border border-white/10 max-h-[90vh] flex flex-col">
@@ -522,4 +541,4 @@ export default function AdminDashboard() {
 
     </div>
   );
-};
+}

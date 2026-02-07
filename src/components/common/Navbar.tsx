@@ -14,7 +14,9 @@ import {
   Home,
   Briefcase,
   FileText,
-  Settings
+  Settings,
+  Building2,
+  MessageSquare
 } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 
@@ -154,15 +156,22 @@ export const Navbar: React.FC = () => {
       return [
         ...baseItems,
         { label: 'Job Drives', icon: Briefcase, link: `${getDashboardLink()}?tab=drives` },
+        { label: 'Internships', icon: Building2, link: `${getDashboardLink()}?tab=internships` },
         { label: 'Applications', icon: FileText, link: `${getDashboardLink()}?tab=applications` },
+        { label: 'Offers', icon: CheckCircle, link: `${getDashboardLink()}?tab=offers` },
+        { label: 'Chat', icon: MessageSquare, link: `${getDashboardLink()}?tab=chat` },
         { label: 'Notifications', icon: Bell, link: `${getDashboardLink()}?tab=notifications` },
       ];
     } else if (user?.role === 'tpo') {
       return [
         ...baseItems,
         { label: 'Manage Drives', icon: Briefcase, link: `${getDashboardLink()}?tab=drives` },
+        { label: 'Internships', icon: Building2, link: `${getDashboardLink()}?tab=internships` },
+        { label: 'Applications', icon: FileText, link: `${getDashboardLink()}?tab=applications` },
         { label: 'Students', icon: User, link: `${getDashboardLink()}?tab=students` },
-        { label: 'Reports', icon: FileText, link: `${getDashboardLink()}?tab=reports` },
+        { label: 'Offers', icon: CheckCircle, link: `${getDashboardLink()}?tab=offers` },
+        { label: 'Chat', icon: MessageSquare, link: `${getDashboardLink()}?tab=chat` },
+        { label: 'Notifications', icon: Bell, link: `${getDashboardLink()}?tab=notifications` },
       ];
     } else if (user?.role === 'admin') {
       return [

@@ -3,6 +3,7 @@ const Drive = require('../models/Drive');
 const Application = require('../models/Application');
 const User = require('../models/User');
 const Notification = require('../models/Notification');
+const { createGroupsForDrive, addStudentToGroup } = require('./chatController');
 
 
 // @desc    Create new drive
@@ -64,7 +65,7 @@ const createDrive = async (req, res) => {
       branchMapping[branch] || branch
     );
 
-    
+
 
     const driveData = {
       position,
@@ -109,6 +110,15 @@ const createDrive = async (req, res) => {
     } catch (notificationError) {
       console.error('Failed to create drive notification:', notificationError);
       // Don't fail the request if notification fails
+    }
+
+    // Create chat groups for each allowed branch
+    try {
+      await createGroupsForDrive(drive, user._id);
+      console.log(`Created chat groups for drive: ${drive.companyName} ${drive.position}`);
+    } catch (chatError) {
+      console.error('Failed to create chat groups:', chatError);
+      // Don't fail the request if chat group creation fails
     }
 
     res.status(201).json({
@@ -199,9 +209,9 @@ const getEligibleDrives = async (req, res) => {
       'Data Science': 'DS',
       'AIML': 'AIML'
     };
-    
+
     const studentBranch = branchMapping[student.branch] || student.branch;
-    
+
     // Convert student year to number if it's a string
     let studentYear = student.year;
     if (typeof studentYear === 'string') {
@@ -363,7 +373,7 @@ const deleteDrive = async (req, res) => {
     // Delete the drive
     await Drive.findByIdAndDelete(id);
 
-    res.json({ 
+    res.json({
       message: 'Drive deleted successfully',
       deletedApplications: deletedApplications.deletedCount
     });
@@ -443,6 +453,15 @@ const applyToDrive = async (req, res) => {
     } catch (notificationError) {
       console.error('Failed to create application notification:', notificationError);
       // Don't fail the request if notification fails
+    }
+
+    // Auto-join student to drive's chat group
+    try {
+      await addStudentToGroup(drive._id, student._id, student.branch);
+      console.log(`Added student ${student.studentId} to chat group for drive ${drive.companyName}`);
+    } catch (chatError) {
+      console.error('Failed to add student to chat group:', chatError);
+      // Don't fail the request if chat join fails
     }
 
     res.status(201).json({

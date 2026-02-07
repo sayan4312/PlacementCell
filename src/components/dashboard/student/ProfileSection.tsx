@@ -280,24 +280,24 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, onUserUpdate }) =
         </div>
       </Modal>
       {/* Profile Header */}
-      <div className="glass-card p-8">
-        <div className="flex items-start justify-between mb-6">
-          <div className="flex items-center space-x-6">
-            <div className="w-24 h-24 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center text-white text-2xl font-bold">
+      <div className="glass-card p-4 sm:p-6 md:p-8">
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4 sm:mb-6">
+          <div className="flex items-center gap-3 sm:gap-6">
+            <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center text-white text-lg sm:text-xl md:text-2xl font-bold flex-shrink-0">
               {localUser?.name?.split(' ').map((n: string) => n[0]).join('')}
             </div>
-            <div>
-              <h2 className="text-2xl font-bold text-white">{localUser?.name}</h2>
-              <p className="text-gray-400">{localUser?.branch}</p>
-              <p className="text-sm text-gray-400">{localUser?.studentId} • {localUser?.year}</p>
-              <div className="flex items-center space-x-4 mt-2">
-                <div className="flex items-center space-x-1">
-                  <Star className="w-4 h-4 text-yellow-500" />
-                  <span className="text-sm font-medium">CGPA: {localUser?.cgpa}</span>
+            <div className="min-w-0">
+              <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-white truncate">{localUser?.name}</h2>
+              <p className="text-gray-400 text-sm sm:text-base">{localUser?.branch}</p>
+              <p className="text-xs sm:text-sm text-gray-400">{localUser?.studentId} • {localUser?.year}</p>
+              <div className="flex flex-wrap items-center gap-2 sm:gap-4 mt-2">
+                <div className="flex items-center gap-1">
+                  <Star className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-500" />
+                  <span className="text-xs sm:text-sm font-medium">CGPA: {localUser?.cgpa}</span>
                 </div>
-                <div className="flex items-center space-x-1">
-                  <CheckCircle className="w-4 h-4 text-green-500" />
-                  <span className="text-sm font-medium">No Backlogs</span>
+                <div className="flex items-center gap-1">
+                  <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 text-green-500" />
+                  <span className="text-xs sm:text-sm font-medium">No Backlogs</span>
                 </div>
               </div>
             </div>
@@ -305,9 +305,9 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, onUserUpdate }) =
           <button
             onClick={handleEditProfile}
             disabled={isEditing}
-            className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all ${isEditing
-              ? 'bg-white/5 cursor-not-allowed'
-              : 'btn-primary'
+            className={`flex items-center space-x-2 px-3 sm:px-4 py-2 rounded-lg transition-all text-sm self-start sm:self-auto flex-shrink-0 ${isEditing
+                ? 'bg-white/5 cursor-not-allowed'
+                : 'btn-primary'
               }`}
           >
             {isEditing ? (
@@ -315,11 +315,11 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, onUserUpdate }) =
             ) : (
               <Edit className="w-4 h-4" />
             )}
-            <span>{isEditing ? 'Editing...' : 'Edit Profile'}</span>
+            <span>{isEditing ? 'Editing...' : 'Edit'}</span>
           </button>
         </div>
         {/* Contact Information */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           <div className="flex items-center space-x-3">
             <Mail className="w-5 h-5 text-gray-400" />
             <div>

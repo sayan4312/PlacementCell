@@ -6,7 +6,8 @@ import {
   Bell,
   TrendingUp,
   Building2,
-  CheckCircle
+  CheckCircle,
+  MessageSquare
 } from 'lucide-react';
 import apiClient from '../../../services/apiClient';
 import { notificationAPI } from '../../../services/apiClient';
@@ -17,9 +18,12 @@ import InternshipsSection from './InternshipsSection';
 import ApplicationsSection from './ApplicationsSection';
 import NotificationsSection from './NotificationsSection';
 import StudentOffers from '../../offers/StudentOffers';
+import ChatPage from '../../chat/ChatPage';
+import DashboardSidebar from '../../common/DashboardSidebar';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useLocation } from 'react-router-dom';
+
 
 interface User {
   _id: string;
@@ -132,6 +136,7 @@ export const StudentDashboard: React.FC = () => {
   const [internshipCompanyFilter, setInternshipCompanyFilter] = useState('All');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   // State for data
   const [user, setUser] = useState<User | null>(null);
@@ -154,6 +159,18 @@ export const StudentDashboard: React.FC = () => {
 
   useEffect(() => {
     fetchDashboardData();
+
+    // Poll for notifications every 30 seconds
+    const intervalId = setInterval(async () => {
+      try {
+        const res = await notificationAPI.getNotifications();
+        setNotifications(res.data.notifications || []);
+      } catch (error) {
+        console.error('Error polling notifications:', error);
+      }
+    }, 30000);
+
+    return () => clearInterval(intervalId);
   }, []);
 
   const fetchDashboardData = async () => {
@@ -333,6 +350,7 @@ export const StudentDashboard: React.FC = () => {
     { id: 'internships', label: 'Internships', icon: Building2 },
     { id: 'applications', label: 'My Applications', icon: FileText },
     { id: 'offers', label: 'Offers', icon: CheckCircle },
+    { id: 'chat', label: 'Chat', icon: MessageSquare },
     { id: 'notifications', label: 'Notifications', icon: Bell }
   ];
 
@@ -369,42 +387,41 @@ export const StudentDashboard: React.FC = () => {
     );
   }
 
-  return (
-    <div className="min-h-screen bg-dark-bg pt-20">
-      <ToastContainer />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Tabs */}
-        <div className="glass-panel">
-          <div className="border-b border-white/10">
-            <nav className="flex overflow-x-auto scrollbar-hide px-4 sm:px-6 -mb-px" aria-label="Tabs">
-              {tabs.map((tab: any) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`py-3 sm:py-4 px-3 sm:px-4 border-b-2 font-medium text-xs sm:text-sm flex items-center space-x-1.5 sm:space-x-2 transition-all duration-300 whitespace-nowrap flex-shrink-0 ${activeTab === tab.id
-                    ? 'border-indigo-500 text-white'
-                    : 'border-transparent text-gray-400 hover:text-gray-300 hover:border-white/20'
-                    }`}
-                >
-                  <tab.icon className="h-4 w-4" />
-                  <span className="hidden xs:inline sm:inline">{tab.label}</span>
-                  <span className="xs:hidden sm:hidden">{tab.label.split(' ')[0]}</span>
-                </button>
-              ))}
-            </nav>
-          </div>
+  const unreadNotifications = notifications.filter(n => !n.read).length;
+  const tabsWithBadges = tabs.map(tab => ({
+    ...tab,
+    badge: tab.id === 'notifications' ? unreadNotifications : undefined
+  }));
 
-          <div className="p-6">
+  return (
+    <div className="min-h-screen bg-dark-bg">
+      <ToastContainer />
+
+      {/* Sidebar */}
+      <DashboardSidebar
+        tabs={tabsWithBadges}
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        collapsed={sidebarCollapsed}
+        setCollapsed={setSidebarCollapsed}
+        userInfo={user ? { name: user.name, role: 'Student' } : undefined}
+      />
+
+      {/* Main Content */}
+      <main className={`pt-20 md:pt-[100px] transition-all duration-300 ml-0 ${sidebarCollapsed ? 'md:ml-24' : 'md:ml-72'}`}>
+        <div className="p-3 sm:p-4 md:p-6 overflow-x-hidden">
+          <div className="glass-panel p-3 sm:p-4 md:p-6 overflow-x-auto">
             {activeTab === 'overview' && renderOverviewTab()}
             {activeTab === 'profile' && renderProfileTab()}
             {activeTab === 'drives' && renderDrivesTab()}
             {activeTab === 'internships' && renderInternshipsTab()}
             {activeTab === 'applications' && renderApplicationsTab()}
             {activeTab === 'offers' && <StudentOffers />}
+            {activeTab === 'chat' && user && <ChatPage currentUser={{ _id: user._id, name: user.name, studentId: user.studentId, role: 'student' }} />}
             {activeTab === 'notifications' && renderNotificationsTab()}
           </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 };

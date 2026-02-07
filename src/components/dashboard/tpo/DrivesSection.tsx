@@ -33,7 +33,7 @@ const DrivesSection: React.FC<DrivesSectionProps> = ({
   };
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h3 className="text-2xl font-bold text-white">Job Drives</h3>
         <button className="btn-primary" onClick={() => { initializeDriveForm(); setEditingDrive(null); setShowDriveModal(true); }}>
@@ -65,98 +65,103 @@ const DrivesSection: React.FC<DrivesSectionProps> = ({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.05 }}
-            className="glass-card p-6 hover:scale-[1.01] transition-all duration-300"
+            className="group relative bg-slate-900/50 backdrop-blur-sm border border-white/5 rounded-xl overflow-hidden hover:border-indigo-500/30 hover:bg-slate-900/80 transition-all duration-300"
           >
-            <div className="flex items-start justify-between mb-6">
-              <div className="flex items-start space-x-4">
+            {/* Status Strip */}
+            <div className={`absolute left-0 top-0 bottom-0 w-1 ${getStatusColor(drive.status).replace('bg-', 'bg-').replace('text-', 'bg-').split(' ')[0]}`} />
+
+            <div className="p-5 sm:p-6 pl-6 sm:pl-8">
+              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6">
                 <div>
-                  <h4 className="text-xl font-semibold text-white mb-1 flex items-center gap-2">
-                    <Briefcase className="w-5 h-5 text-indigo-400 mr-1" />
-                    {typeof drive.position === 'object' ? drive.position?.name || drive.position?.title || 'Unknown Position' : drive.position || 'Unknown Position'}
-                  </h4>
-                  <p className="text-base font-semibold text-indigo-300 mb-1 flex items-center gap-2">
-                    <Building2 className="w-5 h-5 text-purple-400 mr-1" />
-                    {typeof drive.company === 'object' ? drive.company?.companyName || drive.companyName || 'Unknown Company' : drive.company || drive.companyName || 'Unknown Company'}
-                  </p>
-                  <p className="text-sm text-gray-400">
-                    {typeof drive.description === 'object' ? drive.description?.text || 'No description' : drive.description || 'No description'}
-                  </p>
+                  <div className="flex items-center gap-3 mb-1">
+                    <h4 className="text-lg sm:text-xl font-bold text-white group-hover:text-indigo-400 transition-colors">
+                      {typeof drive.position === 'object' ? drive.position?.name || drive.position?.title || 'Unknown Position' : drive.position || 'Unknown Position'}
+                    </h4>
+                    <span className={`px-2.5 py-0.5 rounded-full text-[10px] uppercase tracking-wider font-semibold border ${getStatusColor(drive.status).replace('bg-', 'border-').replace('text-', 'text-').split(' ')[0]} bg-transparent`}>
+                      {drive.status}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 text-gray-400 text-sm">
+                    <Building2 className="w-4 h-4" />
+                    <span className="font-medium text-gray-300">
+                      {typeof drive.company === 'object' ? drive.company?.companyName || drive.companyName || 'Unknown Company' : drive.company || drive.companyName || 'Unknown Company'}
+                    </span>
+                    <span className="w-1 h-1 rounded-full bg-gray-600" />
+                    <span>Posted {drive.createdAt ? new Date(drive.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }) : '-'}</span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => handleEditDrive(drive)}
+                    className="p-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors border border-transparent hover:border-white/10"
+                    title="Edit Drive"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => setDeletingDriveId(drive._id)}
+                    className="p-2 text-red-400 hover:bg-red-500/10 hover:border-red-500/20 border border-transparent rounded-lg transition-colors"
+                    title="Delete Drive"
+                  >
+                    Delete
+                  </button>
                 </div>
               </div>
-              <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(drive.status)}`}> 
-                {drive.status}
-              </span>
-            </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-              <div className="flex items-center space-x-2">
-                <DollarSign className="h-4 w-4 text-gray-400" />
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 p-4 rounded-lg bg-black/20 border border-white/5">
                 <div>
-                  <p className="text-sm text-gray-400">Package</p>
-                  <p className="font-semibold text-white">
+                  <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Package</p>
+                  <p className="font-semibold text-white flex items-center gap-1.5">
+                    <DollarSign className="w-3.5 h-3.5 text-emerald-400" />
                     {typeof drive.ctc === 'object' ? drive.ctc?.value || 'N/A' : drive.ctc || 'N/A'}
                   </p>
                 </div>
-              </div>
-              <div className="flex items-center space-x-2">
-                <MapPin className="h-4 w-4 text-gray-400" />
                 <div>
-                  <p className="text-sm text-gray-400">Location</p>
-                  <p className="font-semibold text-white">
+                  <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Location</p>
+                  <p className="font-semibold text-white flex items-center gap-1.5">
+                    <MapPin className="w-3.5 h-3.5 text-blue-400" />
                     {typeof drive.location === 'object' ? drive.location?.name || 'N/A' : drive.location || 'N/A'}
                   </p>
                 </div>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Calendar className="h-4 w-4 text-gray-400" />
                 <div>
-                  <p className="text-sm text-gray-400">Deadline</p>
-                  <p className="font-semibold text-white">{formatDate(drive.deadline)}</p>
+                  <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Deadline</p>
+                  <p className="font-semibold text-white flex items-center gap-1.5">
+                    <Calendar className="w-3.5 h-3.5 text-orange-400" />
+                    {formatDate(drive.deadline)}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Applicants</p>
+                  <p className="font-semibold text-white flex items-center gap-1.5">
+                    <span className="w-3.5 h-3.5 rounded-full border border-purple-400 flex items-center justify-center text-[8px] text-purple-400 font-bold">A</span>
+                    {Array.isArray(drive.applicants) ? drive.applicants.length : 0}
+                  </p>
                 </div>
               </div>
-              <div className="flex items-center space-x-2">
-                <span className="inline-block w-4 h-4" />
-                <div>
-                  <p className="text-sm text-gray-400">Applications</p>
-                  <p className="font-semibold text-white">{Array.isArray(drive.applicants) ? drive.applicants.length : 0}</p>
-                </div>
-              </div>
-            </div>
 
-            <div className="mb-4">
-              <h5 className="text-sm font-medium text-gray-300 mb-2">Eligibility Criteria</h5>
-              <div className="flex flex-wrap gap-2">
-                <span className="px-2 py-1 bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 rounded-md text-sm">
-                  Min CGPA: {drive.eligibility?.minCGPA ?? '-'}
+              <div className="flex flex-wrap gap-2 items-center">
+                <span className="text-xs text-gray-500 uppercase tracking-wider mr-2">Eligibility:</span>
+                <span className="px-2 py-0.5 rounded text-xs font-medium bg-white/5 text-gray-300 border border-white/10">
+                  CGPA &ge; {drive.eligibility?.minCGPA ?? '-'}
                 </span>
-                <span className="px-2 py-1 bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 rounded-md text-sm">
-                  Max Backlogs: {drive.eligibility?.maxBacklogs ?? '-'}
+                <span className="px-2 py-0.5 rounded text-xs font-medium bg-white/5 text-gray-300 border border-white/10">
+                  Backlogs &le; {drive.eligibility?.maxBacklogs ?? '-'}
                 </span>
-                <span className="px-2 py-1 bg-purple-500/20 text-purple-300 border border-purple-500/30 rounded-md text-sm">
+                <span className="px-2 py-0.5 rounded text-xs font-medium bg-white/5 text-gray-300 border border-white/10">
                   {typeof drive.workMode === 'object' ? drive.workMode?.name || 'N/A' : drive.workMode || 'N/A'}
                 </span>
-                {drive.eligibility?.allowedBranches && Array.isArray(drive.eligibility.allowedBranches) && drive.eligibility.allowedBranches.map((branch: string, index: number) => (
+                {drive.eligibility?.allowedBranches && Array.isArray(drive.eligibility.allowedBranches) && drive.eligibility.allowedBranches.slice(0, 3).map((branch: string, index: number) => (
                   <span
                     key={`branch-${drive._id}-${index}-${branch}`}
-                    className="px-2 py-1 bg-pink-500/20 text-pink-300 border border-pink-500/30 rounded-md text-sm"
+                    className="px-2 py-0.5 rounded text-xs font-medium bg-white/5 text-gray-300 border border-white/10"
                   >
                     {branch}
                   </span>
                 ))}
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-400">
-                Posted on {drive.createdAt ? new Date(drive.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '-'}
-              </span>
-              <div className="flex items-center space-x-2">
-                <button className="btn-secondary" onClick={() => handleEditDrive(drive)}>
-                  Edit
-                </button>
-                <button className="px-3 py-1 text-red-400 hover:bg-red-500/10 border border-red-500/30 rounded-lg transition-colors" onClick={() => setDeletingDriveId(drive._id)}>
-                  Delete
-                </button>
+                {drive.eligibility?.allowedBranches?.length > 3 && (
+                  <span className="text-xs text-gray-500">+{drive.eligibility.allowedBranches.length - 3} more</span>
+                )}
               </div>
             </div>
           </motion.div>

@@ -89,17 +89,17 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({ user, stats, applicat
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Welcome Section */}
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-3xl font-bold text-white">Welcome back, {user?.name}!</h2>
-          <p className="text-gray-400">
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white">Welcome back, {user?.name}!</h2>
+          <p className="text-gray-400 text-sm sm:text-base">
             {user?.profileCompleted ? 'Your profile is complete!' : 'Complete your profile to get better opportunities'}
           </p>
         </div>
         {user?.requiresPasswordChange && (
-          <div className="glass-card px-4 py-2 flex items-center space-x-2">
-            <AlertCircle className="w-4 h-4 text-yellow-400" />
-            <span className="text-yellow-400 text-sm">Please change your password</span>
+          <div className="glass-card px-3 py-2 flex items-center space-x-2">
+            <AlertCircle className="w-4 h-4 text-yellow-400 flex-shrink-0" />
+            <span className="text-yellow-400 text-xs sm:text-sm">Please change your password</span>
           </div>
         )}
       </div>
@@ -135,25 +135,25 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({ user, stats, applicat
 
       {/* Stats Grid */}
       {stats && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="glass-card p-6 hover:scale-[1.02] transition-transform duration-300 cursor-pointer"
+            className="glass-card p-3 sm:p-4 md:p-6 hover:scale-[1.02] transition-transform duration-300 cursor-pointer"
             onClick={() => setActiveTab('applications')}
           >
             <div className="flex justify-between items-start">
               <div>
-                <p className="text-gray-400 text-sm">Total Applications</p>
-                <h3 className="text-3xl font-bold text-white mt-1">{stats.totalApplications}</h3>
+                <p className="text-gray-400 text-xs sm:text-sm">Total Applications</p>
+                <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mt-1">{stats.totalApplications}</h3>
               </div>
-              <div className="p-3 rounded-xl bg-indigo-500/10 text-indigo-400">
-                <FileText size={24} />
+              <div className="p-2 sm:p-3 rounded-xl bg-indigo-500/10 text-indigo-400">
+                <FileText className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
               </div>
             </div>
-            <p className="text-emerald-400 text-sm mt-4 flex items-center gap-1">
-              <TrendingUp size={16} /> +{stats.totalApplications} this month
+            <p className="text-emerald-400 text-xs sm:text-sm mt-2 sm:mt-4 flex items-center gap-1">
+              <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4" /> +{stats.totalApplications} this month
             </p>
           </motion.div>
 
@@ -161,66 +161,66 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({ user, stats, applicat
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="glass-card p-6 hover:scale-[1.02] transition-transform duration-300 cursor-pointer"
+            className="glass-card p-3 sm:p-4 md:p-6 hover:scale-[1.02] transition-transform duration-300 cursor-pointer"
             onClick={() => setActiveTab('applications')}
           >
             <div className="flex justify-between items-start">
               <div>
-                <p className="text-gray-400 text-sm">Success Rate</p>
-                <h3 className="text-3xl font-bold text-white mt-1">{successRate}%</h3>
+                <p className="text-gray-400 text-xs sm:text-sm">Success Rate</p>
+                <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mt-1">{successRate}%</h3>
               </div>
-              <div className="p-3 rounded-xl bg-emerald-500/10 text-emerald-400">
-                <CheckCircle size={24} />
+              <div className="p-2 sm:p-3 rounded-xl bg-emerald-500/10 text-emerald-400">
+                <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
               </div>
             </div>
-            <p className="text-gray-400 text-sm mt-4">Shortlisted + Selected</p>
+            <p className="text-gray-400 text-xs sm:text-sm mt-2 sm:mt-4">Shortlisted + Selected</p>
           </motion.div>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="glass-card p-6 hover:scale-[1.02] transition-transform duration-300 cursor-pointer"
+            className="glass-card p-3 sm:p-4 md:p-6 hover:scale-[1.02] transition-transform duration-300 cursor-pointer"
             onClick={() => setActiveTab('profile')}
           >
             <div className="flex justify-between items-start">
               <div>
-                <p className="text-gray-400 text-sm">Profile Score</p>
-                <h3 className="text-3xl font-bold text-white mt-1">{stats.profileScore}%</h3>
+                <p className="text-gray-400 text-xs sm:text-sm">Profile Score</p>
+                <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mt-1">{stats.profileScore}%</h3>
               </div>
-              <div className="p-3 rounded-xl bg-purple-500/10 text-purple-400">
-                <Target size={24} />
+              <div className="p-2 sm:p-3 rounded-xl bg-purple-500/10 text-purple-400">
+                <Target className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
               </div>
             </div>
-            <p className="text-white text-sm mt-4">Click to improve</p>
+            <p className="text-white text-xs sm:text-sm mt-2 sm:mt-4">Click to improve</p>
           </motion.div>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="glass-card p-6 hover:scale-[1.02] transition-transform duration-300 cursor-pointer"
+            className="glass-card p-3 sm:p-4 md:p-6 hover:scale-[1.02] transition-transform duration-300 cursor-pointer"
             onClick={() => setActiveTab('drives')}
           >
             <div className="flex justify-between items-start">
               <div>
-                <p className="text-gray-400 text-sm">Eligible Drives</p>
-                <h3 className="text-3xl font-bold text-white mt-1">{stats.eligibleDrives}</h3>
+                <p className="text-gray-400 text-xs sm:text-sm">Eligible Drives</p>
+                <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mt-1">{stats.eligibleDrives}</h3>
               </div>
-              <div className="p-3 rounded-xl bg-pink-500/10 text-pink-400">
-                <Briefcase size={24} />
+              <div className="p-2 sm:p-3 rounded-xl bg-pink-500/10 text-pink-400">
+                <Briefcase className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
               </div>
             </div>
-            <p className="text-emerald-400 text-sm mt-4">Click to browse</p>
+            <p className="text-emerald-400 text-xs sm:text-sm mt-2 sm:mt-4">Click to browse</p>
           </motion.div>
         </div>
       )}
 
       {/* Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="glass-card p-6">
-          <h3 className="text-xl font-bold text-white mb-6">Application Trends (Last 6 Months)</h3>
-          <div className="h-[300px] w-full">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+        <div className="glass-card p-4 md:p-6">
+          <h3 className="text-lg md:text-xl font-bold text-white mb-4 md:mb-6">Application Trends (Last 6 Months)</h3>
+          <div className="h-[200px] sm:h-[250px] md:h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={applicationTrends}>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
@@ -236,8 +236,8 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({ user, stats, applicat
           </div>
         </div>
 
-        <div className="glass-card p-6">
-          <h3 className="text-xl font-bold text-white mb-6">Application Status</h3>
+        <div className="glass-card p-4 md:p-6">
+          <h3 className="text-lg md:text-xl font-bold text-white mb-4 md:mb-6">Application Status</h3>
           {(
             (stats.pendingApplications || 0) === 0 &&
             (stats.shortlistedApplications || 0) === 0 &&
@@ -250,7 +250,7 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({ user, stats, applicat
               <p className="text-gray-400">Start applying to job drives to see your application status here.</p>
             </div>
           ) : (
-            <div className="h-[300px] w-full">
+            <div className="h-[200px] sm:h-[250px] md:h-[300px] w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
@@ -286,9 +286,9 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({ user, stats, applicat
       </div>
 
       {/* Quick Actions */}
-      <div className="glass-card p-6">
-        <h3 className="text-xl font-bold text-white mb-6">Quick Actions</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="glass-card p-4 md:p-6">
+        <h3 className="text-lg md:text-xl font-bold text-white mb-4 md:mb-6">Quick Actions</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4">
           <button
             onClick={handleUpdateResume}
             className="flex items-center space-x-3 p-4 rounded-lg transition-all bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/20"

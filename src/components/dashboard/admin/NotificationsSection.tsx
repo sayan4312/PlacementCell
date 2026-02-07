@@ -1,9 +1,10 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { motion } from 'framer-motion';
-import { 
-  Bell, 
-  Check, 
-  Trash2, 
+import {
+  Bell,
+  Check,
+  Trash2,
   Filter,
   Search,
   Plus,
@@ -159,7 +160,7 @@ const NotificationsSection: React.FC<NotificationsSectionProps> = ({ notificatio
         actionUrl: sendForm.actionUrl || undefined,
         roles: sendForm.targetRoles.length > 0 ? sendForm.targetRoles : undefined
       });
-      
+
       setShowSendModal(false);
       setSendForm({
         title: '',
@@ -169,7 +170,7 @@ const NotificationsSection: React.FC<NotificationsSectionProps> = ({ notificatio
         targetRoles: [],
         actionUrl: ''
       });
-      
+
       // Refresh notifications
       const res = await notificationAPI.getNotifications();
       setLocalNotifications(res.data.notifications || []);
@@ -180,12 +181,12 @@ const NotificationsSection: React.FC<NotificationsSectionProps> = ({ notificatio
 
   const filteredNotifications = useMemo(() => {
     return localNotifications.filter(notification => {
-      const matchesType = 
+      const matchesType =
         filterType === 'all' ||
         (filterType === 'unread' && !notification.read) ||
         (filterType === 'read' && notification.read);
-      
-      const matchesSearch = !searchTerm || 
+
+      const matchesSearch = !searchTerm ||
         (notification.title && notification.title.toLowerCase().includes(searchTerm.toLowerCase())) ||
         (notification.message && notification.message.toLowerCase().includes(searchTerm.toLowerCase()));
 
@@ -209,7 +210,7 @@ const NotificationsSection: React.FC<NotificationsSectionProps> = ({ notificatio
     const date = new Date(dateString);
     const now = new Date();
     const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
-    
+
     if (diffInHours < 1) {
       return 'Just now';
     } else if (diffInHours < 24) {
@@ -322,11 +323,10 @@ const NotificationsSection: React.FC<NotificationsSectionProps> = ({ notificatio
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               whileHover={{ scale: 1.01 }}
-              className={`glass-card p-4 cursor-pointer transition-all duration-300 ${
-                notification.read 
-                  ? 'bg-white/3' 
-                  : 'bg-white/8 border-l-4 border-indigo-500'
-              } ${selectedNotifications.includes(notification._id) ? 'ring-2 ring-indigo-500' : ''}`}
+              className={`glass-card p-4 cursor-pointer transition-all duration-300 ${notification.read
+                ? 'bg-white/3'
+                : 'bg-white/8 border-l-4 border-indigo-500'
+                } ${selectedNotifications.includes(notification._id) ? 'ring-2 ring-indigo-500' : ''}`}
               onClick={() => handleNotificationClick(notification)}
             >
               <div className="flex items-start justify-between">
@@ -392,23 +392,24 @@ const NotificationsSection: React.FC<NotificationsSectionProps> = ({ notificatio
       </div>
 
       {/* Send Notification Modal */}
-      {showSendModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      {showSendModal && createPortal(
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="glass-card w-full max-w-md relative border border-white/10"
+            className="glass-card w-full max-w-md relative border border-white/10 flex flex-col max-h-[90vh]"
           >
-            <div className="flex items-center justify-between px-6 py-4 border-b border-white/10">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 shrink-0">
               <h3 className="text-xl font-semibold text-white">Send System Notification</h3>
               <button
                 onClick={() => setShowSendModal(false)}
                 className="text-gray-400 hover:text-white transition-colors"
+                title="Close"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
-            <div className="p-6 space-y-4">
+            <div className="p-6 space-y-4 overflow-y-auto">
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
                   Title *
@@ -417,7 +418,7 @@ const NotificationsSection: React.FC<NotificationsSectionProps> = ({ notificatio
                   type="text"
                   value={sendForm.title}
                   onChange={(e) => setSendForm(prev => ({ ...prev, title: e.target.value }))}
-                  className="input-glass"
+                  className="input-glass w-full"
                   placeholder="Notification title"
                 />
               </div>
@@ -429,7 +430,7 @@ const NotificationsSection: React.FC<NotificationsSectionProps> = ({ notificatio
                   value={sendForm.message}
                   onChange={(e) => setSendForm(prev => ({ ...prev, message: e.target.value }))}
                   rows={3}
-                  className="input-glass resize-none"
+                  className="input-glass w-full resize-none"
                   placeholder="Notification message"
                 />
               </div>
@@ -459,12 +460,12 @@ const NotificationsSection: React.FC<NotificationsSectionProps> = ({ notificatio
                   type="url"
                   value={sendForm.actionUrl}
                   onChange={(e) => setSendForm(prev => ({ ...prev, actionUrl: e.target.value }))}
-                  className="input-glass"
+                  className="input-glass w-full"
                   placeholder="https://example.com"
                 />
               </div>
             </div>
-            <div className="flex justify-end space-x-3 px-6 py-4 border-t border-white/10">
+            <div className="flex justify-end space-x-3 px-6 py-4 border-t border-white/10 shrink-0">
               <button
                 onClick={() => setShowSendModal(false)}
                 className="btn-secondary"
@@ -480,7 +481,8 @@ const NotificationsSection: React.FC<NotificationsSectionProps> = ({ notificatio
               </button>
             </div>
           </motion.div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
