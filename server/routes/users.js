@@ -85,6 +85,18 @@ router.post('/student', [
   body('address').optional().isString()
 ], userController.createStudentByTPO);
 
+// @route   PUT /api/users/student/:id
+// @desc    Update Student account (TPO only)
+// @access  Private (TPO)
+router.put('/student/:id', [
+  auth,
+  authorizeTPOOrCompany,
+  body('name').optional().trim().isLength({ min: 2 }),
+  body('email').optional().isEmail().normalizeEmail(),
+  body('cgpa').optional().isNumeric(),
+  body('backlogs').optional().isNumeric()
+], userController.updateStudentByTPO);
+
 // @route   GET /api/users/eligible/:driveId
 // @desc    Get eligible students for drive
 // @access  Private (TPO/Company)
@@ -150,33 +162,57 @@ router.post('/import-students', upload.single('file'), async (req, res) => {
     if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
     const students = [];
     const parser = fs.createReadStream(req.file.path).pipe(parse({ columns: true, trim: true }));
+    let processed = 0;
+    let skipped = 0;
+
     for await (const record of parser) {
-      // Expected columns: name, email, studentId, branch, year, cgpa, backlogs, phone, address
-      if (!record.email) continue;
-      const existing = await User.findOne({ email: record.email });
-      if (existing) continue;
+
+      if (!record.email || !record.studentId) {
+        skipped++;
+        continue;
+      }
+
+      // Check for existing user by email OR studentId
+      const existing = await User.findOne({
+        $or: [{ email: record.email }, { studentId: record.studentId }]
+      });
+
+      if (existing) {
+        skipped++;
+        continue;
+      }
+
       const hashedPassword = await bcrypt.hash('student123', 10);
       students.push({
-        name: record.name,
+        name: record.name ? record.name.trim() : 'unknown',
         email: record.email,
         studentId: record.studentId,
-        branch: record.branch,
-        year: record.year,
-        cgpa: record.cgpa,
-        backlogs: record.backlogs,
-        phone: record.phone,
-        address: record.address,
+        branch: record.branch || 'Unknown',
+        year: record.year || 'Unknown',
+        cgpa: record.cgpa || 0,
+        backlogs: record.backlogs || 0,
+        phone: record.phone || '',
+        address: record.address ? record.address.trim().toLowerCase() : '',
         role: 'student',
         password: hashedPassword,
         requiresPasswordChange: true,
         isApproved: true,
         isActive: true
       });
+      processed++;
     }
-    if (students.length > 0) await User.insertMany(students);
+
+    if (students.length > 0) {
+      // use ordered: false to continue inserting even if one fails (though we tried to filter duplicates)
+      await User.insertMany(students, { ordered: false });
+    }
+
     fs.unlinkSync(req.file.path);
-    res.json({ message: `Imported ${students.length} students.` });
+    res.json({
+      message: `Import complete. Added: ${students.length}, Skipped: ${skipped} (duplicates or missing ID/email).`
+    });
   } catch (err) {
+    if (req.file && fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
     res.status(500).json({ message: 'Failed to import students', error: err.message });
   }
 });

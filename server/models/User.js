@@ -128,7 +128,38 @@ const userSchema = new mongoose.Schema({
     max: 100
   }
 }, {
-  timestamps: true
+  timestamps: true,
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true }
+});
+
+// Virtual for dynamic year calculation
+userSchema.virtual('calculatedCurrentYear').get(function () {
+  if (this.role !== 'student' || !this.studentId || this.studentId.length < 2) return null;
+
+  // Extract batch year from first 2 digits of ID (e.g., 22 -> 2022)
+  const batchPrefix = this.studentId.substring(0, 2);
+  const batchYear = parseInt(batchPrefix, 10);
+
+  if (isNaN(batchYear)) return null;
+
+  const fullBatchYear = 2000 + batchYear; // Assumption: 2000s
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth(); // 0-11
+
+  let yearDiff = currentYear - fullBatchYear;
+
+  // If current month is July (6) or later, we are in the next academic year
+  // Example: Joined Aug 2022 (Batch 2022)
+  // Aug 2022 (Month 7): 2022 - 2022 = 0 + 1 => 1st Year
+  // Feb 2023 (Month 1): 2023 - 2022 = 1 => 1st Year
+  // Aug 2023 (Month 7): 2023 - 2022 = 1 + 1 => 2nd Year
+  if (currentMonth >= 6) {
+    yearDiff += 1;
+  }
+
+  return yearDiff > 0 ? yearDiff : 1;
 });
 
 // Index for better query performance

@@ -90,9 +90,8 @@ exports.verifyOffer = async (req, res) => {
         // If verified, mark student as placed?
         if (status === 'Verified') {
             const student = await User.findById(offer.student);
-            // Check Student model structure. Usually Student schema is separate or User has role.
-            // Assuming loose coupling for now, or update User.isPlaced if schema supports it.
-            // For USP: Automate placement status.
+            
+            
         }
 
         res.json({ message: `Offer ${status}`, offer });

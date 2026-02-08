@@ -50,7 +50,7 @@ const driveSchema = new mongoose.Schema({
     type: String,
     required: false,
     validate: {
-      validator: function(v) {
+      validator: function (v) {
         if (!v) return true; // Allow empty/null values
         return /^https?:\/\/.+/.test(v); // Must be a valid URL if provided
       },
@@ -135,75 +135,81 @@ driveSchema.index({ 'eligibility.allowedBranches': 1 });
 driveSchema.index({ createdAt: -1 });
 
 // Virtual for application count
-driveSchema.virtual('applicationCount').get(function() {
+driveSchema.virtual('applicationCount').get(function () {
   return this.applicants.length;
 });
 
 // Virtual for eligible students count (calculated dynamically)
-driveSchema.virtual('eligibleCount').get(function() {
+driveSchema.virtual('eligibleCount').get(function () {
   // This would be calculated based on current student database
   return 0; // Placeholder
 });
 
 // Method to check if student is eligible
-driveSchema.methods.isStudentEligible = function(student) {
+driveSchema.methods.isStudentEligible = function (student) {
   if (student.role !== 'student') return false;
-  
+
   // Check CGPA
   if (student.cgpa < this.eligibility.minCGPA) return false;
-  
+
   // Check backlogs
   if (student.backlogs > this.eligibility.maxBacklogs) return false;
-  
-  // Check year - convert string to number if needed
-  let studentYear = student.year;
-  if (typeof studentYear === 'string') {
-    const yearMatch = studentYear.match(/(\d+)/);
-    if (yearMatch) {
-      studentYear = parseInt(yearMatch[1]);
+
+  // Check year - use dynamic calculated year if available
+  let studentYear = student.calculatedCurrentYear;
+
+  // Fallback to manual year if dynamic calculation fails (e.g. invalid ID)
+  if (!studentYear) {
+    if (typeof student.year === 'string') {
+      const yearMatch = student.year.match(/(\d+)/);
+      if (yearMatch) {
+        studentYear = parseInt(yearMatch[1]);
+      } else {
+        studentYear = 4; // Default
+      }
     } else {
-      studentYear = 4; // Default
+      studentYear = student.year;
     }
   }
   if (studentYear < this.eligibility.minYear) return false;
-  
+
   // Check branch
-  if (!this.eligibility.allowedBranches.includes('All') && 
-      !this.eligibility.allowedBranches.includes(student.branch)) {
+  if (!this.eligibility.allowedBranches.includes('All') &&
+    !this.eligibility.allowedBranches.includes(student.branch)) {
     return false;
   }
-  
+
   // Check if already applied
-  const hasApplied = this.applicants.some(app => 
+  const hasApplied = this.applicants.some(app =>
     app.student.toString() === student._id.toString()
   );
   if (hasApplied) return false;
-  
+
   // Check if drive is active and not expired
   if (this.status !== 'active' || new Date() > this.deadline) return false;
-  
+
   return true;
 };
 
 // Method to check eligibility with detailed reasons
-driveSchema.methods.checkEligibility = function(student) {
+driveSchema.methods.checkEligibility = function (student) {
   const reasons = [];
-  
+
   if (student.role !== 'student') {
     reasons.push('Only students can apply to drives');
     return { eligible: false, reasons };
   }
-  
+
   // Check CGPA
   if (student.cgpa < this.eligibility.minCGPA) {
     reasons.push(`CGPA requirement not met. Required: ${this.eligibility.minCGPA}, Your CGPA: ${student.cgpa}`);
   }
-  
+
   // Check backlogs
   if (student.backlogs > this.eligibility.maxBacklogs) {
     reasons.push(`Too many backlogs. Maximum allowed: ${this.eligibility.maxBacklogs}, Your backlogs: ${student.backlogs}`);
   }
-  
+
   // Check year
   let studentYear = student.year;
   if (typeof studentYear === 'string') {
@@ -217,7 +223,7 @@ driveSchema.methods.checkEligibility = function(student) {
   if (studentYear < this.eligibility.minYear) {
     reasons.push(`Year requirement not met. Minimum year: ${this.eligibility.minYear}, Your year: ${studentYear}`);
   }
-  
+
   // Check branch
   const branchMapping = {
     'Computer Science': 'CSE',
@@ -229,21 +235,21 @@ driveSchema.methods.checkEligibility = function(student) {
     'Data Science': 'DS',
     'AIML': 'AIML'
   };
-  
+
   const studentBranch = branchMapping[student.branch] || student.branch;
-  if (!this.eligibility.allowedBranches.includes('All') && 
-      !this.eligibility.allowedBranches.includes(studentBranch)) {
+  if (!this.eligibility.allowedBranches.includes('All') &&
+    !this.eligibility.allowedBranches.includes(studentBranch)) {
     reasons.push(`Branch not eligible. Allowed branches: ${this.eligibility.allowedBranches.join(', ')}, Your branch: ${studentBranch}`);
   }
-  
+
   // Check if already applied
-  const hasApplied = this.applicants.some(app => 
+  const hasApplied = this.applicants.some(app =>
     app.student.toString() === student._id.toString()
   );
   if (hasApplied) {
     reasons.push('You have already applied to this drive');
   }
-  
+
   // Check if drive is active and not expired
   if (this.status !== 'active') {
     reasons.push('Drive is not active');
@@ -251,7 +257,7 @@ driveSchema.methods.checkEligibility = function(student) {
   if (new Date() > this.deadline) {
     reasons.push('Application deadline has passed');
   }
-  
+
   return {
     eligible: reasons.length === 0,
     reasons
@@ -259,55 +265,55 @@ driveSchema.methods.checkEligibility = function(student) {
 };
 
 // Method to add applicant
-driveSchema.methods.addApplicant = function(studentId) {
-  const existingApplication = this.applicants.find(app => 
+driveSchema.methods.addApplicant = function (studentId) {
+  const existingApplication = this.applicants.find(app =>
     app.student.toString() === studentId.toString()
   );
-  
+
   if (existingApplication) {
     throw new Error('Student has already applied for this drive');
   }
-  
+
   this.applicants.push({
     student: studentId,
     appliedAt: new Date(),
     status: 'pending'
   });
-  
+
   return this.save();
 };
 
 // Method to update application status
-driveSchema.methods.updateApplicationStatus = function(studentId, status) {
-  const application = this.applicants.find(app => 
+driveSchema.methods.updateApplicationStatus = function (studentId, status) {
+  const application = this.applicants.find(app =>
     app.student.toString() === studentId.toString()
   );
-  
+
   if (!application) {
     throw new Error('Application not found');
   }
-  
+
   const oldStatus = application.status;
   application.status = status;
-  
+
   // Update counters
   if (oldStatus === 'shortlisted' && status !== 'shortlisted') {
     this.shortlistedCount = Math.max(0, this.shortlistedCount - 1);
   } else if (oldStatus !== 'shortlisted' && status === 'shortlisted') {
     this.shortlistedCount += 1;
   }
-  
+
   if (oldStatus === 'selected' && status !== 'selected') {
     this.selectedCount = Math.max(0, this.selectedCount - 1);
   } else if (oldStatus !== 'selected' && status === 'selected') {
     this.selectedCount += 1;
   }
-  
+
   return this.save();
 };
 
 // Static method to get drives for student
-driveSchema.statics.getEligibleDrives = function(student) {
+driveSchema.statics.getEligibleDrives = function (student) {
   const branchMapping = {
     'Computer Science': 'CSE',
     'Information Technology': 'IT',
@@ -318,9 +324,9 @@ driveSchema.statics.getEligibleDrives = function(student) {
     'Chemical Engineering': 'CHE',
     'Biotechnology': 'BT'
   };
-  
+
   const studentBranch = branchMapping[student.branch] || student.branch;
-  
+
   // Convert student year to number if it's a string
   let studentYear = student.year;
   if (typeof studentYear === 'string') {
@@ -333,7 +339,7 @@ driveSchema.statics.getEligibleDrives = function(student) {
       studentYear = 4;
     }
   }
-  
+
   return this.find({
     status: 'active',
     deadline: { $gt: new Date() },

@@ -12,7 +12,7 @@ interface ApplicationsSectionProps {
   handleApplicationStatus: (appId: string, status: string) => void;
   applicationActionLoading: string | null;
   tpoProfile: any;
-  jobDrives: any[]; 
+  jobDrives: any[];
 }
 
 const ApplicationsSection: React.FC<ApplicationsSectionProps> = ({ applications, tpoProfile, jobDrives, ...props }) => {
@@ -34,7 +34,7 @@ const ApplicationsSection: React.FC<ApplicationsSectionProps> = ({ applications,
   // CSV Export Handler (Drive-specific)
   const handleExportCSV = () => {
     const headers = ['Application ID', 'Student Name', 'Email', 'Status', 'Position', 'Company'];
-    
+
     // Filter applications based on selected drive
     const applicationsToExport = filteredApplications
       .filter(app => selectedDriveId === 'all' || app.drive?._id === selectedDriveId)
@@ -49,11 +49,11 @@ const ApplicationsSection: React.FC<ApplicationsSectionProps> = ({ applications,
       app.drive?.position || app.drive?.title || 'N/A',
       app.drive?.companyName || app.drive?.company?.companyName || app.companyName || 'N/A'
     ]);
-    
+
     const csvContent = [headers, ...rows]
       .map(row => row.map(field => `"${String(field).replace(/"/g, '""')}"`).join(','))
       .join('\n');
-    
+
     // Generate filename based on company name
     let fileName = 'applicants';
     if (selectedDriveId === 'all') {
@@ -71,7 +71,7 @@ const ApplicationsSection: React.FC<ApplicationsSectionProps> = ({ applications,
         fileName = 'selected-drive-applicants';
       }
     }
-    
+
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     saveAs(blob, `${fileName}.csv`);
   };
@@ -102,53 +102,53 @@ const ApplicationsSection: React.FC<ApplicationsSectionProps> = ({ applications,
                 accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
                 style={{ display: 'none' }}
                 onChange={async (e) => {
-                const file = e.target.files?.[0];
-                if (!file) return;
-                
-                if (selectedDriveId === 'all') {
-                  setToast({ message: 'Please select a specific drive before importing shortlist', type: 'error' });
-                  return;
-                }
-                
-                const formData = new FormData();
-                formData.append('file', file);
-                formData.append('driveId', selectedDriveId);
-                
-                try {
-                  const token = localStorage.getItem('token');
-                  const response = await fetch('/api/applications/import-shortlist', {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                      'Authorization': `Bearer ${token}`
-                    },
-                    credentials: 'include'
-                  });
-                  
-                  if (response.ok) {
-                    const result = await response.json();
-                    const shortlisted = result.shortlisted || 0;
-                    const selected = result.selected || 0;
-                    const rejected = result.rejected || 0;
-                    const errors = result.errors?.length || 0;
-                    
-                    let message = 'Import completed! ';
-                    if (shortlisted > 0) message += `Shortlisted: ${shortlisted}`;
-                    if (selected > 0) message += `${shortlisted > 0 ? ', ' : ''}Selected: ${selected}`;
-                    if (rejected > 0) message += `${shortlisted > 0 || selected > 0 ? ', ' : ''}Rejected: ${rejected}`;
-                    if (errors > 0) message += `, ${errors} errors`;
-                    
-                    setToast({ message, type: 'success' });
-                    setTimeout(() => window.location.reload(), 2000); // Delay reload to show toast
-                  } else {
-                    const error = await response.json();
-                    setToast({ message: `Import failed: ${error.message}`, type: 'error' });
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+
+                  if (selectedDriveId === 'all') {
+                    setToast({ message: 'Please select a specific drive before importing shortlist', type: 'error' });
+                    return;
                   }
-                } catch (error) {
-                  setToast({ message: 'Import failed. Please try again.', type: 'error' });
-                }
-              }}
-            />
+
+                  const formData = new FormData();
+                  formData.append('file', file);
+                  formData.append('driveId', selectedDriveId);
+
+                  try {
+                    const token = localStorage.getItem('token');
+                    const response = await fetch('/api/applications/import-shortlist', {
+                      method: 'POST',
+                      body: formData,
+                      headers: {
+                        'Authorization': `Bearer ${token}`
+                      },
+                      credentials: 'include'
+                    });
+
+                    if (response.ok) {
+                      const result = await response.json();
+                      const shortlisted = result.shortlisted || 0;
+                      const selected = result.selected || 0;
+                      const rejected = result.rejected || 0;
+                      const errors = result.errors?.length || 0;
+
+                      let message = 'Import completed! ';
+                      if (shortlisted > 0) message += `Shortlisted: ${shortlisted}`;
+                      if (selected > 0) message += `${shortlisted > 0 ? ', ' : ''}Selected: ${selected}`;
+                      if (rejected > 0) message += `${shortlisted > 0 || selected > 0 ? ', ' : ''}Rejected: ${rejected}`;
+                      if (errors > 0) message += `, ${errors} errors`;
+
+                      setToast({ message, type: 'success' });
+                      setTimeout(() => window.location.reload(), 2000); // Delay reload to show toast
+                    } else {
+                      const error = await response.json();
+                      setToast({ message: `Import failed: ${error.message}`, type: 'error' });
+                    }
+                  } catch (error) {
+                    setToast({ message: 'Import failed. Please try again.', type: 'error' });
+                  }
+                }}
+              />
             </label>
             <div className="absolute bottom-full mb-2 left-0 bg-dark-bg border border-white/20 backdrop-blur-xl text-white text-xs rounded-lg p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 w-80 pointer-events-none shadow-lg">
               <strong>Import Instructions:</strong>
@@ -163,7 +163,7 @@ const ApplicationsSection: React.FC<ApplicationsSectionProps> = ({ applications,
 
         </div>
       </div>
-      
+
       {/* Drive Selection Filter */}
       <div className="glass-card p-4">
         <div className="flex items-center gap-4 mb-4">
@@ -239,11 +239,11 @@ const ApplicationsSection: React.FC<ApplicationsSectionProps> = ({ applications,
               // Filter by status, search, and company
               return (
                 (props.applicationStatusFilter === 'all' ||
-                 app.status === props.applicationStatusFilter) &&
+                  app.status === props.applicationStatusFilter) &&
                 (companyFilter === 'all' || company === companyFilter) &&
                 (studentName.toLowerCase().includes(props.applicationSearch.toLowerCase()) ||
-                 position.toLowerCase().includes(props.applicationSearch.toLowerCase()) ||
-                 company.toLowerCase().includes(props.applicationSearch.toLowerCase()))
+                  position.toLowerCase().includes(props.applicationSearch.toLowerCase()) ||
+                  company.toLowerCase().includes(props.applicationSearch.toLowerCase()))
               );
             }).map((app: any) => (
               <tr key={app._id} className="hover:bg-white/5 transition-colors">
@@ -261,13 +261,12 @@ const ApplicationsSection: React.FC<ApplicationsSectionProps> = ({ applications,
                 <td className="px-4 py-3 whitespace-nowrap text-gray-300">{app.drive?.companyName || app.drive?.company?.companyName || app.companyName || 'Unknown Company'}</td>
                 <td className="px-4 py-3 whitespace-nowrap text-gray-300">{formatDate(app.appliedAt)}</td>
                 <td className="px-4 py-3 whitespace-nowrap">
-                  <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                    app.status === 'applied' ? 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30' :
-                    app.status === 'pending' ? 'bg-gray-500/20 text-gray-300 border border-gray-500/30' :
-                    app.status === 'shortlisted' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' :
-                    app.status === 'rejected' ? 'bg-red-500/20 text-red-300 border border-red-500/30' :
-                    'bg-gray-500/20 text-gray-300 border border-gray-500/30'
-                  }`}>
+                  <span className={`px-3 py-1 rounded-full text-xs font-semibold ${app.status === 'applied' ? 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30' :
+                      app.status === 'pending' ? 'bg-gray-500/20 text-gray-300 border border-gray-500/30' :
+                        app.status === 'shortlisted' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' :
+                          app.status === 'rejected' ? 'bg-red-500/20 text-red-300 border border-red-500/30' :
+                            'bg-gray-500/20 text-gray-300 border border-gray-500/30'
+                    }`}>
                     {app.status.charAt(0).toUpperCase() + app.status.slice(1)}
                   </span>
                 </td>
@@ -276,7 +275,7 @@ const ApplicationsSection: React.FC<ApplicationsSectionProps> = ({ applications,
           </tbody>
         </table>
       </div>
-      
+
       {/* Toast notification */}
       {toast && (
         <Toast

@@ -57,10 +57,16 @@ const DEPARTMENTS = [
   'AIML'
 ];
 
-const CompaniesList: React.FC = () => {
+interface CompaniesListProps {
+  jobDrives: any[];
+}
+
+const CompaniesList: React.FC<CompaniesListProps> = ({ jobDrives }) => {
   const [companies, setCompanies] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [selectedBatch, setSelectedBatch] = useState<string | null>(null);
+
   useEffect(() => {
     setLoading(true);
     setError('');
@@ -69,31 +75,149 @@ const CompaniesList: React.FC = () => {
       .catch(() => setError('Failed to load companies'))
       .finally(() => setLoading(false));
   }, []);
+
+  // Compute Batches and their Stats
+  const batchStats = React.useMemo(() => {
+    const stats: { [key: string]: Set<string> } = {};
+
+    jobDrives.forEach(drive => {
+      if (!drive.createdAt) return;
+      const driveDate = new Date(drive.createdAt);
+      const academicYearEnd = driveDate.getMonth() >= 5 ? driveDate.getFullYear() + 1 : driveDate.getFullYear();
+      const minYear = parseInt(drive.eligibility?.minYear || '4');
+      const targetBatch = (academicYearEnd - minYear).toString();
+
+      if (!stats[targetBatch]) {
+        stats[targetBatch] = new Set();
+      }
+      stats[targetBatch].add(drive.companyName);
+      if (drive.company?.companyName) stats[targetBatch].add(drive.company.companyName);
+    });
+
+    return Object.entries(stats).map(([batch, companySet]) => ({
+      batch,
+      companyCount: companySet.size,
+      companies: companySet
+    })).sort((a, b) => b.batch.localeCompare(a.batch));
+  }, [jobDrives]);
+
+  // Filter Companies for Selected Batch
+  const filteredCompanies = React.useMemo(() => {
+    if (!selectedBatch) return [];
+
+    // Find companies in the selected batch
+    const targetStats = batchStats.find(b => b.batch === selectedBatch);
+    if (!targetStats) return [];
+
+    return companies.filter(c => targetStats.companies.has(c.name));
+  }, [companies, batchStats, selectedBatch]);
+
   if (loading) return <div className="py-8 text-center text-white/70">Loading companies...</div>;
   if (error) return <div className="py-8 text-center text-red-400">{error}</div>;
-  if (!companies.length) return <div className="py-8 text-center text-white/50">No companies found.</div>;
+
   return (
-    <div className="bg-slate-900/50 backdrop-blur-sm border border-white/5 rounded-2xl shadow-lg p-6 overflow-hidden">
-      <div className="overflow-x-auto">
-        <table className="min-w-full">
-          <thead>
-            <tr className="border-b border-white/10">
-              <th className="px-6 py-4 text-left text-xs font-semibold text-white/90 uppercase tracking-wider">Name</th>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-white/90 uppercase tracking-wider">Contact Info</th>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-white/90 uppercase tracking-wider">Notes</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-white/10">
-            {companies.map(company => (
-              <tr key={company._id} className="hover:bg-white/5 transition-colors">
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">{company.name}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-white/70">{company.contactInfo || '-'}</td>
-                <td className="px-6 py-4 text-sm text-white/70">{company.notes || '-'}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+    <div className="space-y-6">
+      {/* Level 1: Batch Cards */}
+      {!selectedBatch && (
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {batchStats.map(({ batch, companyCount }) => (
+            <motion.div
+              key={batch}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => setSelectedBatch(batch)}
+              className="glass-card p-6 cursor-pointer hover:bg-white/5 transition-colors border-l-4 border-indigo-500 flex flex-col justify-between h-40"
+            >
+              <div>
+                <h3 className="text-2xl font-bold text-white mb-2">Batch {batch}-{parseInt(batch) + 4}</h3>
+                <p className="text-gray-400 text-sm">Placement Season {parseInt(batch) + 3}-{parseInt(batch) + 4}</p>
+              </div>
+              <div className="flex items-center gap-2 mt-4 text-indigo-400 font-medium">
+                <Building2 className="w-5 h-5" />
+                <span>{companyCount} Companies Visited</span>
+              </div>
+            </motion.div>
+          ))}
+          {batchStats.length === 0 && (
+            <div className="col-span-full text-center py-12 text-gray-500">
+              No placement data found for any batch yet. Post a job drive to see tracking.
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Level 2: Company List for Batch */}
+      {selectedBatch && (
+        <div className="space-y-4 animate-fade-in">
+          <div className="flex items-center gap-4 mb-6">
+            <button
+              onClick={() => setSelectedBatch(null)}
+              className="p-2 hover:bg-white/10 rounded-full transition-colors text-gray-400 hover:text-white"
+            >
+              <ChevronDown className="w-6 h-6 rotate-90" /> {/* Back Icon Hack */}
+            </button>
+            <div>
+              <h2 className="text-2xl font-bold text-white">Companies for Batch {selectedBatch}-{parseInt(selectedBatch) + 4}</h2>
+              <p className="text-gray-400 text-sm">Showing companies that hired from this batch</p>
+            </div>
+          </div>
+
+          <div className="bg-slate-900/50 backdrop-blur-sm border border-white/5 rounded-2xl shadow-lg p-6 overflow-hidden">
+            {filteredCompanies.length === 0 ? (
+              <div className="py-12 text-center">
+                <Building2 className="w-12 h-12 text-gray-600 mx-auto mb-3" />
+                <p className="text-gray-400">No companies found in database matching the drives for this batch.</p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="min-w-full">
+                  <thead>
+                    <tr className="border-b border-white/10">
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-white/90 uppercase tracking-wider">Name</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-white/90 uppercase tracking-wider">Contact Info</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-white/90 uppercase tracking-wider">Roles Offered (This Batch)</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-white/10">
+                    {filteredCompanies.map(company => {
+                      const relevantDrives = jobDrives.filter(d => {
+                        if (d.companyName !== company.name && d.company?.companyName !== company.name) return false;
+                        const dDate = new Date(d.createdAt);
+                        const acadEnd = dDate.getMonth() >= 5 ? dDate.getFullYear() + 1 : dDate.getFullYear();
+                        const minYear = parseInt(d.eligibility?.minYear || '4');
+                        return (acadEnd - minYear).toString() === selectedBatch;
+                      });
+
+                      return (
+                        <tr key={company._id} className="hover:bg-white/5 transition-colors">
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="flex items-center">
+                              <div className="h-8 w-8 rounded bg-indigo-500/20 flex items-center justify-center text-indigo-400 font-bold mr-3">
+                                {company.name.charAt(0)}
+                              </div>
+                              <span className="text-sm font-medium text-white">{company.name}</span>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-white/70">{company.contactInfo || '-'}</td>
+                          <td className="px-6 py-4 text-sm text-white/70">
+                            <div className="flex flex-col gap-1">
+                              {relevantDrives.map(d => (
+                                <span key={d._id} className="text-xs px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 w-fit">
+                                  {d.position}
+                                </span>
+                              ))}
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -175,6 +299,7 @@ export const TPODashboard: React.FC = () => {
     address: ''
   });
   const [studentModalError, setStudentModalError] = useState('');
+  const [editingStudent, setEditingStudent] = useState<any>(null);
 
   // --- NOTIFICATION STATE ---
   const [notifications, setNotifications] = useState<any[]>([]);
@@ -284,14 +409,20 @@ export const TPODashboard: React.FC = () => {
   const handleAddStudent = async () => {
     setStudentModalError('');
     try {
-      await apiClient.post('/users/student', { ...studentForm, branch: tpoProfile?.department });
-      toast.success('Student created successfully!');
+      if (editingStudent) {
+        await apiClient.put(`/users/student/${editingStudent._id}`, { ...studentForm });
+        toast.success('Student updated successfully!');
+      } else {
+        await apiClient.post('/users/student', { ...studentForm, branch: tpoProfile?.department });
+        toast.success('Student created successfully!');
+      }
       setShowStudentModal(false);
+      setEditingStudent(null);
       setStudentForm({ name: '', email: '', studentId: '', branch: '', year: '', cgpa: '', backlogs: '', phone: '', address: '' });
       fetchStudents();
     } catch (err: any) {
-      setStudentModalError(err?.response?.data?.message || 'Failed to create student.');
-      toast.error('Failed to create student.');
+      setStudentModalError(err?.response?.data?.message || 'Failed to save student.');
+      toast.error('Failed to save student.');
     }
   };
 
@@ -954,9 +1085,11 @@ export const TPODashboard: React.FC = () => {
                 handleAddStudent={handleAddStudent}
                 tpoProfile={tpoProfile}
                 YEAR_OPTIONS={YEAR_OPTIONS}
+                editingStudent={editingStudent}
+                setEditingStudent={setEditingStudent}
               />
             )}
-            {activeTab === 'companies' && <CompaniesList />}
+            {activeTab === 'companies' && <CompaniesList jobDrives={jobDrives} />}
             {activeTab === 'offers' && <OfferVerificationTable />}
             {activeTab === 'chat' && tpoProfile && <ChatPage currentUser={{ _id: tpoProfile._id, name: tpoProfile.name, role: 'tpo' }} />}
             {activeTab === 'notifications' && (

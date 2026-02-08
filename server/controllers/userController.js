@@ -201,7 +201,7 @@ const createStudentByTPO = async (req, res) => {
       return res.status(400).json({ message: 'Student already exists with this email or student ID' });
     }
     const studentData = {
-      name,
+      name: name.trim(),
       email,
       studentId,
       branch,
@@ -209,7 +209,7 @@ const createStudentByTPO = async (req, res) => {
       cgpa,
       backlogs,
       phone,
-      address,
+      address: address ? address.trim().toLowerCase() : '',
       password: 'student123', // Default password
       role: 'student',
       isApproved: true,
@@ -227,6 +227,57 @@ const createStudentByTPO = async (req, res) => {
     });
   } catch (error) {
     console.error('Create Student error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// @desc    Update Student account (TPO only)
+// @route   PUT /api/users/student/:id
+// @access  Private (TPO)
+const updateStudentByTPO = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, email, studentId, branch, year, cgpa, backlogs, phone, address } = req.body;
+
+    const student = await User.findById(id);
+    if (!student) {
+      return res.status(404).json({ message: 'Student not found' });
+    }
+
+    // Check if email/studentId is being changed to one that already exists
+    if (email !== student.email || studentId !== student.studentId) {
+      const existing = await User.findOne({
+        $and: [
+          { _id: { $ne: id } },
+          { $or: [{ email }, { studentId }] }
+        ]
+      });
+      if (existing) {
+        return res.status(400).json({ message: 'Email or Student ID already in use' });
+      }
+    }
+
+    student.name = name ? name.trim() : student.name;
+    student.email = email || student.email;
+    student.studentId = studentId || student.studentId;
+    student.branch = branch || student.branch;
+    student.year = year || student.year;
+    student.cgpa = cgpa !== undefined ? cgpa : student.cgpa;
+    student.backlogs = backlogs !== undefined ? backlogs : student.backlogs;
+    student.phone = phone || student.phone;
+    student.address = address ? address.trim().toLowerCase() : student.address;
+
+    await student.save();
+
+    const studentResponse = student.toObject();
+    delete studentResponse.password;
+
+    res.json({
+      message: 'Student updated successfully',
+      student: studentResponse
+    });
+  } catch (error) {
+    console.error('Update Student error:', error);
     res.status(500).json({ message: 'Server error' });
   }
 };
@@ -670,6 +721,7 @@ module.exports = {
   approveUser,
   createTPO,
   createStudentByTPO,
+  updateStudentByTPO,
   updateProfile,
   uploadResume,
   deleteResume,

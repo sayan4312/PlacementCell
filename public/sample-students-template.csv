@@ -1,1 +1,3 @@
 name,email,studentId,branch,year,cgpa,backlogs,phone,address
+John Doe,john@example.com,22EG105C50,Computer Science,2022-2026,8.5,0,9876543210,123 Main St
+Jane Smith,jane@example.com,22EG105C51,Computer Science,2022-2026,9.0,0,9876543211,456 Oak Ave
