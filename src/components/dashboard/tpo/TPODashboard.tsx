@@ -35,6 +35,7 @@ import { useLocation } from 'react-router-dom';
 import OfferVerificationTable from '../../offers/OfferVerificationTable';
 import ChatPage from '../../chat/ChatPage';
 import DashboardSidebar from '../../common/DashboardSidebar';
+import Modal from '../student/Modal';
 
 // Add these above the component
 const YEAR_OPTIONS = [
@@ -965,187 +966,171 @@ export const TPODashboard: React.FC = () => {
         </div>
       </main>
       {/* DRIVE MODAL */}
-      {showDriveModal && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="bg-gradient-to-br from-slate-900/95 to-slate-800/95 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl w-full max-w-3xl relative flex flex-col"
-            style={{ maxHeight: '90vh' }}
-          >
-            <div className="flex items-center justify-between p-6 border-b border-white/10">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600">
-                  <Briefcase className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h2 className="text-xl font-bold text-white">{editingDrive ? 'Edit Drive' : 'Post New Drive'}</h2>
-                  <p className="text-white/60 text-sm mt-1">Fill in the details to create or update a job drive</p>
-                </div>
-              </div>
-              <button onClick={() => setShowDriveModal(false)} className="p-2 hover:bg-white/10 rounded-lg transition-colors">
-                <X className="w-5 h-5 text-white/70" />
-              </button>
-            </div>
-            <form id="drive-form" onSubmit={e => { e.preventDefault(); handleDriveSubmit(); }} className="flex-1 overflow-y-auto px-6 py-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {/* DRIVE MODAL using Standardized Component */}
+      <Modal
+        isOpen={showDriveModal}
+        onClose={() => {
+          setShowDriveModal(false);
+          setEditingDrive(null);
+        }}
+        title={editingDrive ? 'Edit Drive' : 'Post New Drive'}
+      >
+        <form id="drive-form" onSubmit={(e) => { e.preventDefault(); handleDriveSubmit(); }}>
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="relative">
+                <label className="block text-sm font-semibold mb-2 text-white">Company Name</label>
                 <div className="relative">
-                  <label className="block text-sm font-semibold mb-2 text-white">Company</label>
-                  <div className="relative">
-                    <Building2 className="absolute left-3 top-1/2 transform -translate-y-1/2 text-indigo-400 w-5 h-5" />
-                    {editingDrive ? (
-                      <input
-                        type="text"
-                        className="input-glass w-full pl-10 opacity-70"
-                        value={driveForm.companyName}
-                        disabled
-                      />
-                    ) : (
-                      <select
-                        className="input-glass w-full pl-10"
-                        value={driveForm.companyName}
-                        onChange={e => setDriveForm({ ...driveForm, companyName: e.target.value })}
-                        required
-                        disabled={companiesLoading}
-                      >
-                        <option value="">Select a company</option>
-                        {availableCompanies.map((company: any) => (
-                          <option key={company._id} value={company.name}>{company.name}</option>
-                        ))}
-                      </select>
-                    )}
-                    {companiesLoading && <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-xs text-gray-400">Loading...</span>}
-                    {companiesError && <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-xs text-red-500">{companiesError}</span>}
-                  </div>
-                </div>
-                <div className="relative">
-                  <label className="block text-sm font-semibold mb-2 text-white">Position</label>
-                  <div className="relative">
-                    <UserPlus className="absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-400 w-5 h-5" />
-                    <input type="text" className="input-glass w-full pl-10" value={driveForm.position} onChange={e => setDriveForm({ ...driveForm, position: e.target.value })} required />
-                  </div>
-                </div>
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-semibold mb-2 text-white">Description</label>
-                  <textarea className="input-glass w-full resize-none" rows={3} value={driveForm.description} onChange={e => setDriveForm({ ...driveForm, description: e.target.value })} required />
-                </div>
-                <div className="relative">
-                  <label className="block text-sm font-semibold mb-2 text-white">CTC</label>
-                  <div className="relative">
-                    <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-emerald-400 w-5 h-5" />
-                    <input type="text" className="input-glass w-full pl-10" value={driveForm.ctc} onChange={e => setDriveForm({ ...driveForm, ctc: e.target.value })} required />
-                  </div>
-                </div>
-                <div className="relative">
-                  <label className="block text-sm font-semibold mb-2 text-white">Location</label>
-                  <div className="relative">
-                    <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400 w-5 h-5" />
-                    <input type="text" className="input-glass w-full pl-10" value={driveForm.location} onChange={e => setDriveForm({ ...driveForm, location: e.target.value })} required />
-                  </div>
-                </div>
-                <div className="relative">
-                  <label className="block text-sm font-semibold mb-2 text-white">Deadline</label>
-                  <div className="relative">
-                    <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-red-400 w-5 h-5" />
-                    <input type="date" className="input-glass w-full pl-10" value={driveForm.deadline} onChange={e => setDriveForm({ ...driveForm, deadline: e.target.value })} required />
-                  </div>
-                  <p className="text-xs text-white/50 mt-2 ml-1">Last date to apply</p>
-                </div>
-                <div className="relative">
-                  <label className="block text-sm font-semibold mb-2 text-white">External Application URL (Optional)</label>
-                  <div className="relative">
-                    <ExternalLink className="absolute left-3 top-1/2 transform -translate-y-1/2 text-emerald-400 w-5 h-5" />
+                  <Building2 className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400 w-5 h-5" />
+                  {editingDrive ? (
                     <input
-                      type="url"
-                      placeholder="https://company.com/apply (optional)"
-                      className="input-glass w-full pl-10"
-                      value={driveForm.externalApplicationUrl}
-                      onChange={e => setDriveForm({ ...driveForm, externalApplicationUrl: e.target.value })}
+                      type="text"
+                      className="input-glass w-full pl-10 bg-white/5 cursor-not-allowed"
+                      value={driveForm.companyName}
+                      disabled
                     />
-                  </div>
-                  <p className="text-xs text-white/50 mt-2 ml-1">Students will see an additional "Application Link" button</p>
-                </div>
-                <div className="relative">
-                  <label className="block text-sm font-semibold mb-2 text-white">Work Mode</label>
-                  <div className="relative">
-                    <Building2 className="absolute left-3 top-1/2 transform -translate-y-1/2 text-pink-400 w-5 h-5" />
+                  ) : (
                     <select
                       className="input-glass w-full pl-10"
-                      value={driveForm.workMode}
-                      onChange={e => setDriveForm({ ...driveForm, workMode: e.target.value })}
+                      value={driveForm.companyName}
+                      onChange={e => setDriveForm({ ...driveForm, companyName: e.target.value })}
+                      required
+                      disabled={companiesLoading}
                     >
-                      <option value="">Select Work Mode</option>
-                      <option value="On-site">On-site</option>
-                      <option value="Remote">Remote</option>
-                      <option value="Hybrid">Hybrid</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-              <div className="border-t border-white/10 pt-6 mt-4">
-                <h3 className="text-base font-bold mb-4 text-white flex items-center gap-2"><Shield className="w-5 h-5 text-indigo-400" /> Eligibility Criteria</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="relative">
-                    <label className="block text-sm font-semibold mb-2 text-white">Min CGPA</label>
-                    <input type="number" step="0.01" className="input-glass w-full" value={driveForm.eligibility.minCGPA} onChange={e => setDriveForm({ ...driveForm, eligibility: { ...driveForm.eligibility, minCGPA: e.target.value } })} />
-                  </div>
-                  <div className="relative">
-                    <label className="block text-sm font-semibold mb-2 text-white">Allowed Branches</label>
-                    <select
-                      multiple
-                      className="input-glass w-full"
-                      value={driveForm.eligibility.allowedBranches}
-                      onChange={e => {
-                        const options = Array.from(e.target.selectedOptions, option => option.value);
-                        setDriveForm({ ...driveForm, eligibility: { ...driveForm.eligibility, allowedBranches: options } });
-                      }}
-                    >
-                      {DEPARTMENTS.map(branch => (
-                        <option key={`dept-${branch}`} value={branch}>{branch}</option>
+                      <option value="">Select a company</option>
+                      {availableCompanies.map((company: any) => (
+                        <option key={company._id} value={company.name}>{company.name}</option>
                       ))}
                     </select>
-                    <p className="text-xs text-white/50 mt-2 ml-1">Hold Ctrl (Windows) or Cmd (Mac) to select multiple</p>
-                  </div>
-                  <div className="relative">
-                    <label className="block text-sm font-semibold mb-2 text-white">Max Backlogs</label>
-                    <input type="number" className="input-glass w-full" value={driveForm.eligibility.maxBacklogs} onChange={e => setDriveForm({ ...driveForm, eligibility: { ...driveForm.eligibility, maxBacklogs: e.target.value } })} />
-                  </div>
-                  <div className="relative">
-                    <label className="block text-sm font-semibold mb-2 text-white">Min Year</label>
-                    <input type="number" className="input-glass w-full" value={driveForm.eligibility.minYear} onChange={e => setDriveForm({ ...driveForm, eligibility: { ...driveForm.eligibility, minYear: e.target.value } })} />
-                  </div>
+                  )}
+                  {companiesLoading && <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-xs text-gray-400">Loading...</span>}
+                  {companiesError && <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-xs text-red-500">{companiesError}</span>}
                 </div>
               </div>
-              {driveModalError && (
-                <div className="mt-4 p-3 rounded-lg bg-red-500/10 border border-red-500/20">
-                  <p className="text-red-400 text-sm text-center">{driveModalError}</p>
+              <div className="relative">
+                <label className="block text-sm font-semibold mb-2 text-white">Position</label>
+                <div className="relative">
+                  <UserPlus className="absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-400 w-5 h-5" />
+                  <input type="text" className="input-glass w-full pl-10" value={driveForm.position} onChange={e => setDriveForm({ ...driveForm, position: e.target.value })} required />
                 </div>
-              )}
-            </form>
-            <div className="flex justify-end gap-3 px-6 py-4 border-t border-white/10">
-              <button type="button" onClick={() => { setShowDriveModal(false); setEditingDrive(null); }} className="btn-secondary">Cancel</button>
-              <button
-                type="submit"
-                form="drive-form"
-                disabled={isSubmittingDrive}
-                className={`btn-primary flex items-center gap-2 ${isSubmittingDrive ? 'opacity-50 cursor-not-allowed' : ''}`}
-              >
-                {isSubmittingDrive ? (
-                  <>
-                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                    {editingDrive ? 'Updating...' : 'Creating...'}
-                  </>
-                ) : (
-                  <>
-                    <UserPlus className="w-5 h-5" />
-                    {editingDrive ? 'Update Drive' : 'Create Drive'}
-                  </>
-                )}
-              </button>
+              </div>
+              <div className="md:col-span-2">
+                <label className="block text-sm font-semibold mb-2 text-white">Description</label>
+                <textarea className="input-glass w-full resize-none" rows={3} value={driveForm.description} onChange={e => setDriveForm({ ...driveForm, description: e.target.value })} required />
+              </div>
+              <div className="relative">
+                <label className="block text-sm font-semibold mb-2 text-white">CTC</label>
+                <div className="relative">
+                  <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-emerald-400 w-5 h-5" />
+                  <input type="text" className="input-glass w-full pl-10" value={driveForm.ctc} onChange={e => setDriveForm({ ...driveForm, ctc: e.target.value })} required />
+                </div>
+              </div>
+              <div className="relative">
+                <label className="block text-sm font-semibold mb-2 text-white">Location</label>
+                <div className="relative">
+                  <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400 w-5 h-5" />
+                  <input type="text" className="input-glass w-full pl-10" value={driveForm.location} onChange={e => setDriveForm({ ...driveForm, location: e.target.value })} required />
+                </div>
+              </div>
+              <div className="relative">
+                <label className="block text-sm font-semibold mb-2 text-white">Deadline</label>
+                <div className="relative">
+                  <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-red-400 w-5 h-5" />
+                  <input type="date" className="input-glass w-full pl-10" value={driveForm.deadline} onChange={e => setDriveForm({ ...driveForm, deadline: e.target.value })} required />
+                </div>
+                <p className="text-xs text-white/50 mt-2 ml-1">Last date to apply</p>
+              </div>
+              <div className="relative">
+                <label className="block text-sm font-semibold mb-2 text-white">External Application URL (Optional)</label>
+                <div className="relative">
+                  <ExternalLink className="absolute left-3 top-1/2 transform -translate-y-1/2 text-emerald-400 w-5 h-5" />
+                  <input
+                    type="url"
+                    placeholder="https://company.com/apply (optional)"
+                    className="input-glass w-full pl-10"
+                    value={driveForm.externalApplicationUrl}
+                    onChange={e => setDriveForm({ ...driveForm, externalApplicationUrl: e.target.value })}
+                  />
+                </div>
+                <p className="text-xs text-white/50 mt-2 ml-1">Students will see an additional "Application Link" button</p>
+              </div>
+              <div className="relative">
+                <label className="block text-sm font-semibold mb-2 text-white">Work Mode</label>
+                <div className="relative">
+                  <Building2 className="absolute left-3 top-1/2 transform -translate-y-1/2 text-pink-400 w-5 h-5" />
+                  <select
+                    className="input-glass w-full pl-10"
+                    value={driveForm.workMode}
+                    onChange={e => setDriveForm({ ...driveForm, workMode: e.target.value })}
+                  >
+                    <option value="">Select Work Mode</option>
+                    <option value="On-site">On-site</option>
+                    <option value="Remote">Remote</option>
+                    <option value="Hybrid">Hybrid</option>
+                  </select>
+                </div>
+              </div>
             </div>
-          </motion.div>
-        </div>
-      )}
+            <div className="border-t border-white/10 pt-6 mt-4">
+              <h3 className="text-base font-bold mb-4 text-white flex items-center gap-2"><Shield className="w-5 h-5 text-indigo-400" /> Eligibility Criteria</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="relative">
+                  <label className="block text-sm font-semibold mb-2 text-white">Min CGPA</label>
+                  <input type="number" step="0.01" className="input-glass w-full" value={driveForm.eligibility.minCGPA} onChange={e => setDriveForm({ ...driveForm, eligibility: { ...driveForm.eligibility, minCGPA: e.target.value } })} />
+                </div>
+                <div className="relative">
+                  <label className="block text-sm font-semibold mb-2 text-white">Allowed Branches</label>
+                  <select
+                    multiple
+                    className="input-glass w-full"
+                    value={driveForm.eligibility.allowedBranches}
+                    onChange={e => {
+                      const options = Array.from(e.target.selectedOptions, option => option.value);
+                      setDriveForm({ ...driveForm, eligibility: { ...driveForm.eligibility, allowedBranches: options } });
+                    }}
+                  >
+                    {DEPARTMENTS.map(branch => (
+                      <option key={`dept-${branch}`} value={branch}>{branch}</option>
+                    ))}
+                  </select>
+                  <p className="text-xs text-white/50 mt-2 ml-1">Hold Ctrl (Windows) or Cmd (Mac) to select multiple</p>
+                </div>
+                <div className="relative">
+                  <label className="block text-sm font-semibold mb-2 text-white">Max Backlogs</label>
+                  <input type="number" className="input-glass w-full" value={driveForm.eligibility.maxBacklogs} onChange={e => setDriveForm({ ...driveForm, eligibility: { ...driveForm.eligibility, maxBacklogs: e.target.value } })} />
+                </div>
+                <div className="relative">
+                  <label className="block text-sm font-semibold mb-2 text-white">Min Year</label>
+                  <input type="number" className="input-glass w-full" value={driveForm.eligibility.minYear} onChange={e => setDriveForm({ ...driveForm, eligibility: { ...driveForm.eligibility, minYear: e.target.value } })} />
+                </div>
+              </div>
+            </div>
+            {driveModalError && (
+              <div className="mt-4 p-3 rounded-lg bg-red-500/10 border border-red-500/20">
+                <p className="text-red-400 text-sm text-center">{driveModalError}</p>
+              </div>
+            )}
+          </div>
+
+          <button
+            type="submit"
+            disabled={isSubmittingDrive}
+            className={`btn-primary w-full flex items-center justify-center gap-2 mt-6 ${isSubmittingDrive ? 'opacity-50 cursor-not-allowed' : ''}`}
+          >
+            {isSubmittingDrive ? (
+              <>
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                {editingDrive ? 'Updating...' : 'Creating...'}
+              </>
+            ) : (
+              <>
+                <UserPlus className="w-5 h-5" />
+                {editingDrive ? 'Update Drive' : 'Create Drive'}
+              </>
+            )}
+          </button>
+        </form>
+      </Modal>
       {/* END DRIVE MODAL */}
       {/* DELETE CONFIRMATION */}
       {deletingDriveId && (
@@ -1162,72 +1147,59 @@ export const TPODashboard: React.FC = () => {
       )}
       {/* END DELETE CONFIRMATION */}
       {/* INTERNSHIP MODAL */}
-      {showInternshipModal && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="bg-gradient-to-br from-slate-900/95 to-slate-800/95 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl w-full max-w-2xl relative flex flex-col"
-            style={{ maxHeight: '90vh' }}
+      {/* INTERNSHIP MODAL using Standardized Component */}
+      <Modal
+        isOpen={showInternshipModal}
+        onClose={() => {
+          setShowInternshipModal(false);
+          setEditingInternship(null);
+        }}
+        title={editingInternship ? 'Edit Internship' : 'Add New Internship'}
+      >
+        <form id="internship-form" onSubmit={(e) => { e.preventDefault(); handleInternshipSubmit(); }}>
+          <div className="space-y-4">
+            <div className="relative">
+              <label className="block text-sm font-semibold mb-2 text-white">Title</label>
+              <div className="relative">
+                <Briefcase className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400 w-5 h-5" />
+                <input type="text" className="input-glass w-full pl-10" value={internshipForm.title} onChange={e => setInternshipForm({ ...internshipForm, title: e.target.value })} required />
+              </div>
+            </div>
+            <div className="relative">
+              <label className="block text-sm font-semibold mb-2 text-white">Company</label>
+              <div className="relative">
+                <Building2 className="absolute left-3 top-1/2 transform -translate-y-1/2 text-emerald-400 w-5 h-5" />
+                <input type="text" className="input-glass w-full pl-10" value={internshipForm.company} onChange={e => setInternshipForm({ ...internshipForm, company: e.target.value })} required />
+              </div>
+            </div>
+            <div className="relative">
+              <label className="block text-sm font-semibold mb-2 text-white">Description</label>
+              <textarea className="input-glass w-full resize-none" rows={4} value={internshipForm.description} onChange={e => setInternshipForm({ ...internshipForm, description: e.target.value })} required />
+            </div>
+            <div className="relative">
+              <label className="block text-sm font-semibold mb-2 text-white">External Link</label>
+              <div className="relative">
+                <ExternalLink className="absolute left-3 top-1/2 transform -translate-y-1/2 text-indigo-400 w-5 h-5" />
+                <input type="url" className="input-glass w-full pl-10" value={internshipForm.externalLink} onChange={e => setInternshipForm({ ...internshipForm, externalLink: e.target.value })} required />
+              </div>
+              <p className="text-xs text-white/50 mt-2 ml-1">Link to the internship application page</p>
+            </div>
+          </div>
+          {internshipModalError && (
+            <div className="mt-4 p-3 rounded-lg bg-red-500/10 border border-red-500/20">
+              <p className="text-red-400 text-sm text-center">{internshipModalError}</p>
+            </div>
+          )}
+
+          <button
+            type="submit"
+            className="btn-primary w-full flex items-center justify-center gap-2 mt-6"
           >
-            <div className="flex items-center justify-between p-6 border-b border-white/10">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-gradient-to-br from-purple-500 to-indigo-600">
-                  <Building2 className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h2 className="text-xl font-bold text-white">{editingInternship ? 'Edit Internship' : 'Add New Internship'}</h2>
-                  <p className="text-white/60 text-sm mt-1">Fill in the details to create or update an internship opportunity</p>
-                </div>
-              </div>
-              <button onClick={() => setShowInternshipModal(false)} className="p-2 hover:bg-white/10 rounded-lg transition-colors">
-                <X className="w-5 h-5 text-white/70" />
-              </button>
-            </div>
-            <form id="internship-form" onSubmit={e => { e.preventDefault(); handleInternshipSubmit(); }} className="flex-1 overflow-y-auto px-6 py-6">
-              <div className="space-y-4">
-                <div className="relative">
-                  <label className="block text-sm font-semibold mb-2 text-white">Title</label>
-                  <div className="relative">
-                    <Briefcase className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400 w-5 h-5" />
-                    <input type="text" className="input-glass w-full pl-10" value={internshipForm.title} onChange={e => setInternshipForm({ ...internshipForm, title: e.target.value })} required />
-                  </div>
-                </div>
-                <div className="relative">
-                  <label className="block text-sm font-semibold mb-2 text-white">Company</label>
-                  <div className="relative">
-                    <Building2 className="absolute left-3 top-1/2 transform -translate-y-1/2 text-emerald-400 w-5 h-5" />
-                    <input type="text" className="input-glass w-full pl-10" value={internshipForm.company} onChange={e => setInternshipForm({ ...internshipForm, company: e.target.value })} required />
-                  </div>
-                </div>
-                <div className="relative">
-                  <label className="block text-sm font-semibold mb-2 text-white">Description</label>
-                  <textarea className="input-glass w-full resize-none" rows={4} value={internshipForm.description} onChange={e => setInternshipForm({ ...internshipForm, description: e.target.value })} required />
-                </div>
-                <div className="relative">
-                  <label className="block text-sm font-semibold mb-2 text-white">External Link</label>
-                  <div className="relative">
-                    <ExternalLink className="absolute left-3 top-1/2 transform -translate-y-1/2 text-indigo-400 w-5 h-5" />
-                    <input type="url" className="input-glass w-full pl-10" value={internshipForm.externalLink} onChange={e => setInternshipForm({ ...internshipForm, externalLink: e.target.value })} required />
-                  </div>
-                  <p className="text-xs text-white/50 mt-2 ml-1">Link to the internship application page</p>
-                </div>
-              </div>
-              {internshipModalError && (
-                <div className="mt-4 p-3 rounded-lg bg-red-500/10 border border-red-500/20">
-                  <p className="text-red-400 text-sm text-center">{internshipModalError}</p>
-                </div>
-              )}
-            </form>
-            <div className="flex justify-end gap-3 px-6 py-4 border-t border-white/10">
-              <button type="button" onClick={() => { setShowInternshipModal(false); setEditingInternship(null); }} className="btn-secondary">Cancel</button>
-              <button type="submit" form="internship-form" className="btn-primary flex items-center gap-2">
-                <Building2 className="w-5 h-5" /> {editingInternship ? 'Update Internship' : 'Create Internship'}
-              </button>
-            </div>
-          </motion.div>
-        </div>
-      )}
+            <Building2 className="w-5 h-5" />
+            {editingInternship ? 'Update Internship' : 'Create Internship'}
+          </button>
+        </form>
+      </Modal>
       {/* END INTERNSHIP MODAL */}
       {/* DELETE INTERNSHIP CONFIRMATION */}
       {deletingInternshipId && (

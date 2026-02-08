@@ -58,7 +58,7 @@ exports.getAllOffers = async (req, res) => {
 
         // Get all offers with student populated
         let offers = await Offer.find(query)
-            .populate('student', 'name email rollNo branch') // Populate student details
+            .populate('student', 'name email studentId branch') // Populate student details
             .sort({ uploadedAt: -1 });
 
         // Filter by TPO's department if set

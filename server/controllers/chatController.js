@@ -358,7 +358,7 @@ exports.editMessage = async (req, res) => {
     }
 };
 
-// Delete message (soft delete)
+
 exports.deleteMessage = async (req, res) => {
     try {
         const { messageId } = req.params;
@@ -371,7 +371,7 @@ exports.deleteMessage = async (req, res) => {
         const user = await User.findById(req.user.id);
 
         // Sender or TPO can delete
-        if (message.sender.toString() !== req.user.id && user.role !== 'tpo' && user.role !== 'admin') {
+        if (message.sender.toString() !== req.user.id.toString() && user.role !== 'tpo' && user.role !== 'admin') {
             return res.status(403).json({ message: 'Cannot delete this message' });
         }
 

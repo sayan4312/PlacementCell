@@ -84,7 +84,7 @@ const OfferVerificationTable = () => {
                                 offers.map((offer) => (
                                     <tr key={offer._id} className="hover:bg-white/5 transition-colors">
                                         <td className="p-4">
-                                            <div className="font-medium text-white">{offer.student?.rollNo}</div>
+                                            <div className="font-medium text-white">{offer.student?.studentId || offer.student?.rollNo || 'N/A'}</div>
                                             <div className="text-xs text-gray-500">{offer.student?.branch}</div>
                                         </td>
                                         <td className="p-4 text-gray-300">{offer.company}</td>

@@ -230,53 +230,59 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, onUserUpdate }) =
       )}
       {/* Edit Profile Modal */}
       <Modal isOpen={isEditing} onClose={handleEditCancel} title="Edit Profile">
-        <div className="space-y-3">
-          <input
-            type="text"
-            name="name"
-            value={editForm.name}
-            onChange={handleEditFormChange}
-            className="input-glass"
-            placeholder="Name"
-          />
-          <input
-            type="text"
-            name="phone"
-            value={editForm.phone}
-            onChange={handleEditFormChange}
-            className="input-glass"
-            placeholder="Phone"
-          />
-          <input
-            type="text"
-            name="address"
-            value={editForm.address}
-            onChange={handleEditFormChange}
-            className="input-glass"
-            placeholder="Address"
-          />
-          <input
-            type="date"
-            name="dateOfBirth"
-            value={editForm.dateOfBirth}
-            onChange={handleEditFormChange}
-            className="input-glass"
-            placeholder="Date of Birth"
-          />
-          <div className="flex space-x-2 mt-2">
-            <button
-              onClick={handleEditSave}
-              className="btn-primary"
-            >
-              Save
-            </button>
-            <button
-              onClick={handleEditCancel}
-              className="btn-secondary"
-            >
-              Cancel
-            </button>
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-1">Name</label>
+            <input
+              type="text"
+              name="name"
+              value={editForm.name}
+              onChange={handleEditFormChange}
+              className="input-glass w-full opacity-60 cursor-not-allowed"
+              placeholder="Name"
+              disabled
+            />
           </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-1">Phone</label>
+            <input
+              type="text"
+              name="phone"
+              value={editForm.phone}
+              onChange={handleEditFormChange}
+              className="input-glass w-full"
+              placeholder="Phone"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-1">Address</label>
+            <input
+              type="text"
+              name="address"
+              value={editForm.address}
+              onChange={handleEditFormChange}
+              className="input-glass w-full"
+              placeholder="Address"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-1">Date of Birth</label>
+            <input
+              type="date"
+              name="dateOfBirth"
+              value={editForm.dateOfBirth}
+              onChange={handleEditFormChange}
+              className="input-glass w-full"
+              placeholder="Date of Birth"
+            />
+          </div>
+          <button
+            onClick={handleEditSave}
+            className="btn-primary w-full flex items-center justify-center gap-2 mt-4"
+          >
+            <CheckCircle size={18} />
+            <span>Save Changes</span>
+          </button>
         </div>
       </Modal>
       {/* Profile Header */}
@@ -306,8 +312,8 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, onUserUpdate }) =
             onClick={handleEditProfile}
             disabled={isEditing}
             className={`flex items-center space-x-2 px-3 sm:px-4 py-2 rounded-lg transition-all text-sm self-start sm:self-auto flex-shrink-0 ${isEditing
-                ? 'bg-white/5 cursor-not-allowed'
-                : 'btn-primary'
+              ? 'bg-white/5 cursor-not-allowed'
+              : 'btn-primary'
               }`}
           >
             {isEditing ? (
@@ -361,45 +367,31 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, onUserUpdate }) =
           </button>
         </div>
 
-        {isAddingSkill && (
-          <div className="mb-6 bg-white/[0.03] backdrop-blur-xl rounded-2xl border border-white/10 p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h4 className="text-lg font-semibold text-white">Add New Skill</h4>
+        <Modal isOpen={isAddingSkill} onClose={handleCancelSkill} title="Add New Skill">
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Skill Name
+              </label>
+              <input
+                type="text"
+                value={newSkill}
+                onChange={(e) => setNewSkill(e.target.value)}
+                placeholder="e.g., React, Node.js, Python"
+                className="input-glass w-full"
+                onKeyPress={(e) => e.key === 'Enter' && handleSaveSkill()}
+              />
             </div>
 
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Skill Name
-                </label>
-                <input
-                  type="text"
-                  value={newSkill}
-                  onChange={(e) => setNewSkill(e.target.value)}
-                  placeholder="e.g., React, Node.js, Python"
-                  className="input-glass w-full"
-                  onKeyPress={(e) => e.key === 'Enter' && handleSaveSkill()}
-                />
-              </div>
-
-              <div className="flex items-center gap-3 pt-2">
-                <button
-                  onClick={handleSaveSkill}
-                  className="btn-primary flex-1 flex items-center justify-center gap-2"
-                >
-                  <Plus className="w-4 h-4" />
-                  <span>Add Skill</span>
-                </button>
-                <button
-                  onClick={handleCancelSkill}
-                  className="btn-secondary px-6"
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
+            <button
+              onClick={handleSaveSkill}
+              className="btn-primary w-full flex items-center justify-center gap-2 mt-4"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Add Skill</span>
+            </button>
           </div>
-        )}
+        </Modal>
 
         <div className="flex flex-wrap gap-2">
           {localUser?.skills?.map((skill: string, index: number) => (
@@ -426,85 +418,69 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, onUserUpdate }) =
           </button>
         </div>
 
-        {isAddingProject && (
-          <div className="mb-6 bg-white/[0.03] backdrop-blur-xl rounded-2xl border border-white/10 p-6">
-            <div className="flex items-center justify-between mb-6">
-              <h4 className="text-lg font-semibold text-white">Add New Project</h4>
+        <Modal isOpen={isAddingProject} onClose={handleCancelProject} title="Add New Project">
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Project Name <span className="text-red-400">*</span>
+              </label>
+              <input
+                type="text"
+                value={newProject.name}
+                onChange={(e) => setNewProject({ ...newProject, name: e.target.value })}
+                placeholder="e.g., E-commerce Platform"
+                className="input-glass w-full"
+              />
             </div>
 
-            <div className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Project Name <span className="text-red-400">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    value={newProject.name}
-                    onChange={(e) => setNewProject({ ...newProject, name: e.target.value })}
-                    placeholder="e.g., E-commerce Platform"
-                    className="input-glass w-full"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Technologies Used <span className="text-red-400">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    value={newProject.tech}
-                    onChange={(e) => setNewProject({ ...newProject, tech: e.target.value })}
-                    placeholder="e.g., React, Node.js, MongoDB"
-                    className="input-glass w-full"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Project Description <span className="text-red-400">*</span>
-                </label>
-                <textarea
-                  value={newProject.description}
-                  onChange={(e) => setNewProject({ ...newProject, description: e.target.value })}
-                  placeholder="Describe your project, its features, and your role..."
-                  rows={4}
-                  className="input-glass w-full resize-none"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  GitHub URL <span className="text-gray-500">(Optional)</span>
-                </label>
-                <input
-                  type="url"
-                  value={newProject.github}
-                  onChange={(e) => setNewProject({ ...newProject, github: e.target.value })}
-                  placeholder="https://github.com/username/repository"
-                  className="input-glass w-full"
-                />
-              </div>
-
-              <div className="flex items-center gap-3 pt-2">
-                <button
-                  onClick={handleSaveProject}
-                  className="btn-primary flex-1 flex items-center justify-center gap-2"
-                >
-                  <Plus className="w-4 h-4" />
-                  <span>Add Project</span>
-                </button>
-                <button
-                  onClick={handleCancelProject}
-                  className="btn-secondary px-6"
-                >
-                  Cancel
-                </button>
-              </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Technologies Used <span className="text-red-400">*</span>
+              </label>
+              <input
+                type="text"
+                value={newProject.tech}
+                onChange={(e) => setNewProject({ ...newProject, tech: e.target.value })}
+                placeholder="e.g., React, Node.js, MongoDB"
+                className="input-glass w-full"
+              />
             </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Project Description <span className="text-red-400">*</span>
+              </label>
+              <textarea
+                value={newProject.description}
+                onChange={(e) => setNewProject({ ...newProject, description: e.target.value })}
+                placeholder="Describe your project..."
+                rows={4}
+                className="input-glass w-full resize-none"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                GitHub URL <span className="text-gray-500">(Optional)</span>
+              </label>
+              <input
+                type="url"
+                value={newProject.github}
+                onChange={(e) => setNewProject({ ...newProject, github: e.target.value })}
+                placeholder="https://github.com/username/repository"
+                className="input-glass w-full"
+              />
+            </div>
+
+            <button
+              onClick={handleSaveProject}
+              className="btn-primary w-full flex items-center justify-center gap-2 mt-4"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Add Project</span>
+            </button>
           </div>
-        )}
+        </Modal>
 
         <div className="space-y-4">
           {localUser?.projects?.map((project: any, index: number) => (

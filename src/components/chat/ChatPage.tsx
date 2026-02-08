@@ -177,7 +177,7 @@ const ChatPage = ({ currentUser }: ChatPageProps) => {
     };
 
     const handleDelete = async (messageId: string) => {
-        if (!confirm('Delete this message?')) return;
+        // if (!confirm('Delete this message?')) return; // Removed window confirm
         try {
             await chatAPI.deleteMessage(messageId);
             fetchMessages(selectedGroup!._id);
@@ -585,7 +585,7 @@ const ChatPage = ({ currentUser }: ChatPageProps) => {
 
                     {/* File Attachment */}
                     {msg.fileUrl && !msg.isDeleted && (
-                        <a href={msg.fileUrl} target="_blank" rel="noreferrer" className="flex items-center gap-2 p-2 bg-black/20 rounded-lg mb-2 hover:bg-black/30">
+                        <a href={msg.fileUrl} target="_blank" rel="noreferrer" download className="flex items-center gap-2 p-2 bg-black/20 rounded-lg mb-2 hover:bg-black/30">
                             {getFileIcon(msg.fileType)}
                             <span className="text-sm text-white truncate">{msg.fileName}</span>
                         </a>

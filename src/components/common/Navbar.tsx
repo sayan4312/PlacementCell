@@ -157,6 +157,7 @@ export const Navbar: React.FC = () => {
         ...baseItems,
         { label: 'Job Drives', icon: Briefcase, link: `${getDashboardLink()}?tab=drives` },
         { label: 'Internships', icon: Building2, link: `${getDashboardLink()}?tab=internships` },
+        { label: 'ATS Checker', icon: FileText, link: `${getDashboardLink()}?tab=ats` },
         { label: 'Applications', icon: FileText, link: `${getDashboardLink()}?tab=applications` },
         { label: 'Offers', icon: CheckCircle, link: `${getDashboardLink()}?tab=offers` },
         { label: 'Chat', icon: MessageSquare, link: `${getDashboardLink()}?tab=chat` },

@@ -24,6 +24,8 @@ const reportRoutes = require('./routes/reportRoutes');
 const offerRoutes = require('./routes/offerRoutes');
 const chatRoutes = require('./routes/chatRoutes');
 const experienceRoutes = require('./routes/experienceRoutes');
+const jobRoutes = require('./routes/jobRoutes');
+const atsRoutes = require('./routes/atsRoutes');
 
 const app = express();
 
@@ -75,6 +77,8 @@ const initializeServer = async () => {
     app.use('/api/offers', offerRoutes);
     app.use('/api/chat', chatRoutes);
     app.use('/api/experiences', experienceRoutes);
+    app.use('/api/jobs', jobRoutes);
+    app.use('/api/ats', atsRoutes);
 
     // Error handling middleware
     app.use((err, req, res, next) => {

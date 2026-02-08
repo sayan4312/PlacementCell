@@ -17,7 +17,9 @@ const uploadToCloudinary = async (file, folder = 'resumes') => {
       transformation: [
         { quality: 'auto' },
         { fetch_format: 'auto' }
-      ]
+      ],
+      type: 'upload',
+      access_mode: 'public'
     });
 
     return {
@@ -48,6 +50,8 @@ const uploadFromBuffer = (buffer, folder = 'offers') => {
       {
         folder: folder,
         resource_type: 'auto',
+        type: 'upload',
+        access_mode: 'public'
       },
       (error, result) => {
         if (error) return reject(error);

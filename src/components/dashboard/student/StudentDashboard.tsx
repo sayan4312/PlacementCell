@@ -18,6 +18,7 @@ import DrivesSection from './DrivesSection';
 import InternshipsSection from './InternshipsSection';
 import ApplicationsSection from './ApplicationsSection';
 import NotificationsSection from './NotificationsSection';
+import ATSCheckerSection from './ATSCheckerSection';
 import StudentOffers from '../../offers/StudentOffers';
 import ChatPage from '../../chat/ChatPage';
 import DashboardSidebar from '../../common/DashboardSidebar';
@@ -350,6 +351,7 @@ export const StudentDashboard: React.FC = () => {
     { id: 'profile', label: 'My Profile', icon: User },
     { id: 'drives', label: 'Job Drives', icon: Briefcase },
     { id: 'internships', label: 'Internships', icon: Building2 },
+    { id: 'ats', label: 'ATS Checker', icon: FileText },
     { id: 'applications', label: 'My Applications', icon: FileText },
     { id: 'offers', label: 'Offers', icon: CheckCircle },
     { id: 'community', label: 'Community', icon: Users },
@@ -418,6 +420,7 @@ export const StudentDashboard: React.FC = () => {
             {activeTab === 'profile' && renderProfileTab()}
             {activeTab === 'drives' && renderDrivesTab()}
             {activeTab === 'internships' && renderInternshipsTab()}
+            {activeTab === 'ats' && <ATSCheckerSection />}
             {activeTab === 'applications' && renderApplicationsTab()}
             {activeTab === 'offers' && <StudentOffers />}
             {activeTab === 'community' && user && <CommunityHome currentUserId={user._id} />}
