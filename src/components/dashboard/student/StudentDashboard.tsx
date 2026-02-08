@@ -7,7 +7,8 @@ import {
   TrendingUp,
   Building2,
   CheckCircle,
-  MessageSquare
+  MessageSquare,
+  Users
 } from 'lucide-react';
 import apiClient from '../../../services/apiClient';
 import { notificationAPI } from '../../../services/apiClient';
@@ -20,6 +21,7 @@ import NotificationsSection from './NotificationsSection';
 import StudentOffers from '../../offers/StudentOffers';
 import ChatPage from '../../chat/ChatPage';
 import DashboardSidebar from '../../common/DashboardSidebar';
+import { CommunityHome } from '../../community';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useLocation } from 'react-router-dom';
@@ -350,6 +352,7 @@ export const StudentDashboard: React.FC = () => {
     { id: 'internships', label: 'Internships', icon: Building2 },
     { id: 'applications', label: 'My Applications', icon: FileText },
     { id: 'offers', label: 'Offers', icon: CheckCircle },
+    { id: 'community', label: 'Community', icon: Users },
     { id: 'chat', label: 'Chat', icon: MessageSquare },
     { id: 'notifications', label: 'Notifications', icon: Bell }
   ];
@@ -417,6 +420,7 @@ export const StudentDashboard: React.FC = () => {
             {activeTab === 'internships' && renderInternshipsTab()}
             {activeTab === 'applications' && renderApplicationsTab()}
             {activeTab === 'offers' && <StudentOffers />}
+            {activeTab === 'community' && user && <CommunityHome currentUserId={user._id} />}
             {activeTab === 'chat' && user && <ChatPage currentUser={{ _id: user._id, name: user.name, studentId: user.studentId, role: 'student' }} />}
             {activeTab === 'notifications' && renderNotificationsTab()}
           </div>

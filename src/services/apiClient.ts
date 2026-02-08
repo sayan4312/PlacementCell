@@ -95,85 +95,85 @@ apiClient.interceptors.response.use(
 
 // Helper functions for common HTTP methods
 export const api = {
-  get: <T = any>(url: string, config = {}) => 
+  get: <T = any>(url: string, config = {}) =>
     apiClient.get<T>(url, config).then(response => response.data),
-  
-  post: <T = any>(url: string, data = {}, config = {}) => 
+
+  post: <T = any>(url: string, data = {}, config = {}) =>
     apiClient.post<T>(url, data, config).then(response => response.data),
-  
-  put: <T = any>(url: string, data = {}, config = {}) => 
+
+  put: <T = any>(url: string, data = {}, config = {}) =>
     apiClient.put<T>(url, data, config).then(response => response.data),
-  
-  patch: <T = any>(url: string, data = {}, config = {}) => 
+
+  patch: <T = any>(url: string, data = {}, config = {}) =>
     apiClient.patch<T>(url, data, config).then(response => response.data),
-  
-  delete: <T = any>(url: string, config = {}) => 
+
+  delete: <T = any>(url: string, config = {}) =>
     apiClient.delete<T>(url, config).then(response => response.data),
 };
 
 // Notification APIs
 export const notificationAPI = {
   // Get user notifications
-  getNotifications: (params?: any) => 
+  getNotifications: (params?: any) =>
     apiClient.get('/notifications', { params }),
 
   // Get notification count
-  getNotificationCount: () => 
+  getNotificationCount: () =>
     apiClient.get('/notifications/count'),
 
   // Mark notifications as read
-  markAsRead: (notificationIds?: string[]) => 
+  markAsRead: (notificationIds?: string[]) =>
     apiClient.patch('/notifications/read', { notificationIds }),
 
   // Mark all notifications as read
-  markAllAsRead: () => 
+  markAllAsRead: () =>
     apiClient.patch('/notifications/read-all'),
 
   // Mark single notification as read
-  markSingleAsRead: (id: string) => 
+  markSingleAsRead: (id: string) =>
     apiClient.patch(`/notifications/${id}/read`),
 
   // Delete notifications
-  deleteNotifications: (notificationIds?: string[]) => 
+  deleteNotifications: (notificationIds?: string[]) =>
     apiClient.delete('/notifications', { data: { notificationIds } }),
 
   // Delete single notification
-  deleteNotification: (id: string) => 
+  deleteNotification: (id: string) =>
     apiClient.delete(`/notifications/${id}`),
 
   // Create system notification (Admin/TPO only)
-  createSystemNotification: (data: any) => 
+  createSystemNotification: (data: any) =>
     apiClient.post('/notifications/system', data),
 
   // Create application notification (Company/TPO only)
-  createApplicationNotification: (data: any) => 
+  createApplicationNotification: (data: any) =>
     apiClient.post('/notifications/application', data),
 
   // Create drive notification (Company/TPO only)
-  createDriveNotification: (data: any) => 
+  createDriveNotification: (data: any) =>
     apiClient.post('/notifications/drive', data)
 };
 
 // User profile management APIs
 export const userProfileAPI = {
   // Add skill
-  addSkill: (skill: string) => 
+  addSkill: (skill: string) =>
     apiClient.post('/users/skills', { skill }),
 
   // Remove skill
-  removeSkill: (skill: string) => 
+  removeSkill: (skill: string) =>
     apiClient.delete(`/users/skills/${encodeURIComponent(skill)}`),
 
   // Add project
-  addProject: (project: any) => 
+  addProject: (project: any) =>
     apiClient.post('/users/projects', project),
 
   // Update project
-  updateProject: (id: string, project: any) => 
+  updateProject: (id: string, project: any) =>
     apiClient.put(`/users/projects/${id}`, project),
 
   // Remove project
-  removeProject: (id: string) => 
+  removeProject: (id: string) =>
     apiClient.delete(`/users/projects/${id}`),
 
   // Update profile

@@ -23,6 +23,7 @@ const companyRoutes = require('./routes/company');
 const reportRoutes = require('./routes/reportRoutes');
 const offerRoutes = require('./routes/offerRoutes');
 const chatRoutes = require('./routes/chatRoutes');
+const experienceRoutes = require('./routes/experienceRoutes');
 
 const app = express();
 
@@ -73,6 +74,7 @@ const initializeServer = async () => {
     app.use('/api/reports', reportRoutes);
     app.use('/api/offers', offerRoutes);
     app.use('/api/chat', chatRoutes);
+    app.use('/api/experiences', experienceRoutes);
 
     // Error handling middleware
     app.use((err, req, res, next) => {

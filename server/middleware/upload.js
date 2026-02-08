@@ -69,6 +69,23 @@ const fileFilter = (req, file, cb) => {
       cb(new Error('Only PDF, Word documents, and images are allowed for chat'), false);
     }
   }
+  // Allow files for post attachments (images, PDFs, docs)
+  else if (file.fieldname === 'postAttachment') {
+    const allowedTypes = [
+      'application/pdf',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'image/jpeg',
+      'image/png',
+      'image/gif',
+      'image/webp'
+    ];
+    if (allowedTypes.includes(file.mimetype) || file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only PDF, Word documents, and images are allowed for attachments'), false);
+    }
+  }
   else {
     cb(new Error('Unexpected field'), false);
   }
