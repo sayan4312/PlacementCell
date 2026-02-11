@@ -1,20 +1,14 @@
-import axios from 'axios';
+import apiClient from './apiClient';
 
-const API_URL = `${import.meta.env.VITE_API_URL}/reports`;
-
-
-const getAuthHeader = () => {
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
-    return { headers: { Authorization: `Bearer ${user.token}` } };
-};
+const API_URL = '/reports';
 
 export const getPlacementStats = async () => {
-    const response = await axios.get(`${API_URL}/stats`, getAuthHeader());
+    const response = await apiClient.get(`${API_URL}/stats`);
     return response.data;
 };
 
 export const getCompanyStats = async () => {
-    const response = await axios.get(`${API_URL}/company-stats`, getAuthHeader());
+    const response = await apiClient.get(`${API_URL}/company-stats`);
     return response.data;
 };
 
@@ -23,6 +17,6 @@ export const getStudentReportData = async (department?: string, batch?: string) 
     if (department) params.append('department', department);
     if (batch) params.append('batch', batch);
 
-    const response = await axios.get(`${API_URL}/export-students?${params.toString()}`, getAuthHeader());
+    const response = await apiClient.get(`${API_URL}/export-students?${params.toString()}`);
     return response.data;
 };
