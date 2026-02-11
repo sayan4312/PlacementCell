@@ -201,7 +201,6 @@ export const Navbar: React.FC = () => {
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-4">
-
               {user && (
                 <>
                   {/* Notifications Dropdown */}
@@ -299,12 +298,19 @@ export const Navbar: React.FC = () => {
                   </motion.button>
                 </>
               )}
+              {!user && (
+                <Link
+                  to="/login"
+                  className="btn-primary !px-6 !py-2 !text-sm"
+                >
+                  Login
+                </Link>
+              )}
             </div>
 
             {/* Mobile Navigation Controls */}
             <div className="flex md:hidden items-center space-x-2">
-
-              {user && (
+              {user ? (
                 <>
                   {/* Mobile Notifications Button */}
                   <motion.button
@@ -335,6 +341,13 @@ export const Navbar: React.FC = () => {
                     {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
                   </motion.button>
                 </>
+              ) : (
+                <Link
+                  to="/login"
+                  className="btn-primary !px-4 !py-1.5 !text-sm"
+                >
+                  Login
+                </Link>
               )}
             </div>
           </div>
