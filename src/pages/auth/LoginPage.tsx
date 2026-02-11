@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Lock, User, ArrowRight, GraduationCap } from 'lucide-react';
+import { Lock, User, ArrowRight } from 'lucide-react';
 import authService from '../../services/authService';
 import { useAuthStore } from '../../store/authStore';
 
@@ -72,16 +72,16 @@ const LoginPage: React.FC = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, duration: 0.6 }}
-              className="flex items-center gap-3 mb-12"
+              className="flex items-center gap-4 mb-12"
             >
               <motion.div
                 whileHover={{ rotate: 360, scale: 1.1 }}
                 transition={{ duration: 0.6 }}
-                className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/20"
+                className="w-12 h-12 rounded-xl flex items-center justify-center"
               >
-                <GraduationCap className="text-white" size={20} />
+                <img src="/logo.png" alt="CampusNix Logo" className="w-full h-full object-contain" />
               </motion.div>
-              <span className="text-2xl font-bold tracking-tight text-white">Placement<span className="text-indigo-400">Cell</span></span>
+              <span className="text-3xl font-bold tracking-tight text-gradient-premium">CampusNix</span>
             </motion.div>
 
             <motion.h1
@@ -110,7 +110,7 @@ const LoginPage: React.FC = () => {
             className="relative z-10"
           >
             <p className="text-sm text-gray-500 font-light">
-              © 2025 Campus Placement Portal. All rights reserved.
+              © 2026 CampusNix Portal. All rights reserved.
             </p>
           </motion.div>
         </motion.div>
