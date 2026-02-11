@@ -24,6 +24,13 @@ import { useAuthStore } from '../store/authStore';
 export const LandingPage: React.FC = () => {
   const { user } = useAuthStore();
 
+  const scrollToSection = (id: string) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   const features = [
     {
       icon: GraduationCap,
@@ -155,7 +162,10 @@ export const LandingPage: React.FC = () => {
                       <ArrowRight className="ml-2 h-5 w-5 inline-block group-hover:translate-x-1 transition-transform" />
                     </button>
                   </Link>
-                  <button className="btn-secondary">
+                  <button
+                    onClick={() => scrollToSection('features')}
+                    className="btn-secondary"
+                  >
                     Learn More
                   </button>
                 </>
@@ -258,7 +268,7 @@ export const LandingPage: React.FC = () => {
         </div>
       </section>
       {/* Features Section */}
-      <section className="py-24 relative overflow-hidden">
+      <section id="features" className="py-24 relative overflow-hidden">
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -322,7 +332,10 @@ export const LandingPage: React.FC = () => {
             <p className="text-lg text-gray-400 mb-8">
               Ready to experience the future of campus placements?
             </p>
-            <button className="btn-secondary group">
+            <button
+              onClick={() => scrollToSection('how-it-works')}
+              className="btn-secondary group"
+            >
               Explore All Features
               <ArrowRight className="ml-2 w-5 h-5 inline-block group-hover:translate-x-1 transition-transform" />
             </button>
@@ -330,8 +343,79 @@ export const LandingPage: React.FC = () => {
         </div>
       </section>
 
+      {/* How it Works Section */}
+      <section id="how-it-works" className="py-24 relative overflow-hidden bg-dark-bg/50">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+              How it <span className="text-gradient-premium">Works</span>
+            </h2>
+            <p className="text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed">
+              Your journey from campus to career in four simple steps.
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            {[
+              {
+                step: '01',
+                title: 'Register',
+                desc: 'Create your account as a student, TPO, or company.',
+                icon: Users
+              },
+              {
+                step: '02',
+                title: 'Build Profile',
+                desc: 'Upload your resume and showcase your skills to companies.',
+                icon: Award
+              },
+              {
+                step: '03',
+                title: 'Apply',
+                desc: 'Find eligible drives and apply with a single click.',
+                icon: Target
+              },
+              {
+                step: '04',
+                title: 'Get Placed',
+                desc: 'Track status, interview, and land your dream job offer.',
+                icon: Briefcase
+              }
+            ].map((item, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                className="relative glass-card p-8 text-center group hover:bg-white/5 transition-colors"
+                style={{ zIndex: 10 - index }}
+              >
+                <div className="absolute -top-4 -right-4 text-6xl font-black text-white/5 group-hover:text-white/10 transition-colors pointer-events-none">
+                  {item.step}
+                </div>
+                <div className="w-16 h-16 mx-auto mb-6 bg-indigo-500/10 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                  <item.icon className="w-8 h-8 text-indigo-400" />
+                </div>
+                <h3 className="text-xl font-bold text-white mb-3">{item.title}</h3>
+                <p className="text-gray-400 text-sm leading-relaxed">{item.desc}</p>
+                {index < 3 && (
+                  <div className="hidden md:block absolute top-1/2 -right-4 w-8 h-px bg-gradient-to-r from-indigo-500/50 to-transparent" />
+                )}
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* CTA Section */}
-      <section className="py-20 relative overflow-hidden">
+      <section id="cta" className="py-20 relative overflow-hidden">
         <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -340,7 +424,7 @@ export const LandingPage: React.FC = () => {
             transition={{ duration: 0.6 }}
           >
             <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">
-              Ready to Transform Your Career Journey?
+              Ready to Transform Your <span className="text-gradient-premium">Career Journey?</span>
             </h2>
 
             <p className="text-lg text-gray-400 mb-8 max-w-2xl mx-auto">
@@ -368,8 +452,8 @@ export const LandingPage: React.FC = () => {
               transition={{ duration: 0.6 }}
               className="flex items-center space-x-3"
             >
-              <div className="w-10 h-10 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center">
-                <GraduationCap className="h-6 w-6 text-white" />
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center">
+                <img src="/logo.png" alt="CampusNix Logo" className="h-full w-full object-contain" />
               </div>
               <div>
                 <h3 className="text-xl font-bold text-gradient-premium">

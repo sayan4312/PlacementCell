@@ -49,32 +49,32 @@ const LoginPage: React.FC = () => {
 
       <div className="glass-panel w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 overflow-hidden min-h-[600px] relative z-10 shadow-2xl">
         {/* Left Side - Hero / Context */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, x: -50 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.6 }}
           className="p-12 lg:p-16 flex flex-col justify-between bg-black/20 backdrop-blur-sm relative overflow-hidden border-r border-white/5"
         >
           {/* Decorative Circles */}
-          <motion.div 
+          <motion.div
             animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
             transition={{ duration: 4, repeat: Infinity }}
-            className="absolute top-10 right-10 w-32 h-32 bg-indigo-500/10 rounded-full blur-3xl" 
+            className="absolute top-10 right-10 w-32 h-32 bg-indigo-500/10 rounded-full blur-3xl"
           />
-          <motion.div 
+          <motion.div
             animate={{ scale: [1, 1.3, 1], opacity: [0.3, 0.5, 0.3] }}
             transition={{ duration: 5, repeat: Infinity, delay: 1 }}
-            className="absolute bottom-10 left-10 w-40 h-40 bg-purple-500/10 rounded-full blur-3xl" 
+            className="absolute bottom-10 left-10 w-40 h-40 bg-purple-500/10 rounded-full blur-3xl"
           />
 
           <div className="relative z-10">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, duration: 0.6 }}
               className="flex items-center gap-3 mb-12"
             >
-              <motion.div 
+              <motion.div
                 whileHover={{ rotate: 360, scale: 1.1 }}
                 transition={{ duration: 0.6 }}
                 className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/20"
@@ -84,7 +84,7 @@ const LoginPage: React.FC = () => {
               <span className="text-2xl font-bold tracking-tight text-white">Placement<span className="text-indigo-400">Cell</span></span>
             </motion.div>
 
-            <motion.h1 
+            <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.6 }}
@@ -93,7 +93,7 @@ const LoginPage: React.FC = () => {
               Empowering Your <br />
               <span className="text-gradient-premium">Career Journey</span>
             </motion.h1>
-            <motion.p 
+            <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4, duration: 0.6 }}
@@ -103,7 +103,7 @@ const LoginPage: React.FC = () => {
             </motion.p>
           </div>
 
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5, duration: 0.6 }}
@@ -116,13 +116,13 @@ const LoginPage: React.FC = () => {
         </motion.div>
 
         {/* Right Side - Login Form */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, x: 50 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
           className="bg-black/40 backdrop-blur-xl p-12 lg:p-16 flex flex-col justify-center"
         >
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.6 }}
@@ -133,7 +133,7 @@ const LoginPage: React.FC = () => {
           </motion.div>
 
           {/* Role Selector */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5, duration: 0.6 }}
@@ -149,11 +149,10 @@ const LoginPage: React.FC = () => {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.6 + index * 0.1, duration: 0.4 }}
-                className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 capitalize ${
-                  role === r.value
-                    ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/25'
-                    : 'text-gray-400 hover:text-white hover:bg-white/5'
-                }`}
+                className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 capitalize ${role === r.value
+                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/25'
+                  : 'text-gray-400 hover:text-white hover:bg-white/5'
+                  }`}
               >
                 {r.label}
               </motion.button>
@@ -161,7 +160,7 @@ const LoginPage: React.FC = () => {
           </motion.div>
 
           <form onSubmit={handleSubmit} autoComplete="on" className="space-y-6">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.7, duration: 0.5 }}
@@ -183,7 +182,7 @@ const LoginPage: React.FC = () => {
               </div>
             </motion.div>
 
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.8, duration: 0.5 }}
@@ -206,7 +205,7 @@ const LoginPage: React.FC = () => {
             </motion.div>
 
             {error && (
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm"

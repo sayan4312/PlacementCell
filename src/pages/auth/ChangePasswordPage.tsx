@@ -22,7 +22,7 @@ const ChangePasswordPage: React.FC = () => {
       setSuccess('Password changed successfully!');
       setOldPassword('');
       setNewPassword('');
-      
+
       // Redirect to appropriate dashboard after 2 seconds
       setTimeout(() => {
         if (user?.role === 'admin') {

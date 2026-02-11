@@ -193,8 +193,8 @@ const InternshipsSection: React.FC<InternshipsSectionProps> = ({
           <button
             onClick={() => setActiveTab('tpo')}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === 'tpo'
-                ? 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/30'
-                : 'text-gray-400 hover:text-white'
+              ? 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/30'
+              : 'text-gray-400 hover:text-white'
               }`}
           >
             <Briefcase className="w-4 h-4" />
@@ -203,8 +203,8 @@ const InternshipsSection: React.FC<InternshipsSectionProps> = ({
           <button
             onClick={() => setActiveTab('external')}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === 'external'
-                ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30'
-                : 'text-gray-400 hover:text-white'
+              ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30'
+              : 'text-gray-400 hover:text-white'
               }`}
           >
             <Globe className="w-4 h-4" />

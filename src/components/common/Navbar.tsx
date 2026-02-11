@@ -5,7 +5,6 @@ import {
   LogOut,
   User,
   Bell,
-  GraduationCap,
   CheckCircle,
   AlertCircle,
   Info,
@@ -192,8 +191,8 @@ export const Navbar: React.FC = () => {
           <div className="flex justify-between items-center">
             {/* Logo */}
             <Link to="/" className="flex items-center space-x-2 sm:space-x-3 group">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                <GraduationCap className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                <img src="/logo.png" alt="CampusNix Logo" className="h-full w-full object-contain" />
               </div>
               <span className="text-lg sm:text-xl font-bold text-gradient-premium hidden xs:block">
                 CampusNix
@@ -425,8 +424,8 @@ export const Navbar: React.FC = () => {
               <div className="p-4 border-b border-white/10">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center">
-                      <User className="h-5 w-5 text-white" />
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center">
+                      <img src="/logo.png" alt="CampusNix Logo" className="h-full w-full object-contain" />
                     </div>
                     <div>
                       <div className="text-white font-medium text-sm">{user?.name}</div>
