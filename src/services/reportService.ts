@@ -1,8 +1,8 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/api/reports';
+const API_URL = `${import.meta.env.VITE_API_URL}/reports`;
 
-// Get auth token helper
+
 const getAuthHeader = () => {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     return { headers: { Authorization: `Bearer ${user.token}` } };
