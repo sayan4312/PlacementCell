@@ -18,11 +18,11 @@ const router = express.Router();
 const getMyApplications = async (req, res) => {
   try {
     const { status, page = 1, limit = 10 } = req.query;
-    
+
     // Convert string ID to ObjectId
     const mongoose = require('mongoose');
     const studentId = new mongoose.Types.ObjectId(req.user.userId);
-    
+
     const query = { student: studentId };
     if (status) query.status = status;
 
@@ -124,7 +124,7 @@ const updateApplicationStatus = async (req, res) => {
     if (oldStatus !== status) {
       const Notification = require('../models/Notification');
       let notificationType = '';
-      
+
       switch (status) {
         case 'shortlisted':
           notificationType = 'application_shortlisted';
@@ -214,41 +214,6 @@ const scheduleInterview = async (req, res) => {
   }
 };
 
-// @desc    Get application statistics
-// @route   GET /api/applications/stats
-// @access  Private (Student)
-const getApplicationStats = async (req, res) => {
-  try {
-    // Convert string ID to ObjectId
-    const mongoose = require('mongoose');
-    const studentId = new mongoose.Types.ObjectId(req.user.userId);
-
-    const stats = await Application.aggregate([
-      { $match: { student: studentId } },
-      {
-        $group: {
-          _id: '$status',
-          count: { $sum: 1 }
-        }
-      }
-    ]);
-
-    const totalApplications = await Application.countDocuments({ student: studentId });
-    const recentApplications = await Application.find({ student: studentId })
-      .populate('drive', 'title companyName')
-      .sort({ appliedAt: -1 })
-      .limit(5);
-
-    res.json({
-      stats,
-      totalApplications,
-      recentApplications
-    });
-  } catch (error) {
-    console.error('Get application stats error:', error);
-    res.status(500).json({ message: 'Server error' });
-  }
-};
 
 // @desc    Withdraw application
 // @route   DELETE /api/applications/:id
@@ -278,7 +243,7 @@ const withdrawApplication = async (req, res) => {
     // Remove from drive's applicants
     const drive = await Drive.findById(application.drive);
     if (drive) {
-      drive.applicants = drive.applicants.filter(app => 
+      drive.applicants = drive.applicants.filter(app =>
         app.student.toString() !== req.user.userId
       );
       await drive.save();
@@ -317,7 +282,6 @@ router.post('/:id/interview', [
   body('instructions').optional().isString().withMessage('Instructions must be a string')
 ], scheduleInterview);
 router.post('/import-shortlist', auth, authorizeTPOOrCompany, upload.single('file'), applicationController.importShortlist);
-router.get('/stats', auth, authorizeStudent, getApplicationStats);
 router.delete('/:id', auth, authorizeStudent, withdrawApplication);
 
 // Admin only route for cleaning up orphaned applications

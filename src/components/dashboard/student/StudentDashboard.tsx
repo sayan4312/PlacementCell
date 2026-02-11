@@ -163,15 +163,42 @@ export const StudentDashboard: React.FC = () => {
   useEffect(() => {
     fetchDashboardData();
 
-    // Poll for notifications every 30 seconds
+    // Poll for notifications every 30 seconds, and drives every 60 seconds
     const intervalId = setInterval(async () => {
       try {
-        const res = await notificationAPI.getNotifications();
-        setNotifications(res.data.notifications || []);
+        const [notifRes, drivesRes, appsRes, statsRes] = await Promise.all([
+          notificationAPI.getNotifications(),
+          apiClient.get('/drives/eligible'),
+          apiClient.get('/applications/mine'),
+          apiClient.get('/applications/stats')
+        ]);
+
+        setNotifications(notifRes.data.notifications || []);
+        setDrives(drivesRes.data.drives || []);
+        setApplications(appsRes.data.applications || []);
+
+        // Update stats
+        const statsData = statsRes.data;
+        const statsMap = (statsData.stats && Array.isArray(statsData.stats))
+          ? statsData.stats.reduce((acc: any, stat: any) => {
+            acc[stat._id] = stat.count;
+            return acc;
+          }, {})
+          : {};
+
+        setStats({
+          totalApplications: statsData.totalApplications || 0,
+          pendingApplications: statsMap.pending || 0,
+          shortlistedApplications: statsMap.shortlisted || 0,
+          selectedApplications: statsMap.selected || 0,
+          rejectedApplications: statsMap.rejected || 0,
+          profileScore: user?.profileScore || 0,
+          eligibleDrives: drivesRes.data.drives?.length || 0
+        });
       } catch (error) {
-        console.error('Error polling notifications:', error);
+        console.error('Error polling dashboard data:', error);
       }
-    }, 30000);
+    }, 60000);
 
     return () => clearInterval(intervalId);
   }, []);

@@ -7,32 +7,32 @@ const mongoose = require('mongoose');
 exports.getAllApplications = async (req, res) => {
   try {
     const { company } = req.query;
-    
+
     let query = {};
-    
+
     // Get user info to check if TPO and filter by department
     const user = await User.findById(req.user.userId);
     if (user.role === 'tpo') {
       // For TPOs, only show applications from students in their department
       const department = user.department;
       // Find students in this department
-      const students = await User.find({ 
-        role: 'student', 
-        branch: department 
+      const students = await User.find({
+        role: 'student',
+        branch: department
       }).select('_id');
-      
+
       const studentIds = students.map(student => student._id);
-      
+
       // Find applications from these students
       query.student = { $in: studentIds };
     } else if (company) {
       // If company filter is provided, find applications for that company's drives
-      const drives = await Drive.find({ 
-        companyName: { $regex: company, $options: 'i' } 
+      const drives = await Drive.find({
+        companyName: { $regex: company, $options: 'i' }
       }).select('_id');
-      
+
       const driveIds = drives.map(drive => drive._id);
-      
+
       // Then find applications for these drives
       query.drive = { $in: driveIds };
     }
@@ -46,7 +46,7 @@ exports.getAllApplications = async (req, res) => {
           path: 'company',
           select: 'companyName industry'
         },
-        match: { 
+        match: {
           companyName: { $exists: true, $ne: null, $ne: '' },
           position: { $exists: true, $ne: null, $ne: '' }
         }
@@ -54,14 +54,14 @@ exports.getAllApplications = async (req, res) => {
       .sort({ appliedAt: -1 });
 
     // Filter out applications where drive population failed due to missing data
-    const validApplications = applications.filter(app => 
-      app.drive && 
-      app.drive.companyName && 
+    const validApplications = applications.filter(app =>
+      app.drive &&
+      app.drive.companyName &&
       app.drive.position &&
       app.drive.companyName !== 'Unknown Company' &&
       app.drive.position !== 'Unknown Position'
     );
-      
+
     res.json({ applications: validApplications });
   } catch (error) {
     console.error('Get all applications error:', error);
@@ -72,7 +72,7 @@ exports.getAllApplications = async (req, res) => {
 // Bulk import shortlist from CSV
 exports.importShortlist = async (req, res) => {
   if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
-  
+
   const { driveId } = req.body;
   if (!driveId) {
     return res.status(400).json({ message: 'Drive ID is required' });
@@ -99,7 +99,7 @@ exports.importShortlist = async (req, res) => {
     }
 
     // First, get all applications for this drive
-    const allApplicationsForDrive = await Application.find({ 
+    const allApplicationsForDrive = await Application.find({
       drive: driveId,
       status: { $in: ['pending', 'applied', 'shortlisted'] } // Include all active applications
     }).populate('student', 'name email');
@@ -107,13 +107,13 @@ exports.importShortlist = async (req, res) => {
     const shortlistedIds = [];
     const errors = [];
     const parser = csv.parse({ columns: true, trim: true });
-    
+
     req.file.buffer
       .toString()
       .split('\n')
       .forEach(line => parser.write(line + '\n'));
     parser.end();
-    
+
     // Collect all shortlisted Application IDs from CSV
     for await (const record of parser) {
       const appId = record['Application ID'] || record['application_id'] || record['id'] || record['app_id'];
@@ -122,38 +122,38 @@ exports.importShortlist = async (req, res) => {
       const status = (record['Status'] || record['status'] || '').toLowerCase();
       const position = record['Position'] || record['position'] || record['drive'];
       const company = record['Company'] || record['company'];
-      
+
       if (!appId) {
         errors.push({ appId: 'Missing', studentName: studentName || 'Unknown', error: 'Application ID is required' });
         continue;
       }
-      
+
       // Process both shortlisted and selected statuses
       if (status && !['shortlisted', 'selected'].includes(status)) {
         errors.push({ appId, studentName: studentName || 'Unknown', error: `Invalid status: ${status}. Only 'shortlisted' or 'selected' candidates should be included.` });
         continue;
       }
-      
+
       // Validate that this application ID exists for this drive
       const appExists = allApplicationsForDrive.find(app => app._id.toString() === appId);
       if (!appExists) {
         errors.push({ appId, studentName: studentName || 'Unknown', error: 'Application not found for this drive' });
         continue;
       }
-      
+
       shortlistedIds.push({ appId, status: status || 'shortlisted' });
     }
 
     console.log('DEBUG: shortlistedIds sample:', shortlistedIds.slice(0, 2));
-    
+
     // Extract just the application IDs for the rejection query
     const applicationIds = shortlistedIds.map(item => item.appId);
     console.log('DEBUG: applicationIds sample:', applicationIds.slice(0, 2));
-    
+
     let shortlistedCount = 0;
     let selectedCount = 0;
     let processedIds = []; // Track successfully processed IDs
-    
+
     // Process each application individually to avoid parallel save errors
     for (const csvItem of shortlistedIds) {
       try {
@@ -163,14 +163,14 @@ exports.importShortlist = async (req, res) => {
           drive: driveId,
           status: { $in: ['pending', 'applied', 'shortlisted'] }
         });
-        
+
         if (!app) {
           console.log(`Application ${csvItem.appId} not found or already in final status`);
           continue;
         }
-        
+
         const targetStatus = csvItem.status || 'shortlisted';
-        
+
         if (targetStatus === 'selected') {
           app.updateStatusAndTimeline('selected');
           await app.save();
@@ -180,10 +180,10 @@ exports.importShortlist = async (req, res) => {
           await app.save();
           shortlistedCount++;
         }
-        
+
         processedIds.push(csvItem.appId);
         console.log(`Successfully updated application ${app._id} to ${targetStatus}`);
-        
+
       } catch (error) {
         console.error(`Error updating application ${csvItem.appId}:`, error.message);
         // Continue processing other applications
@@ -191,8 +191,8 @@ exports.importShortlist = async (req, res) => {
     }
 
     const rejectedCount = await Application.updateMany(
-      { 
-        drive: driveId, 
+      {
+        drive: driveId,
         _id: { $nin: processedIds }, // NOT in successfully processed IDs
         status: { $in: ['pending', 'applied'] } // Only reject pending/applied, not already shortlisted
       },
@@ -211,8 +211,8 @@ exports.importShortlist = async (req, res) => {
       studentName: app.student?.name || 'Unknown',
       studentEmail: app.student?.email || 'Unknown'
     }));
-    
-    res.json({ 
+
+    res.json({
       shortlisted: shortlistedCount,
       selected: selectedCount,
       rejected: rejectedCount.modifiedCount,
@@ -222,7 +222,7 @@ exports.importShortlist = async (req, res) => {
       results,
       message: `Processed ${shortlistedCount} shortlisted, ${selectedCount} selected candidates and rejected ${rejectedCount.modifiedCount} others for ${drive.companyName}'s ${drive.title} drive`
     });
-    
+
   } catch (error) {
     console.error('Import shortlist error:', error);
     res.status(500).json({ message: 'Server error during import' });
@@ -231,32 +231,36 @@ exports.importShortlist = async (req, res) => {
 
 
 
- 
+
 
 exports.getStudentApplicationStats = async (req, res) => {
   try {
-    const studentId = req.user.userId;
-    
+    const mongoose = require('mongoose');
+    const studentId = new mongoose.Types.ObjectId(req.user.userId);
+
     const stats = await Application.aggregate([
       { $match: { student: studentId } },
-      { $group: { _id: '$status', count: { $sum: 1 } } }
+      {
+        $group: {
+          _id: '$status',
+          count: { $sum: 1 }
+        }
+      }
     ]);
-    // Map stats to expected keys
-    const result = {
-      pendingApplications: 0,
-      shortlistedApplications: 0,
-      selectedApplications: 0,
-      rejectedApplications: 0
-    };
-    stats.forEach(s => {
-      if (s._id === 'pending' || s._id === 'applied') result.pendingApplications += s.count;
-      if (s._id === 'shortlisted') result.shortlistedApplications = s.count;
-      if (s._id === 'selected') result.selectedApplications = s.count;
-      if (s._id === 'rejected') result.rejectedApplications = s.count;
+
+    const totalApplications = await Application.countDocuments({ student: studentId });
+    const recentApplications = await Application.find({ student: studentId })
+      .populate('drive', 'title companyName')
+      .sort({ appliedAt: -1 })
+      .limit(5);
+
+    res.json({
+      stats,
+      totalApplications,
+      recentApplications
     });
-    res.json({ stats: result });
   } catch (error) {
-    
+    console.error('Get application stats error:', error);
     res.status(500).json({ message: 'Server error' });
   }
 };
@@ -268,9 +272,9 @@ exports.cleanupOrphanedApplications = async (req, res) => {
   try {
     // Find all applications
     const allApplications = await Application.find({});
-    
+
     const orphanedApplications = [];
-    
+
     // Check each application to see if its drive still exists
     for (const application of allApplications) {
       if (application.drive) {
@@ -283,13 +287,13 @@ exports.cleanupOrphanedApplications = async (req, res) => {
         orphanedApplications.push(application._id);
       }
     }
-    
+
     // Delete orphaned applications
-    const result = await Application.deleteMany({ 
-      _id: { $in: orphanedApplications } 
+    const result = await Application.deleteMany({
+      _id: { $in: orphanedApplications }
     });
-    
-    res.json({ 
+
+    res.json({
       message: `Cleanup completed. Removed ${result.deletedCount} orphaned applications.`,
       deletedCount: result.deletedCount,
       orphanedIds: orphanedApplications
