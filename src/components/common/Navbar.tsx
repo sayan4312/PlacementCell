@@ -146,6 +146,13 @@ export const Navbar: React.FC = () => {
 
   // Mobile menu navigation items
   const getMobileMenuItems = () => {
+    if (!user) {
+      return [
+        { label: 'Features', icon: Info, link: 'features' },
+        { label: 'How it Works', icon: CheckCircle, link: 'how-it-works' },
+      ];
+    }
+
     const baseItems = [
       { label: 'Dashboard', icon: Home, link: getDashboardLink() },
       { label: 'Profile', icon: User, link: `${getDashboardLink()}?tab=profile` },
@@ -199,8 +206,30 @@ export const Navbar: React.FC = () => {
               </span>
             </Link>
 
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-4">
+            <div className="hidden md:flex items-center space-x-6">
+              {!user && (
+                <div className="flex items-center space-x-8 mr-4">
+                  <button
+                    onClick={() => {
+                      const element = document.getElementById('features');
+                      element?.scrollIntoView({ behavior: 'smooth' });
+                    }}
+                    className="text-sm font-medium text-gray-400 hover:text-white transition-colors"
+                  >
+                    Features
+                  </button>
+                  <button
+                    onClick={() => {
+                      const element = document.getElementById('how-it-works');
+                      element?.scrollIntoView({ behavior: 'smooth' });
+                    }}
+                    className="text-sm font-medium text-gray-400 hover:text-white transition-colors"
+                  >
+                    How it Works
+                  </button>
+                </div>
+              )}
+
               {user && (
                 <>
                   {/* Notifications Dropdown */}
@@ -441,8 +470,12 @@ export const Navbar: React.FC = () => {
                       <img src="/logo.png" alt="CampusNix Logo" className="h-full w-full object-contain" />
                     </div>
                     <div>
-                      <div className="text-white font-medium text-sm">{user?.name}</div>
-                      <div className="text-gray-400 text-xs capitalize">{user?.role}</div>
+                      <div className="text-white font-medium text-sm">
+                        {user ? user.name : 'Welcome to CampusNix'}
+                      </div>
+                      <div className="text-gray-400 text-xs capitalize">
+                        {user ? user.role : 'Guest Portal'}
+                      </div>
                     </div>
                   </div>
                   <button
@@ -456,28 +489,60 @@ export const Navbar: React.FC = () => {
 
               {/* Menu Items */}
               <div className="p-4 space-y-2">
-                {getMobileMenuItems().map((item, index) => (
-                  <Link
-                    key={index}
-                    to={item.link}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center space-x-3 px-4 py-3 rounded-xl bg-glass-100 border border-glass-border text-gray-300 hover:bg-glass-200 hover:text-white transition-all duration-300"
-                  >
-                    <item.icon size={18} />
-                    <span className="text-sm font-medium">{item.label}</span>
-                  </Link>
-                ))}
+                {getMobileMenuItems().map((item, index) => {
+                  const isScrollLink = !user && (item.link === 'features' || item.link === 'how-it-works');
+
+                  if (isScrollLink) {
+                    return (
+                      <button
+                        key={index}
+                        onClick={() => {
+                          setMobileMenuOpen(false);
+                          const element = document.getElementById(item.link);
+                          element?.scrollIntoView({ behavior: 'smooth' });
+                        }}
+                        className="flex items-center space-x-3 w-full px-4 py-3 rounded-xl bg-glass-100 border border-glass-border text-gray-300 hover:bg-glass-200 hover:text-white transition-all duration-300"
+                      >
+                        <item.icon size={18} />
+                        <span className="text-sm font-medium">{item.label}</span>
+                      </button>
+                    );
+                  }
+
+                  return (
+                    <Link
+                      key={index}
+                      to={item.link}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="flex items-center space-x-3 px-4 py-3 rounded-xl bg-glass-100 border border-glass-border text-gray-300 hover:bg-glass-200 hover:text-white transition-all duration-300"
+                    >
+                      <item.icon size={18} />
+                      <span className="text-sm font-medium">{item.label}</span>
+                    </Link>
+                  );
+                })}
               </div>
 
               {/* Logout Button */}
               <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-white/10">
-                <button
-                  onClick={handleLogout}
-                  className="flex items-center justify-center space-x-2 w-full px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 transition-all duration-300"
-                >
-                  <LogOut size={18} />
-                  <span className="text-sm font-medium">Logout</span>
-                </button>
+                {user ? (
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center justify-center space-x-2 w-full px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 transition-all duration-300"
+                  >
+                    <LogOut size={18} />
+                    <span className="text-sm font-medium">Logout</span>
+                  </button>
+                ) : (
+                  <Link
+                    to="/login"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="btn-primary flex items-center justify-center space-x-2 w-full !px-4 !py-3 !text-sm"
+                  >
+                    <User size={18} />
+                    <span>Login to Portal</span>
+                  </Link>
+                )}
               </div>
             </motion.div>
           </>
