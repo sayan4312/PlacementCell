@@ -373,7 +373,7 @@ export const LandingPage: React.FC = () => {
               </div>
               <div>
                 <h3 className="text-xl font-bold text-gradient-premium">
-                  Placement Cell
+                  CampusNix
                 </h3>
                 <p className="text-gray-500 text-sm">Connecting Dreams with Opportunities</p>
               </div>
@@ -413,7 +413,7 @@ export const LandingPage: React.FC = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.4 }}
             >
-              <p>&copy; {new Date().getFullYear()} Placement Cell. All rights reserved.</p>
+              <p>&copy; {new Date().getFullYear()} CampusNix. All rights reserved.</p>
             </motion.div>
           </div>
         </div>

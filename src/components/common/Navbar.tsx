@@ -196,7 +196,7 @@ export const Navbar: React.FC = () => {
                 <GraduationCap className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
               </div>
               <span className="text-lg sm:text-xl font-bold text-gradient-premium hidden xs:block">
-                Placement Cell
+                CampusNix
               </span>
             </Link>
 

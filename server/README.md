@@ -1,6 +1,6 @@
-# Placement Cell Backend API
+# CampusNix Backend API
 
-A comprehensive Node.js + Express.js backend for a placement cell management system with role-based access control, JWT authentication, and MongoDB integration.
+A comprehensive Node.js + Express.js backend for a CampusNix management system with role-based access control, JWT authentication, and MongoDB integration.
 
 ## 🚀 Features
 
@@ -57,7 +57,7 @@ NODE_ENV=development
 PORT=5000
 
 # Database Configuration
-MONGODB_URI=mongodb://localhost:27017/placement_cell
+MONGODB_URI=mongodb://localhost:27017/campusnix
 
 # JWT Configuration
 JWT_SECRET=your_jwt_secret_key_here_make_it_long_and_secure
