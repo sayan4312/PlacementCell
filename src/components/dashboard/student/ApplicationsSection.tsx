@@ -238,7 +238,7 @@ const ApplicationsSection: React.FC<ApplicationsSectionProps> = ({ applications,
               <div>
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-start space-x-4">
-                    <div className="w-12 h-12 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg flex items-center justify-center text-white font-bold">
+                    <div className="w-12 h-12 bg-gradient-to-r from-indigo-400 via-indigo-200 to-white rounded-lg flex items-center justify-center text-indigo-800 font-bold">
                       {application.drive?.companyName ? 
                         application.drive.companyName.split(' ').map((n: string) => n[0]).join('') : 
                         'N/A'
