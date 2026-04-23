@@ -85,7 +85,7 @@
 
   /* Text Gradient */
   .text-gradient-premium {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-white via-indigo-200 to-indigo-400;
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-indigo-200 to-white;
   }
 
   /* Premium Navbar */

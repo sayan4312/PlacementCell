@@ -114,7 +114,7 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({ user, stats, applicat
         <div className="mb-4">
           <div className="w-full bg-white/10 rounded-full h-3">
             <div
-              className="bg-gradient-to-r from-blue-500 to-purple-500 h-3 rounded-full transition-all duration-500"
+              className="bg-gradient-to-r from-indigo-400 via-indigo-200 to-white h-3 rounded-full transition-all duration-500"
               style={{ width: `${profileCompletion}%` }}
             ></div>
           </div>

@@ -38,7 +38,7 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
             {userInfo && (
                 <div className={`p-4 border-b border-white/10 ${collapsed ? 'px-3' : ''}`}>
                     <div className={`flex items-center gap-3 ${collapsed ? 'justify-center' : ''}`}>
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold flex-shrink-0 shadow-lg shadow-indigo-500/30">
+                        <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-indigo-400 via-indigo-200 to-white flex items-center justify-center text-indigo-800 font-bold flex-shrink-0 shadow-lg shadow-indigo-500/30">
                             {userInfo.avatar ? (
                                 <img src={userInfo.avatar} alt="" className="w-full h-full rounded-xl object-cover" />
                             ) : (

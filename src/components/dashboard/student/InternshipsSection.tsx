@@ -314,7 +314,7 @@ const InternshipsSection: React.FC<InternshipsSectionProps> = ({
                   transition={{ delay: index * 0.05 }}
                   className="glass-card flex flex-col md:flex-row items-stretch overflow-hidden hover:scale-[1.01] transition-all"
                 >
-                  <div className="flex-shrink-0 flex items-center justify-center w-16 h-16 m-4 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg text-white text-xl font-bold">
+                  <div className="flex-shrink-0 flex items-center justify-center w-16 h-16 m-4 bg-gradient-to-r from-indigo-400 via-indigo-200 to-white rounded-lg text-indigo-800 text-xl font-bold">
                     {internship.company.charAt(0).toUpperCase()}
                   </div>
                   <div className="flex-1 flex flex-col justify-center px-2 py-3 md:py-4">
@@ -442,11 +442,11 @@ const InternshipsSection: React.FC<InternshipsSectionProps> = ({
               >
                 <div className="flex flex-col md:flex-row gap-4">
                   {/* Company Logo */}
-                  <div className="flex-shrink-0 w-14 h-14 rounded-lg bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center overflow-hidden">
+                  <div className="flex-shrink-0 w-14 h-14 rounded-lg bg-gradient-to-r from-indigo-400 via-indigo-200 to-white flex items-center justify-center overflow-hidden">
                     {job.companyLogo ? (
                       <img src={job.companyLogo} alt={job.company} className="w-full h-full object-cover" />
                     ) : (
-                      <span className="text-white text-xl font-bold">{job.company.charAt(0)}</span>
+                      <span className="text-indigo-800 text-xl font-bold">{job.company.charAt(0)}</span>
                     )}
                   </div>
 

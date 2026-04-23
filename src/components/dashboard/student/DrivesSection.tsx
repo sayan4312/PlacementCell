@@ -260,8 +260,7 @@ const DrivesSection: React.FC<DrivesSectionProps> = ({
             >
               <div>
                 <p className="text-base sm:text-lg font-semibold text-white mb-2 flex items-start sm:items-center gap-2 sm:gap-3 flex-wrap">
-                  <Building2 className="h-5 w-5 sm:h-7 sm:w-7 text-purple-400 flex-shrink-0" />
-                  <span className="break-words">{drive.position} <span className="font-normal text-gray-400">at</span> {drive.company?.companyName || drive.companyName || "Unknown Company"}</span>
+                  <span className="break-words"><span className="text-gradient-premium">{drive.position}</span> <span className="font-normal text-gray-400">at</span> <span className="text-gradient-premium">{drive.company?.companyName || drive.companyName || "Unknown Company"}</span></span>
                 </p>
                 <p className="text-gray-400 mb-3 sm:mb-4 text-sm sm:text-base">{drive.description}</p>
                 <div className="flex flex-wrap gap-6 mb-4">

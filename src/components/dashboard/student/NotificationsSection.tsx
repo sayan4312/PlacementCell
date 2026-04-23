@@ -295,7 +295,7 @@ const NotificationsSection: React.FC<NotificationsSectionProps> = ({ notificatio
       <div className="space-y-4">
         {filteredNotifications.length === 0 ? (
           <div className="glass-card p-12 text-center">
-            <div className="w-16 h-16 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="w-16 h-16 bg-gradient-to-r from-indigo-400 via-indigo-200 to-white rounded-full flex items-center justify-center mx-auto mb-4">
               <Bell className="h-8 w-8 text-white" />
             </div>
             <p className="text-white text-lg font-semibold mb-2">

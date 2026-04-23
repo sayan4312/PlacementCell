@@ -289,7 +289,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ user, onUserUpdate }) =
       <div className="glass-card p-4 sm:p-6 md:p-8">
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4 sm:mb-6">
           <div className="flex items-center gap-3 sm:gap-6">
-            <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center text-white text-lg sm:text-xl md:text-2xl font-bold flex-shrink-0">
+            <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 bg-gradient-to-r from-indigo-400 via-indigo-200 to-white rounded-full flex items-center justify-center text-indigo-800 text-lg sm:text-xl md:text-2xl font-bold flex-shrink-0">
               {localUser?.name?.split(' ').map((n: string) => n[0]).join('')}
             </div>
             <div className="min-w-0">
